@@ -2,6 +2,7 @@ package gpsl.syntax;
 
 import gpsl.parser.GPSLLexer;
 import gpsl.parser.GPSLParser;
+import gpsl.syntax.model.Automaton;
 import gpsl.syntax.model.Declarations;
 import gpsl.syntax.model.Expression;
 import org.antlr.v4.runtime.CharStream;
@@ -88,6 +89,27 @@ public class Reader {
      */
     public static void link(Declarations tree) {
         link(tree, new HashMap<>());
+    }
+
+    /**
+     * Links symbol references in an automaton using the provided context.
+     * This resolves atom references in transition guards.
+     *
+     * @param automaton the automaton to link
+     * @param context the symbol context (atom name to Atom mapping)
+     */
+    public static void link(Automaton automaton, Map<String, Object> context) {
+        Context symbolContext = context != null ? new Context(context) : new Context();
+        automaton.accept(new SymbolResolver(), symbolContext);
+    }
+
+    /**
+     * Links symbol references in an automaton using an empty context.
+     *
+     * @param automaton the automaton to link
+     */
+    public static void link(Automaton automaton) {
+        link(automaton, new HashMap<>());
     }
 
     /**

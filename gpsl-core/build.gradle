@@ -27,7 +27,7 @@ compileTestJava {
 
 dependencies {
     antlr group: 'org.antlr', name: 'antlr4', version: '4.13.2'
-    //api project(':obp3-algos')
+    implementation project(':gpsl-ltl3ba')
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

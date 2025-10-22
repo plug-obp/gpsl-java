@@ -16,8 +16,7 @@ public class Expression2Automaton {
         var automatonText = LTL3BA.getInstance().convert(ltlFormula);
         
         //Read automaton from text
-        var reader = new AutomatonReaderFromLTL3BA();
-        var automaton = reader.read(automatonText);
+        var automaton = AutomatonReaderFromLTL3BA.read(automatonText);
 
         // Convert atom map to Object map for linking
         java.util.Map<String, Object> atomContext = new java.util.HashMap<>(transformer.getNameToAtomMap());
@@ -27,7 +26,7 @@ public class Expression2Automaton {
     }
 
     private static class AutomatonReaderFromLTL3BA {
-        Automaton read(String automatonText) {
+        static Automaton read(String automatonText) {
             // Parse LTL3BA output format (CSV-like: source,target,guard,...)
             String[] lines = automatonText.split("\n");
             

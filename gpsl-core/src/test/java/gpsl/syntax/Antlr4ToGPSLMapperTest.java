@@ -100,6 +100,10 @@ class Antlr4ToGPSLMapperTest {
         Next next4 = (Next) Reader.readExpression("◯◯ true");
         assertEquals("◯", next4.operator());
         assertInstanceOf(Next.class, next4.expression());
+
+        Next next5 = (Next) Reader.readExpression("X x");
+        assertEquals("X", next5.operator());
+        assertInstanceOf(Reference.class, next5.expression());
     }
 
     @Test

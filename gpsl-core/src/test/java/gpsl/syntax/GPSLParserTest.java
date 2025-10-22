@@ -97,6 +97,7 @@ class GPSLParserTest {
         assertEquals("(formula () (formula (literal true)))", parseExpression("() true"));
         assertEquals("(formula ◯ (formula (literal true)))", parseExpression("◯ true"));
         assertEquals("(formula o (formula (literal true)))", parseExpression("o true"));
+        assertEquals("(formula X (formula (literal true)))", parseExpression("X true"));
         assertEquals("(formula o (formula ( (formula o (formula x)) )))", parseExpression("o(o x)"));
     }
 

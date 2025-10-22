@@ -53,7 +53,7 @@ nativePlatforms.each { platform ->
     
     tasks.register("copyLtl3ba${platform.replaceAll('-', '').capitalize()}", Copy) {
         from "native-binaries/ltl3ba/${platform}"
-        into "${buildDir}/resources/main/${platform}"
+        into "${buildDir}/resources/main/native/ltl3ba/${platform}"
         rename sourceFile, targetFile
     }
 }

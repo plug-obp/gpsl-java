@@ -15,7 +15,7 @@ public class NativeExecutable {
     
     private Path extractExecutable() throws IOException {
         String platform = detectPlatform();
-        String resourcePath = "/" + platform + "/" + getExecutableName(platform);
+        String resourcePath = "/native/ltl3ba/" + platform + "/" + getExecutableName(platform);
         
         // Extract from JAR to temp location
         Path tempDir = Files.createTempDirectory("ltl3ba-native");

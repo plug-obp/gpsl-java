@@ -136,6 +136,8 @@ public class Evaluator<T> implements Visitor<T, Boolean> {
         throw new UnsupportedOperationException(
             "The GPSL evaluator does not support temporal operator: WeakRelease");
     }
+
+    // Automaton expressions are not supported in basic boolean evaluation
     
     @Override
     public Boolean visitAutomaton(Automaton element, T input) {

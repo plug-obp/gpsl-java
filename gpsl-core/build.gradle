@@ -25,19 +25,17 @@ compileTestJava {
     options.compilerArgs.add('--enable-preview')
 }
 
-test {
-    jvmArgs += '--enable-preview'
-}
-
 dependencies {
     antlr group: 'org.antlr', name: 'antlr4', version: '4.13.2'
     //api project(':obp3-algos')
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 test {
     useJUnitPlatform()
+    jvmArgs += '--enable-preview'
 }
 
 generateGrammarSource {

@@ -75,6 +75,6 @@ SEMICOLON : ';';
 LPAREN : '(';
 RPAREN : ')';
 
-LINE_COMMENT : '//' .*? '\n' -> skip ;
+LINE_COMMENT : '//' ~[\r\n]* -> skip ;
 COMMENT : '/*' .*? '*/' -> skip ;
 WS : [ \r\t\n]+ -> skip ;

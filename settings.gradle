@@ -1,0 +1,3 @@
+rootProject.name = 'gpsl-language'
+include 'gpsl-core'
+// include 'gpsl-models'

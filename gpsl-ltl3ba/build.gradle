@@ -1,0 +1,61 @@
+plugins {
+    id 'java'
+}
+
+group = 'fr.ensta'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    modularity.inferModulePath = true
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(23))
+    }
+}
+
+compileJava {
+    options.compilerArgs.add('--enable-preview')
+}
+
+compileTestJava {
+    options.compilerArgs.add('--enable-preview')
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+    jvmArgs += '--enable-preview'
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs = ['src/main/resources', 'src/main/native']
+        }
+    }
+}
+
+// Create tasks for each platform
+def nativePlatforms = ['linux-x64', 'mac-x64', 'windows-x64']
+
+nativePlatforms.each { platform ->
+    def isWindows = platform.startsWith('windows')
+    def sourceFile = isWindows ? "ltl3ba-${platform}.exe" : "ltl3ba-${platform}"
+    def targetFile = isWindows ? 'ltl3ba.exe' : 'ltl3ba'
+    
+    tasks.register("copyLtl3ba${platform.replaceAll('-', '').capitalize()}", Copy) {
+        from "native-binaries/ltl3ba/${platform}"
+        into "src/main/native/${platform}"
+        rename sourceFile, targetFile
+    }
+}
+
+processResources.dependsOn tasks.matching { it.name.startsWith('copyLtl3ba') }

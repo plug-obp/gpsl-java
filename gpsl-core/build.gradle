@@ -26,7 +26,7 @@ compileTestJava {
 }
 
 dependencies {
-    antlr group: 'org.antlr', name: 'antlr4', version: '4.13.2'
+    antlr 'org.antlr:antlr4:4.13.2'
     implementation project(':gpsl-ltl3ba')
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
@@ -40,8 +40,8 @@ test {
 
 generateGrammarSource {
     outputDirectory = layout.buildDirectory.dir('generated-src/antlr/main/gpsl/parser').get().asFile
+    packageName = 'gpsl.parser'
     arguments = [
-            '-package', 'gpsl.parser',
             '-Xexact-output-dir'
     ]
 }

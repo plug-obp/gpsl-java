@@ -1,6 +1,7 @@
 package gpsl.semantics;
 
 import gpsl.syntax.model.*;
+import obp3.runtime.sli.ISemanticRelation;
 
 import java.util.*;
 
@@ -14,7 +15,7 @@ import java.util.*;
  * 
  * @param <T> the type of input context passed to guard evaluators
  */
-public class AutomatonSemantics<T> {
+public class AutomatonSemantics<T> implements ISemanticRelation<T, Transition, State> {
     
     private final Automaton automaton;
     private final Evaluator<T> guardEvaluator;
@@ -35,8 +36,8 @@ public class AutomatonSemantics<T> {
      * 
      * @return an unmodifiable set of initial states
      */
-    public Set<State> initial() {
-        return Collections.unmodifiableSet(automaton.initialStates());
+    public List<State> initial() {
+        return automaton.initialStates().stream().toList();
     }
     
     /**
@@ -110,9 +111,9 @@ public class AutomatonSemantics<T> {
      * @param configuration the current state (not used in basic execution)
      * @return set containing the target state
      */
-    public Set<State> execute(Transition transition, T input, State configuration) {
+    public List<State> execute(Transition transition, T input, State configuration) {
         Objects.requireNonNull(transition, "Transition cannot be null");
-        return Set.of(transition.target());
+        return List.of(transition.target());
     }
     
     /**

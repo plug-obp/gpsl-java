@@ -2,6 +2,7 @@ package gpsl.semantics;
 
 import gpsl.ltl3ba.Expression2Automaton;
 import gpsl.syntax.model.*;
+import obp3.runtime.sli.ISemanticRelation;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,7 +21,7 @@ import java.util.Set;
  * 
  * @param <T> the type of input context passed to guard evaluators
  */
-public class Semantics<T> {
+public class Semantics<T> implements ISemanticRelation<T, Transition, State> {
     
     private final AutomatonSemantics<T> automatonSemantics;
     
@@ -70,7 +71,7 @@ public class Semantics<T> {
      * 
      * @return an unmodifiable set of initial states
      */
-    public Set<State> initial() {
+    public List<State> initial() {
         return automatonSemantics.initial();
     }
 
@@ -94,7 +95,7 @@ public class Semantics<T> {
      * @param configuration the current state
      * @return set containing the target state
      */
-    public Set<State> execute(Transition transition, T input, State configuration) {
+    public List<State> execute(Transition transition, T input, State configuration) {
         return automatonSemantics.execute(transition, input, configuration);
     }
     

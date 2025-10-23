@@ -59,7 +59,7 @@ class SemanticsTest {
         
         assertNotNull(semantics);
         assertEquals(automaton, semantics.getAutomaton());
-        assertEquals(Set.of(s0), semantics.initial());
+        assertEquals(List.of(s0), semantics.initial());
     }
     
     @Test
@@ -69,7 +69,7 @@ class SemanticsTest {
         
         Semantics<Map<String, Boolean>> semantics = new Semantics<>(expr, evaluator);
         
-        Set<State> initialStates = semantics.initial();
+        List<State> initialStates = semantics.initial();
         assertFalse(initialStates.isEmpty());
         
         // Initial states should contain "init" in their names
@@ -115,7 +115,7 @@ class SemanticsTest {
         
         if (!actions.isEmpty()) {
             Transition action = actions.get(0);
-            Set<State> nextStates = semantics.execute(action, input, initialState);
+            List<State> nextStates = semantics.execute(action, input, initialState);
             
             assertNotNull(nextStates);
             assertFalse(nextStates.isEmpty());
@@ -200,9 +200,9 @@ class SemanticsTest {
         TestAtomEvaluator evaluator = new TestAtomEvaluator();
         Semantics<Map<String, Boolean>> semantics = new Semantics<>(automaton, evaluator);
         
-        Set<State> nextStates = semantics.execute(t, Map.of(), s0);
+        List<State> nextStates = semantics.execute(t, Map.of(), s0);
         
-        assertEquals(Set.of(s1), nextStates);
+        assertEquals(List.of(s1), nextStates);
     }
     
     @Test

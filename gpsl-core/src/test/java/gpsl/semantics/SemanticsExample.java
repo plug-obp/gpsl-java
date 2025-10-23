@@ -36,7 +36,7 @@ public class SemanticsExample {
         Semantics<Map<String, Boolean>> semantics = new Semantics<>(expr, evaluator);
         
         // Get initial states
-        Set<State> initialStates = semantics.initial();
+        List<State> initialStates = semantics.initial();
         System.out.println("Initial states: " + initialStates.size());
         
         // Get the underlying automaton
@@ -55,7 +55,7 @@ public class SemanticsExample {
         
         if (!actions1.isEmpty()) {
             Transition transition = actions1.get(0);
-            Set<State> nextStates = semantics.execute(transition, input1, currentState);
+            List<State> nextStates = semantics.execute(transition, input1, currentState);
             State nextState = nextStates.iterator().next();
             System.out.println("  Executed transition to: " + nextState.name());
             System.out.println("  Is accepting? " + semantics.isAccepting(nextState));
@@ -69,7 +69,7 @@ public class SemanticsExample {
         
         if (!actions2.isEmpty()) {
             Transition transition = actions2.get(0);
-            Set<State> nextStates = semantics.execute(transition, input2, currentState);
+            List<State> nextStates = semantics.execute(transition, input2, currentState);
             State nextState = nextStates.iterator().next();
             System.out.println("  Executed transition to: " + nextState.name());
             System.out.println("  Is accepting? " + semantics.isAccepting(nextState));

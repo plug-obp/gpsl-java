@@ -46,7 +46,7 @@ class AutomatonSemanticsTest {
         AutomatonSemantics<Map<String, Boolean>> semantics = 
             new AutomatonSemantics<>(automaton, MAP_EVALUATOR);
         
-        assertEquals(initialStates, semantics.initial());
+        assertEquals(initialStates.stream().toList(), semantics.initial());
     }
     
     @Test
@@ -62,7 +62,7 @@ class AutomatonSemanticsTest {
         AutomatonSemantics<Map<String, Boolean>> semantics = 
             new AutomatonSemantics<>(automaton, MAP_EVALUATOR);
         
-        assertEquals(Set.of(s0), semantics.initial());
+        assertEquals(List.of(s0), semantics.initial());
     }
     
     @Test
@@ -323,9 +323,9 @@ class AutomatonSemanticsTest {
             new AutomatonSemantics<>(automaton, MAP_EVALUATOR);
         
         Map<String, Boolean> input = Map.of();
-        Set<State> result = semantics.execute(t1, input, s0);
+        List<State> result = semantics.execute(t1, input, s0);
         
-        assertEquals(Set.of(s1), result);
+        assertEquals(List.of(s1), result);
     }
     
     @Test
@@ -454,7 +454,7 @@ class AutomatonSemanticsTest {
         AutomatonSemantics<Map<String, Boolean>> semantics = 
             new AutomatonSemantics<>(automaton, MAP_EVALUATOR);
         
-        assertEquals(Set.of(s0), semantics.initial());
+        assertEquals(List.of(s0), semantics.initial());
         assertTrue(semantics.isAccepting(s1));
         assertEquals(1, semantics.actions(Map.of(), s0).size());
     }

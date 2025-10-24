@@ -1,7 +1,7 @@
 package gpsl.semantics;
 
 import gpsl.syntax.model.*;
-import obp3.runtime.sli.ISemanticRelation;
+import obp3.runtime.sli.DependentSemanticRelation;
 
 import java.util.*;
 
@@ -15,7 +15,7 @@ import java.util.*;
  * 
  * @param <T> the type of input context passed to guard evaluators
  */
-public class AutomatonSemantics<T> implements ISemanticRelation<T, Transition, State> {
+public class AutomatonSemantics<T> implements DependentSemanticRelation<T, Transition, State> {
     
     private final Automaton automaton;
     private final Evaluator<T> guardEvaluator;

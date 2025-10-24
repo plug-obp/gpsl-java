@@ -2,11 +2,10 @@ package gpsl.semantics;
 
 import gpsl.ltl3ba.Expression2Automaton;
 import gpsl.syntax.model.*;
-import obp3.runtime.sli.ISemanticRelation;
+import obp3.runtime.sli.DependentSemanticRelation;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Provides operational semantics for any GPSL syntax tree element.
@@ -21,7 +20,7 @@ import java.util.Set;
  * 
  * @param <T> the type of input context passed to guard evaluators
  */
-public class Semantics<T> implements ISemanticRelation<T, Transition, State> {
+public class Semantics<T> implements DependentSemanticRelation<T, Transition, State> {
     
     private final AutomatonSemantics<T> automatonSemantics;
     

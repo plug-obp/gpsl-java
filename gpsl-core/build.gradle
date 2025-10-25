@@ -3,7 +3,7 @@ plugins {
     id 'antlr'
 }
 
-group = 'fr.ensta'
+group = 'org.obpcdl'
 version = '1.0.0'
 
 repositories {
@@ -27,7 +27,7 @@ compileTestJava {
 
 dependencies {
     antlr 'org.antlr:antlr4:4.13.2'
-    implementation ('fr.ensta:obp3-runtime:1.0.0')
+    implementation ('org.obpcdl:obp3-runtime:1.0.0')
     implementation project(':gpsl-ltl3ba')
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'

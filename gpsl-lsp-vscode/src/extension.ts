@@ -8,16 +8,28 @@ export function activate(context: vscode.ExtensionContext) {
   const serverScript = process.platform === 'win32' ? 'gpsl-lsp.bat' : 'gpsl-lsp';
   const serverPath = path.join(context.asAbsolutePath('..'), 'gpsl-lsp', 'build', 'install', 'gpsl-lsp', 'bin', serverScript);
 
+  // Set JAVA_HOME to use Java 23 (required for the LSP server)
+  const env = { ...process.env };
+  if (process.platform === 'darwin') {
+    env.JAVA_HOME = '/Library/Java/JavaVirtualMachines/temurin-23.jdk/Contents/Home';
+  }
+
   const serverOptions: ServerOptions = {
     command: serverPath,
     args: [],
-    options: { env: process.env }
+    options: { env }
   };
 
   const clientOptions: LanguageClientOptions = {
     documentSelector: [{ language: 'gpsl', scheme: 'file' }],
     synchronize: {},
-    outputChannel: vscode.window.createOutputChannel('GPSL LSP')
+    outputChannel: vscode.window.createOutputChannel('GPSL LSP'),
+    traceOutputChannel: vscode.window.createOutputChannel('GPSL LSP Trace'),
+    initializationOptions: {},
+    // Disable trace to avoid setTrace warnings
+    connectionOptions: {
+      maxRestartCount: 5
+    }
   };
 
   client = new LanguageClient('gpsl-lsp', 'GPSL Language Server', serverOptions, clientOptions);

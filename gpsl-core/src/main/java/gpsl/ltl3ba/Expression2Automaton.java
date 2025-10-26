@@ -91,7 +91,7 @@ public class Expression2Automaton {
                 }
                 
                 // Parse guard expression with context - collect errors instead of throwing
-                ParseResult<Expression> guardResult = Reader.parseExpressionWithContext(guardStr, context);
+                ParseResult<Expression> guardResult = Reader.parseExpression(guardStr, context);
                 
                 if (guardResult instanceof ParseResult.Success<Expression> success) {
                     Expression guard = success.value();

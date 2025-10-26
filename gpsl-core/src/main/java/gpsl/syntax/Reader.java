@@ -22,31 +22,56 @@ import java.util.Map;
 public class Reader {
 
     /**
-     * Parse a GPSL expression from source text.
-     * 
-     * @param source the GPSL expression source
-     * @return ParseResult containing expression or errors with positions
+     * Function that extracts a parse tree from a parser.
      */
-    public static ParseResult<Expression> parseExpression(String source) {
+    @FunctionalInterface
+    public interface ParserFunction {
+        ParserRuleContext parse(GPSLParser parser);
+    }
+
+    /**
+     * Core parsing method - all other methods delegate to this.
+     * 
+     * @param source the source text to parse
+     * @param parserFn function that calls the appropriate parser method (e.g., GPSLParser::formula)
+     * @param externalSymbols external symbols for symbol resolution (can be empty)
+     * @param <T> the expected return type
+     * @return ParseResult containing the parsed model or errors
+     */
+    private static <T> ParseResult<T> parse(
+            String source,
+            ParserFunction parserFn,
+            Map<String, Object> externalSymbols) {
+        
         ParseContext parseContext = new ParseContext(source);
         
         // Phase 1: Lexing and Parsing
         GPSLParser parser = createParser(source, parseContext);
-        GPSLParser.FormulaContext tree = parser.formula();
+        ParserRuleContext tree = parserFn.parse(parser);
         
         if (parseContext.hasErrors()) {
             return parseContext.toResult(null);
         }
         
         // Phase 2: Build AST with position tracking
-        Expression expr = buildSyntaxModel(tree, parseContext);
+        T model = buildSyntaxModel(tree, parseContext);
         
         // Phase 3: Symbol resolution
         SymbolResolver resolver = new SymbolResolver(parseContext);
-        Context symbolContext = new Context();
-        expr.accept(resolver, symbolContext);
+        Context symbolContext = new Context(externalSymbols);
+        ((gpsl.syntax.model.SyntaxTreeElement) model).accept(resolver, symbolContext);
         
-        return parseContext.toResult(expr);
+        return parseContext.toResult(model);
+    }
+
+    /**
+     * Parse a GPSL expression from source text.
+     * 
+     * @param source the GPSL expression source
+     * @return ParseResult containing expression or errors with positions
+     */
+    public static ParseResult<Expression> parseExpression(String source) {
+        return parse(source, GPSLParser::formula, new HashMap<>());
     }
     
     /**
@@ -57,26 +82,10 @@ public class Reader {
      * @param externalSymbols map of externally defined symbols (e.g., atoms from LTL3BA)
      * @return ParseResult containing expression or errors
      */
-    public static ParseResult<Expression> parseExpressionWithContext(
+    public static ParseResult<Expression> parseExpression(
             String source,
             Map<String, Object> externalSymbols) {
-        
-        ParseContext parseContext = new ParseContext(source);
-        
-        GPSLParser parser = createParser(source, parseContext);
-        GPSLParser.FormulaContext tree = parser.formula();
-        
-        if (parseContext.hasErrors()) {
-            return parseContext.toResult(null);
-        }
-        
-        Expression expr = buildSyntaxModel(tree, parseContext);
-        
-        SymbolResolver resolver = new SymbolResolver(parseContext);
-        Context symbolContext = new Context(externalSymbols);
-        expr.accept(resolver, symbolContext);
-        
-        return parseContext.toResult(expr);
+        return parse(source, GPSLParser::formula, externalSymbols);
     }
     
     /**
@@ -86,51 +95,21 @@ public class Reader {
      * @return ParseResult containing declarations or errors
      */
     public static ParseResult<Declarations> parseDeclarations(String source) {
-        ParseContext parseContext = new ParseContext(source);
-        
-        GPSLParser parser = createParser(source, parseContext);
-        GPSLParser.BlockContext tree = parser.block();
-        
-        if (parseContext.hasErrors()) {
-            return parseContext.toResult(null);
-        }
-        
-        Declarations decls = buildSyntaxModel(tree, parseContext);
-        
-        SymbolResolver resolver = new SymbolResolver(parseContext);
-        Context symbolContext = new Context();
-        decls.accept(resolver, symbolContext);
-        
-        return parseContext.toResult(decls);
+        return parse(source, GPSLParser::block, new HashMap<>());
     }
 
     /**
-     * Parse with external symbols (for imports).
+     * Parse GPSL declarations from source text with external symbol context.
+     * This method allows providing predefined symbols (e.g., from imports).
      * 
      * @param source the source text
      * @param externalSymbols symbols from imported modules
      * @return ParseResult with declarations
      */
-    public static ParseResult<Declarations> parseDeclarationsWithContext(
+    public static ParseResult<Declarations> parseDeclarations(
             String source,
             Map<String, Object> externalSymbols) {
-        
-        ParseContext parseContext = new ParseContext(source);
-        
-        GPSLParser parser = createParser(source, parseContext);
-        GPSLParser.BlockContext tree = parser.block();
-        
-        if (parseContext.hasErrors()) {
-            return parseContext.toResult(null);
-        }
-        
-        Declarations decls = buildSyntaxModel(tree, parseContext);
-        
-        SymbolResolver resolver = new SymbolResolver(parseContext);
-        Context symbolContext = new Context(externalSymbols);
-        decls.accept(resolver, symbolContext);
-        
-        return parseContext.toResult(decls);
+        return parse(source, GPSLParser::block, externalSymbols);
     }
 
     /**
@@ -311,12 +290,12 @@ public class Reader {
 
     /**
      * Reads GPSL declarations from input and links symbol references using the provided context.
-     * @deprecated Use parseDeclarationsWithContext() for better error handling
+     * @deprecated Use parseDeclarations() for better error handling
      */
     @Deprecated
     public static Declarations readAndLinkDeclarations(String input, Map<String, Object> context) {
         try {
-            return parseDeclarationsWithContext(input, context).orElseThrow();
+            return parseDeclarations(input, context).orElseThrow();
         } catch (ParseException e) {
             throw new RuntimeException("Parse error: " + e.getMessage(), e);
         }

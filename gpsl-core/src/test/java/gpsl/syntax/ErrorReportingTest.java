@@ -461,7 +461,7 @@ class ErrorReportingTest {
         java.util.Map<String, Object> context = new java.util.HashMap<>();
         context.put("x", new True());
         
-        var result = Reader.parseExpressionWithContext("x", context);
+        var result = Reader.parseExpression("x", context);
         
         assertTrue(result.isSuccess(), "Should succeed when symbol is in context");
     }
@@ -471,7 +471,7 @@ class ErrorReportingTest {
         java.util.Map<String, Object> context = new java.util.HashMap<>();
         context.put("x", new True());
         
-        var result = Reader.parseExpressionWithContext("y", context);
+        var result = Reader.parseExpression("y", context);
         
         assertTrue(result.isFailure(), "Should fail for undefined symbol even with context");
         
@@ -487,7 +487,7 @@ class ErrorReportingTest {
         java.util.Map<String, Object> context = new java.util.HashMap<>();
         context.put("x", new True());
         
-        var result = Reader.parseExpressionWithContext("x and y", context);
+        var result = Reader.parseExpression("x and y", context);
         
         assertTrue(result.isFailure(), "Should fail for undefined 'y'");
         

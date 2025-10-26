@@ -55,7 +55,7 @@ public class TestHelpers {
             }
             
             // Retry with the symbols defined
-            result = Reader.parseExpressionWithContext(source, permissiveContext);
+            result = Reader.parseExpression(source, permissiveContext);
         }
         
         if (result instanceof ParseResult.Failure<Expression> failure2) {
@@ -82,7 +82,7 @@ public class TestHelpers {
      * Parse declarations with external context or fail test.
      */
     public static Declarations parseDeclarationsOrFail(String source, java.util.Map<String, Object> context) {
-        ParseResult<Declarations> result = Reader.parseDeclarationsWithContext(source, context);
+        ParseResult<Declarations> result = Reader.parseDeclarations(source, context);
         
         if (result instanceof ParseResult.Failure<Declarations> failure) {
             fail("Parse failed:\n" + failure.formatErrors());

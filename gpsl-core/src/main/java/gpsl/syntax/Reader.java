@@ -79,20 +79,6 @@ public class Reader {
     }
     
     /**
-     * Parse GPSL expression from source text with external symbol context.
-     * This method performs symbol resolution with the provided external symbols.
-     * 
-     * @param source the GPSL expression source
-     * @param externalSymbols map of externally defined symbols (e.g., atoms from LTL3BA)
-     * @return ParseResult containing expression or errors
-     */
-    public static ParseResult<Expression> parseExpression(
-            String source,
-            Map<String, Object> externalSymbols) {
-        return parse(source, GPSLParser::formula, externalSymbols, true);
-    }
-    
-    /**
      * Parse GPSL declarations from source text (without symbol resolution).
      * 
      * @param source the GPSL declarations source
@@ -102,38 +88,99 @@ public class Reader {
         return parse(source, GPSLParser::block, new HashMap<>(), false);
     }
 
+    // ========== LINKING (in-place symbol resolution) ==========
+    
     /**
-     * Parse GPSL declarations from source text with external symbol context.
-     * This method performs symbol resolution with the provided external symbols.
+     * Link symbol references in an expression using an empty context.
+     * Performs in-place symbol resolution and returns errors if any.
      * 
-     * @param source the source text
-     * @param externalSymbols symbols from imported modules
-     * @return ParseResult with declarations
+     * @param expression the expression to link
+     * @param source the original source code (for error formatting)
+     * @param positionMap the position map from parsing (for error reporting)
+     * @return ParseResult with linking errors, or success with the same expression
      */
-    public static ParseResult<Declarations> parseDeclarations(
-            String source,
-            Map<String, Object> externalSymbols) {
-        return parse(source, GPSLParser::block, externalSymbols, true);
+    public static ParseResult<Expression> link(Expression expression, String source, PositionMap positionMap) {
+        return link(expression, source, positionMap, new HashMap<>());
     }
     
     /**
-     * Parse and link GPSL expression (performs symbol resolution).
+     * Link symbol references in an expression using the provided context.
+     * Performs in-place symbol resolution and returns errors if any.
      * 
-     * @param source the GPSL expression source
-     * @return ParseResult containing linked expression or errors
+     * @param expression the expression to link
+     * @param source the original source code (for error formatting)
+     * @param positionMap the position map from parsing (for error reporting)
+     * @param externalSymbols external symbols available for resolution
+     * @return ParseResult with linking errors, or success with the same expression
      */
-    public static ParseResult<Expression> parseAndLinkExpression(String source) {
-        return parse(source, GPSLParser::formula, new HashMap<>(), true);
+    public static ParseResult<Expression> link(Expression expression, String source, PositionMap positionMap, Map<String, Object> externalSymbols) {
+        ParseContext parseContext = new ParseContext(source, positionMap);
+        SymbolResolver resolver = new SymbolResolver(parseContext);
+        Context symbolContext = new Context(externalSymbols);
+        expression.accept(resolver, symbolContext);
+        return parseContext.toResult(expression);
     }
     
     /**
-     * Parse and link GPSL declarations (performs symbol resolution).
+     * Link symbol references in declarations using an empty context.
+     * Performs in-place symbol resolution and returns errors if any.
      * 
-     * @param source the GPSL declarations source
-     * @return ParseResult containing linked declarations or errors
+     * @param declarations the declarations to link
+     * @param source the original source code (for error formatting)
+     * @param positionMap the position map from parsing (for error reporting)
+     * @return ParseResult with linking errors, or success with the same declarations
      */
-    public static ParseResult<Declarations> parseAndLinkDeclarations(String source) {
-        return parse(source, GPSLParser::block, new HashMap<>(), true);
+    public static ParseResult<Declarations> link(Declarations declarations, String source, PositionMap positionMap) {
+        return link(declarations, source, positionMap, new HashMap<>());
+    }
+    
+    /**
+     * Link symbol references in declarations using the provided context.
+     * Performs in-place symbol resolution and returns errors if any.
+     * 
+     * @param declarations the declarations to link
+     * @param source the original source code (for error formatting)
+     * @param positionMap the position map from parsing (for error reporting)
+     * @param externalSymbols external symbols available for resolution
+     * @return ParseResult with linking errors, or success with the same declarations
+     */
+    public static ParseResult<Declarations> link(Declarations declarations, String source, PositionMap positionMap, Map<String, Object> externalSymbols) {
+        ParseContext parseContext = new ParseContext(source, positionMap);
+        SymbolResolver resolver = new SymbolResolver(parseContext);
+        Context symbolContext = new Context(externalSymbols);
+        declarations.accept(resolver, symbolContext);
+        return parseContext.toResult(declarations);
+    }
+    
+    /**
+     * Link symbol references in an automaton using an empty context.
+     * Performs in-place symbol resolution and returns errors if any.
+     * 
+     * @param automaton the automaton to link
+     * @param source the original source code (for error formatting)
+     * @param positionMap the position map from parsing (for error reporting)
+     * @return ParseResult with linking errors, or success with the same automaton
+     */
+    public static ParseResult<Automaton> link(Automaton automaton, String source, PositionMap positionMap) {
+        return link(automaton, source, positionMap, new HashMap<>());
+    }
+    
+    /**
+     * Link symbol references in an automaton using the provided context.
+     * Performs in-place symbol resolution and returns errors if any.
+     * 
+     * @param automaton the automaton to link
+     * @param source the original source code (for error formatting)
+     * @param positionMap the position map from parsing (for error reporting)
+     * @param externalSymbols external symbols available for resolution
+     * @return ParseResult with linking errors, or success with the same automaton
+     */
+    public static ParseResult<Automaton> link(Automaton automaton, String source, PositionMap positionMap, Map<String, Object> externalSymbols) {
+        ParseContext parseContext = new ParseContext(source, positionMap);
+        SymbolResolver resolver = new SymbolResolver(parseContext);
+        Context symbolContext = new Context(externalSymbols);
+        automaton.accept(resolver, symbolContext);
+        return parseContext.toResult(automaton);
     }
 
     /**
@@ -145,8 +192,21 @@ public class Reader {
      */
     public static ParseResultWithPositions<Expression> parseExpressionWithPositions(String source) {
         ParseContext parseContext = new ParseContext(source);
-        ParseResult<Expression> result = parseExpression(source);
-        return new ParseResultWithPositions<>(result, parseContext.positionMap());
+        
+        // Phase 1: Lexing and Parsing
+        GPSLParser parser = createParser(source, parseContext);
+        ParserRuleContext tree = parser.formula();
+        
+        ParseResult<Expression> result;
+        if (parseContext.hasErrors()) {
+            result = parseContext.toResult(null);
+        } else {
+            // Phase 2: Build AST with position tracking
+            Expression model = buildSyntaxModel(tree, parseContext);
+            result = parseContext.toResult(model);
+        }
+        
+        return new ParseResultWithPositions<>(result, source, parseContext.positionMap());
     }
 
     /**
@@ -157,8 +217,21 @@ public class Reader {
      */
     public static ParseResultWithPositions<Declarations> parseDeclarationsWithPositions(String source) {
         ParseContext parseContext = new ParseContext(source);
-        ParseResult<Declarations> result = parseDeclarations(source);
-        return new ParseResultWithPositions<>(result, parseContext.positionMap());
+        
+        // Phase 1: Lexing and Parsing
+        GPSLParser parser = createParser(source, parseContext);
+        ParserRuleContext tree = parser.block();
+        
+        ParseResult<Declarations> result;
+        if (parseContext.hasErrors()) {
+            result = parseContext.toResult(null);
+        } else {
+            // Phase 2: Build AST with position tracking
+            Declarations model = buildSyntaxModel(tree, parseContext);
+            result = parseContext.toResult(model);
+        }
+        
+        return new ParseResultWithPositions<>(result, source, parseContext.positionMap());
     }
 
     /**
@@ -201,131 +274,16 @@ public class Reader {
     }
 
     /**
-     * Wrapper for ParseResult that includes position map.
-     * Useful for IDE integrations.
+     * Wrapper for ParseResult that includes position map and source.
+     * Useful for IDE integrations and for linking phase that needs both.
      */
     public record ParseResultWithPositions<T>(
         ParseResult<T> result,
+        String source,
         PositionMap positionMap
     ) {
         public java.util.Optional<rege.reader.infra.Range> rangeOf(gpsl.syntax.model.SyntaxTreeElement node) {
             return positionMap.get(node);
-        }
-    }
-
-    // ========== LEGACY API (for backward compatibility with tests) ==========
-
-    /**
-     * Creates an ANTLR4 parser for the given input string.
-     * @deprecated Use parseExpression() or parseDeclarations() for better error handling
-     */
-    @Deprecated
-    public static GPSLParser antlr4Parser(String input) {
-        CharStream chars = CharStreams.fromString(input);
-        GPSLLexer lexer = new GPSLLexer(chars);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        return new GPSLParser(tokens);
-    }
-
-    /**
-     * Reads and parses a GPSL expression from the input string.
-     * @deprecated Use parseExpression() for better error handling
-     */
-    @Deprecated
-    public static Expression readExpression(String input) {
-        try {
-            return parseExpression(input).orElseThrow();
-        } catch (ParseException e) {
-            throw new RuntimeException("Parse error: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Reads and parses GPSL declarations from the input string.
-     * @deprecated Use parseDeclarations() for better error handling
-     */
-    @Deprecated
-    public static Declarations readDeclarations(String input) {
-        try {
-            return parseDeclarations(input).orElseThrow();
-        } catch (ParseException e) {
-            throw new RuntimeException("Parse error: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Links symbol references in a syntax tree using the provided context.
-     * @deprecated Symbol resolution is now integrated into parse methods
-     */
-    @Deprecated
-    public static void link(Declarations tree, Map<String, Object> context) {
-        ParseContext parseContext = new ParseContext("");
-        Context symbolContext = context != null ? new Context(context) : new Context();
-        SymbolResolver resolver = new SymbolResolver(parseContext);
-        tree.accept(resolver, symbolContext);
-        
-        if (parseContext.hasErrors()) {
-            throw new RuntimeException("Symbol resolution errors: " + parseContext.errors());
-        }
-    }
-
-    /**
-     * Links symbol references in a syntax tree using an empty context.
-     * @deprecated Symbol resolution is now integrated into parse methods
-     */
-    @Deprecated
-    public static void link(Declarations tree) {
-        link(tree, new HashMap<>());
-    }
-
-    /**
-     * Links symbol references in an automaton using the provided context.
-     * @deprecated Symbol resolution is now integrated into parse methods
-     */
-    @Deprecated
-    public static void link(Automaton automaton, Map<String, Object> context) {
-        ParseContext parseContext = new ParseContext("");
-        Context symbolContext = context != null ? new Context(context) : new Context();
-        SymbolResolver resolver = new SymbolResolver(parseContext);
-        automaton.accept(resolver, symbolContext);
-        
-        if (parseContext.hasErrors()) {
-            throw new RuntimeException("Symbol resolution errors: " + parseContext.errors());
-        }
-    }
-
-    /**
-     * Links symbol references in an automaton using an empty context.
-     * @deprecated Symbol resolution is now integrated into parse methods
-     */
-    @Deprecated
-    public static void link(Automaton automaton) {
-        link(automaton, new HashMap<>());
-    }
-
-    /**
-     * Reads GPSL declarations from input and links all symbol references.
-     * @deprecated Use parseAndLinkDeclarations() for better error handling
-     */
-    @Deprecated
-    public static Declarations readAndLinkDeclarations(String input) {
-        try {
-            return parseAndLinkDeclarations(input).orElseThrow();
-        } catch (ParseException e) {
-            throw new RuntimeException("Parse error: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Reads GPSL declarations from input and links symbol references using the provided context.
-     * @deprecated Use parseDeclarations(source, externalSymbols) for better error handling
-     */
-    @Deprecated
-    public static Declarations readAndLinkDeclarations(String input, Map<String, Object> context) {
-        try {
-            return parseDeclarations(input, context).orElseThrow();
-        } catch (ParseException e) {
-            throw new RuntimeException("Parse error: " + e.getMessage(), e);
         }
     }
 }

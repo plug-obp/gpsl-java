@@ -12,20 +12,25 @@ import static gpsl.syntax.TestHelpers.*;
 public class TestHelpers {
     
     /**
-     * Parse expression or fail test with formatted error.
-     * This method performs symbol resolution.
+     * Parse and link expression or fail test.
+     * This method performs both parsing and symbol resolution.
      */
     public static Expression parseExpressionOrFail(String source) {
-        ParseResult<Expression> result = Reader.parseAndLinkExpression(source);
+        var resultWithPos = Reader.parseExpressionWithPositions(source);
+        ParseResult<Expression> result = resultWithPos.result();
+        
+        if (result.isSuccess()) {
+            result = Reader.link(((ParseResult.Success<Expression>) result).value(), 
+                               resultWithPos.source(), 
+                               resultWithPos.positionMap());
+        }
         
         if (result instanceof ParseResult.Failure<Expression> failure) {
             fail("Parse failed:\n" + failure.formatErrors());
         }
         
         return ((ParseResult.Success<Expression>) result).value();
-    }
-    
-    /**
+    }    /**
      * Parse expression without symbol resolution (for AST-only tests).
      * This is useful for testing the Antlr4ToGPSLMapper without requiring defined symbols.
      */
@@ -44,7 +49,12 @@ public class TestHelpers {
      * This method performs symbol resolution.
      */
     public static Declarations parseDeclarationsOrFail(String source) {
-        ParseResult<Declarations> result = Reader.parseAndLinkDeclarations(source);
+        var resultWithPos = Reader.parseDeclarationsWithPositions(source);
+        ParseResult<Declarations> result = resultWithPos.result();
+        
+        if (result.isSuccess()) {
+            result = Reader.link(((ParseResult.Success<Declarations>) result).value(), resultWithPos.source(), resultWithPos.positionMap());
+        }
         
         if (result instanceof ParseResult.Failure<Declarations> failure) {
             fail("Parse failed:\n" + failure.formatErrors());
@@ -57,21 +67,28 @@ public class TestHelpers {
      * Parse declarations with external context or fail test.
      */
     public static Declarations parseDeclarationsOrFail(String source, java.util.Map<String, Object> context) {
-        ParseResult<Declarations> result = Reader.parseDeclarations(source, context);
+        var resultWithPos = Reader.parseDeclarationsWithPositions(source);
+        ParseResult<Declarations> result = resultWithPos.result();
+        
+        if (result.isSuccess()) {
+            result = Reader.link(((ParseResult.Success<Declarations>) result).value(), resultWithPos.source(), resultWithPos.positionMap(), context);
+        }
         
         if (result instanceof ParseResult.Failure<Declarations> failure) {
             fail("Parse failed:\n" + failure.formatErrors());
         }
         
         return ((ParseResult.Success<Declarations>) result).value();
-    }
-    
-    /**
+    }    /**
      * Assert that parsing fails with specific error code.
      * This performs symbol resolution to catch linking errors.
      */
     public static void assertParseError(String source, String expectedErrorCode) {
-        ParseResult<Expression> result = Reader.parseAndLinkExpression(source);
+        var resultWithPos = Reader.parseExpressionWithPositions(source);
+        ParseResult<Expression> result = resultWithPos.result();
+        if (result.isSuccess()) {
+            result = Reader.link(((ParseResult.Success<Expression>) result).value(), resultWithPos.source(), resultWithPos.positionMap());
+        }
         
         assertTrue(result.isFailure(), "Expected parse to fail");
         
@@ -90,7 +107,11 @@ public class TestHelpers {
      * This performs symbol resolution to catch linking errors.
      */
     public static void assertParseErrorAt(String source, int line, int column, String expectedCode) {
-        ParseResult<Expression> result = Reader.parseAndLinkExpression(source);
+        var resultWithPos = Reader.parseExpressionWithPositions(source);
+        ParseResult<Expression> result = resultWithPos.result();
+        if (result.isSuccess()) {
+            result = Reader.link(((ParseResult.Success<Expression>) result).value(), resultWithPos.source(), resultWithPos.positionMap());
+        }
         
         assertTrue(result.isFailure(), "Expected parse to fail");
         
@@ -113,7 +134,11 @@ public class TestHelpers {
      * This performs symbol resolution to catch linking errors.
      */
     public static void assertDeclarationsParseError(String source, String expectedErrorCode) {
-        ParseResult<Declarations> result = Reader.parseAndLinkDeclarations(source);
+        var resultWithPos = Reader.parseDeclarationsWithPositions(source);
+        ParseResult<Declarations> result = resultWithPos.result();
+        if (result.isSuccess()) {
+            result = Reader.link(((ParseResult.Success<Declarations>) result).value(), resultWithPos.source(), resultWithPos.positionMap());
+        }
         
         assertTrue(result.isFailure(), "Expected parse to fail");
         

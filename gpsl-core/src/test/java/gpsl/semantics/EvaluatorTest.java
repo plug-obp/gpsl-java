@@ -1,6 +1,8 @@
 package gpsl.semantics;
 import gpsl.syntax.TestHelpers;
 
+import static gpsl.syntax.TestHelpers.parseDeclarationsOrFail;
+
 import gpsl.syntax.Reader;
 import gpsl.syntax.model.*;
 import org.junit.jupiter.api.Test;
@@ -161,7 +163,7 @@ class EvaluatorTest {
         Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
         
         String input = "x = |true| result = x and !x";
-        Declarations decls = Reader.readAndLinkDeclarations(input);
+        Declarations decls = parseDeclarationsOrFail(input);
         
         ExpressionDeclaration resultDecl = decls.declarations().get(1);
         assertFalse(resultDecl.expression().accept(evaluator, null));
@@ -173,7 +175,7 @@ class EvaluatorTest {
         
         // Let expressions need to be wrapped in a declaration and linked
         String input = "result = let x = |true| in x and true";
-        Declarations decls = Reader.readAndLinkDeclarations(input);
+        Declarations decls = parseDeclarationsOrFail(input);
         
         ExpressionDeclaration resultDecl = decls.declarations().get(0);
         assertTrue(resultDecl.expression().accept(evaluator, null));
@@ -184,7 +186,7 @@ class EvaluatorTest {
         Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
         
         String input = "result = let x = |true|, y = |false| in x or y";
-        Declarations decls = Reader.readAndLinkDeclarations(input);
+        Declarations decls = parseDeclarationsOrFail(input);
         
         ExpressionDeclaration resultDecl = decls.declarations().get(0);
         assertTrue(resultDecl.expression().accept(evaluator, null));
@@ -204,7 +206,7 @@ class EvaluatorTest {
         Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
         
         String input = "x = true and false";
-        Declarations decls = Reader.readAndLinkDeclarations(input);
+        Declarations decls = parseDeclarationsOrFail(input);
         
         ExpressionDeclaration decl = decls.declarations().get(0);
         assertFalse(decl.accept(evaluator, null));
@@ -241,7 +243,7 @@ class EvaluatorTest {
         Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
         
         String input = "a = states s0; initial s0; accept s0; s0 [true] s0";
-        Declarations decls = Reader.readAndLinkDeclarations(input);
+        Declarations decls = parseDeclarationsOrFail(input);
         
         ExpressionDeclaration automDecl = decls.declarations().get(0);
         LetExpression letExpr = (LetExpression) automDecl.expression();
@@ -306,7 +308,7 @@ class EvaluatorTest {
             mutex = !(alice_cs and bob_cs)
             """;
         
-        Declarations decls = Reader.readAndLinkDeclarations(input);
+        Declarations decls = parseDeclarationsOrFail(input);
         
         // Test case 1: Both in critical section (violation)
         Map<String, Boolean> state1 = new HashMap<>();

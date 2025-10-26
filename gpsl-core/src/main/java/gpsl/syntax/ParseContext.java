@@ -25,6 +25,16 @@ public class ParseContext {
     }
     
     /**
+     * Create a ParseContext with an existing PositionMap.
+     * Useful for linking phase that reuses positions from parsing phase.
+     */
+    public ParseContext(String source, PositionMap positionMap) {
+        this.source = source;
+        this.positionMap = positionMap;
+        this.errors = new ArrayList<>();
+    }
+    
+    /**
      * The source text being parsed.
      */
     public String source() {

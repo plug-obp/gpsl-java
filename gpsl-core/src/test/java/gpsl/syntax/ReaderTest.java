@@ -1,6 +1,7 @@
 package gpsl.syntax;
 
 import gpsl.syntax.model.*;
+import rege.reader.infra.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -48,8 +49,12 @@ class ReaderTest {
     @Test
     void testLinkWithLetExpression() {
         String input = "result = let x = true in x and false";
-        Declarations decls = parseDeclarationsOrFail(input);
-        Reader.link(decls);
+        var resultWithPos = Reader.parseDeclarationsWithPositions(input);
+        assertTrue(resultWithPos.result().isSuccess(), "Parse should succeed");
+        Declarations decls = ((ParseResult.Success<Declarations>) resultWithPos.result()).value();
+        
+        var linkResult = Reader.link(decls, resultWithPos.source(), resultWithPos.positionMap());
+        assertTrue(linkResult.isSuccess(), "Linking should succeed");
         
         ExpressionDeclaration resultDecl = decls.declarations().get(0);
         assertInstanceOf(LetExpression.class, resultDecl.expression());
@@ -66,8 +71,12 @@ class ReaderTest {
     @Test
     void testLinkNestedLetExpressions() {
         String input = "result = let x = true in let y = x in y and false";
-        Declarations decls = parseDeclarationsOrFail(input);
-        Reader.link(decls);
+        var resultWithPos = Reader.parseDeclarationsWithPositions(input);
+        assertTrue(resultWithPos.result().isSuccess(), "Parse should succeed");
+        Declarations decls = ((ParseResult.Success<Declarations>) resultWithPos.result()).value();
+        
+        var linkResult = Reader.link(decls, resultWithPos.source(), resultWithPos.positionMap());
+        assertTrue(linkResult.isSuccess(), "Linking should succeed");
         
         ExpressionDeclaration resultDecl = decls.declarations().get(0);
         assertInstanceOf(LetExpression.class, resultDecl.expression());

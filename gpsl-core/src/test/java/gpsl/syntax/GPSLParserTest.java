@@ -1,6 +1,10 @@
 package gpsl.syntax;
 
+import gpsl.parser.GPSLLexer;
 import gpsl.parser.GPSLParser;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,13 +17,19 @@ import static gpsl.syntax.TestHelpers.*;
 class GPSLParserTest {
 
     private String parseExpression(String input) {
-        GPSLParser parser = Reader.antlr4Parser(input);
+        CharStream chars = CharStreams.fromString(input);
+        GPSLLexer lexer = new GPSLLexer(chars);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        GPSLParser parser = new GPSLParser(tokens);
         GPSLParser.FormulaContext tree = parser.formula();
         return tree.toStringTree(parser);
     }
 
     private String parseDeclarations(String input) {
-        GPSLParser parser = Reader.antlr4Parser(input);
+        CharStream chars = CharStreams.fromString(input);
+        GPSLLexer lexer = new GPSLLexer(chars);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        GPSLParser parser = new GPSLParser(tokens);
         GPSLParser.BlockContext tree = parser.block();
         return tree.toStringTree(parser);
     }

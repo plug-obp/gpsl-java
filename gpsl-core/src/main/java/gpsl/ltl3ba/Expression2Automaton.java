@@ -90,8 +90,15 @@ public class Expression2Automaton {
                     acceptStates.add(targetState);
                 }
                 
-                // Parse guard expression with context - collect errors instead of throwing
-                ParseResult<Expression> guardResult = Reader.parseExpression(guardStr, context);
+                // Parse guard expression and link with context - collect errors instead of throwing
+                var guardResultWithPos = Reader.parseExpressionWithPositions(guardStr);
+                ParseResult<Expression> guardResult = guardResultWithPos.result();
+                if (guardResult.isSuccess()) {
+                    guardResult = Reader.link(((ParseResult.Success<Expression>) guardResult).value(), 
+                                            guardResultWithPos.source(),
+                                            guardResultWithPos.positionMap(), 
+                                            context);
+                }
                 
                 if (guardResult instanceof ParseResult.Success<Expression> success) {
                     Expression guard = success.value();

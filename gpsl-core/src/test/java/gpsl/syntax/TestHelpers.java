@@ -17,16 +17,10 @@ public class TestHelpers {
      */
     public static Expression parseExpressionOrFail(String source) {
         var resultWithPos = Reader.parseExpressionWithPositions(source);
-        ParseResult<Expression> result = resultWithPos.result();
-        
-        if (result.isSuccess()) {
-            result = Reader.link(((ParseResult.Success<Expression>) result).value(), 
-                               resultWithPos.source(), 
-                               resultWithPos.positionMap());
-        }
+        ParseResult<Expression> result = Reader.linkWithPositions(resultWithPos);
         
         if (result instanceof ParseResult.Failure<Expression> failure) {
-            fail("Parse failed:\n" + failure.formatErrors());
+            fail("Parse/link failed:\n" + failure.formatErrors());
         }
         
         return ((ParseResult.Success<Expression>) result).value();
@@ -50,14 +44,10 @@ public class TestHelpers {
      */
     public static Declarations parseDeclarationsOrFail(String source) {
         var resultWithPos = Reader.parseDeclarationsWithPositions(source);
-        ParseResult<Declarations> result = resultWithPos.result();
-        
-        if (result.isSuccess()) {
-            result = Reader.link(((ParseResult.Success<Declarations>) result).value(), resultWithPos.source(), resultWithPos.positionMap());
-        }
+        ParseResult<Declarations> result = Reader.linkWithPositions(resultWithPos);
         
         if (result instanceof ParseResult.Failure<Declarations> failure) {
-            fail("Parse failed:\n" + failure.formatErrors());
+            fail("Parse/link failed:\n" + failure.formatErrors());
         }
         
         return ((ParseResult.Success<Declarations>) result).value();
@@ -68,27 +58,22 @@ public class TestHelpers {
      */
     public static Declarations parseDeclarationsOrFail(String source, java.util.Map<String, Object> context) {
         var resultWithPos = Reader.parseDeclarationsWithPositions(source);
-        ParseResult<Declarations> result = resultWithPos.result();
-        
-        if (result.isSuccess()) {
-            result = Reader.link(((ParseResult.Success<Declarations>) result).value(), resultWithPos.source(), resultWithPos.positionMap(), context);
-        }
+        ParseResult<Declarations> result = Reader.linkWithPositions(resultWithPos, context);
         
         if (result instanceof ParseResult.Failure<Declarations> failure) {
-            fail("Parse failed:\n" + failure.formatErrors());
+            fail("Parse/link failed:\n" + failure.formatErrors());
         }
         
         return ((ParseResult.Success<Declarations>) result).value();
-    }    /**
+    }
+    
+    /**
      * Assert that parsing fails with specific error code.
      * This performs symbol resolution to catch linking errors.
      */
     public static void assertParseError(String source, String expectedErrorCode) {
         var resultWithPos = Reader.parseExpressionWithPositions(source);
-        ParseResult<Expression> result = resultWithPos.result();
-        if (result.isSuccess()) {
-            result = Reader.link(((ParseResult.Success<Expression>) result).value(), resultWithPos.source(), resultWithPos.positionMap());
-        }
+        ParseResult<Expression> result = Reader.linkWithPositions(resultWithPos);
         
         assertTrue(result.isFailure(), "Expected parse to fail");
         
@@ -108,10 +93,7 @@ public class TestHelpers {
      */
     public static void assertParseErrorAt(String source, int line, int column, String expectedCode) {
         var resultWithPos = Reader.parseExpressionWithPositions(source);
-        ParseResult<Expression> result = resultWithPos.result();
-        if (result.isSuccess()) {
-            result = Reader.link(((ParseResult.Success<Expression>) result).value(), resultWithPos.source(), resultWithPos.positionMap());
-        }
+        ParseResult<Expression> result = Reader.linkWithPositions(resultWithPos);
         
         assertTrue(result.isFailure(), "Expected parse to fail");
         
@@ -135,10 +117,7 @@ public class TestHelpers {
      */
     public static void assertDeclarationsParseError(String source, String expectedErrorCode) {
         var resultWithPos = Reader.parseDeclarationsWithPositions(source);
-        ParseResult<Declarations> result = resultWithPos.result();
-        if (result.isSuccess()) {
-            result = Reader.link(((ParseResult.Success<Declarations>) result).value(), resultWithPos.source(), resultWithPos.positionMap());
-        }
+        ParseResult<Declarations> result = Reader.linkWithPositions(resultWithPos);
         
         assertTrue(result.isFailure(), "Expected parse to fail");
         

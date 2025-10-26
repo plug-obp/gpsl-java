@@ -50,12 +50,11 @@ class ReaderTest {
     void testLinkWithLetExpression() {
         String input = "result = let x = true in x and false";
         var resultWithPos = Reader.parseDeclarationsWithPositions(input);
-        assertTrue(resultWithPos.result().isSuccess(), "Parse should succeed");
-        Declarations decls = ((ParseResult.Success<Declarations>) resultWithPos.result()).value();
         
-        var linkResult = Reader.link(decls, resultWithPos.source(), resultWithPos.positionMap());
+        var linkResult = Reader.linkWithPositions(resultWithPos);
         assertTrue(linkResult.isSuccess(), "Linking should succeed");
         
+        Declarations decls = ((ParseResult.Success<Declarations>) linkResult).value();
         ExpressionDeclaration resultDecl = decls.declarations().get(0);
         assertInstanceOf(LetExpression.class, resultDecl.expression());
         
@@ -72,12 +71,11 @@ class ReaderTest {
     void testLinkNestedLetExpressions() {
         String input = "result = let x = true in let y = x in y and false";
         var resultWithPos = Reader.parseDeclarationsWithPositions(input);
-        assertTrue(resultWithPos.result().isSuccess(), "Parse should succeed");
-        Declarations decls = ((ParseResult.Success<Declarations>) resultWithPos.result()).value();
         
-        var linkResult = Reader.link(decls, resultWithPos.source(), resultWithPos.positionMap());
+        var linkResult = Reader.linkWithPositions(resultWithPos);
         assertTrue(linkResult.isSuccess(), "Linking should succeed");
         
+        Declarations decls = ((ParseResult.Success<Declarations>) linkResult).value();
         ExpressionDeclaration resultDecl = decls.declarations().get(0);
         assertInstanceOf(LetExpression.class, resultDecl.expression());
     }

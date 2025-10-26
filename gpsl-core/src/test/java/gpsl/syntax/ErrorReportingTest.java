@@ -19,31 +19,19 @@ class ErrorReportingTest {
     // Helper: parse and link expression (for tests that need linking)
     private static ParseResult<Expression> parseAndLink(String source) {
         var resultWithPos = Reader.parseExpressionWithPositions(source);
-        ParseResult<Expression> result = resultWithPos.result();
-        if (result.isSuccess()) {
-            result = Reader.link(((ParseResult.Success<Expression>) result).value(), resultWithPos.source(), resultWithPos.positionMap());
-        }
-        return result;
+        return Reader.linkWithPositions(resultWithPos);
     }
     
     // Helper: parse and link expression with external context
     private static ParseResult<Expression> parseAndLink(String source, java.util.Map<String, Object> context) {
         var resultWithPos = Reader.parseExpressionWithPositions(source);
-        ParseResult<Expression> result = resultWithPos.result();
-        if (result.isSuccess()) {
-            result = Reader.link(((ParseResult.Success<Expression>) result).value(), resultWithPos.source(), resultWithPos.positionMap(), context);
-        }
-        return result;
+        return Reader.linkWithPositions(resultWithPos, context);
     }
     
     // Helper: parse and link declarations
     private static ParseResult<Declarations> parseAndLinkDeclarations(String source) {
         var resultWithPos = Reader.parseDeclarationsWithPositions(source);
-        ParseResult<Declarations> result = resultWithPos.result();
-        if (result.isSuccess()) {
-            result = Reader.link(((ParseResult.Success<Declarations>) result).value(), resultWithPos.source(), resultWithPos.positionMap());
-        }
-        return result;
+        return Reader.linkWithPositions(resultWithPos);
     }
 
     // ========== SYNTAX ERROR TESTS ==========

@@ -91,30 +91,65 @@ public class Reader {
     // ========== LINKING (in-place symbol resolution) ==========
     
     /**
-     * Link symbol references in an expression using an empty context.
-     * Performs in-place symbol resolution and returns errors if any.
+     * Link symbol references in a ParseResultWithPositions from parsing.
+     * Preserves source code and position information for error reporting.
+     * Works for Expression, Declarations, or Automaton.
      * 
-     * @param expression the expression to link
-     * @param source the original source code (for error formatting)
-     * @param positionMap the position map from parsing (for error reporting)
-     * @return ParseResult with linking errors, or success with the same expression
+     * @param <T> the type of syntax tree element (Expression, Declarations, or Automaton)
+     * @param parseResult the parse result with positions
+     * @return ParseResult with linking errors, or success with the linked element
      */
-    public static ParseResult<Expression> link(Expression expression, String source, PositionMap positionMap) {
-        return link(expression, source, positionMap, new HashMap<>());
+    public static <T extends gpsl.syntax.model.SyntaxTreeElement> ParseResult<T> linkWithPositions(ParseResultWithPositions<T> parseResult) {
+        return linkWithPositions(parseResult, new HashMap<>());
     }
     
     /**
-     * Link symbol references in an expression using the provided context.
-     * Performs in-place symbol resolution and returns errors if any.
+     * Link symbol references in a ParseResultWithPositions with external context.
+     * Preserves source code and position information for error reporting.
+     * Works for Expression, Declarations, or Automaton.
+     * 
+     * @param <T> the type of syntax tree element (Expression, Declarations, or Automaton)
+     * @param parseResult the parse result with positions
+     * @param externalSymbols external symbols available for resolution
+     * @return ParseResult with linking errors, or success with the linked element
+     */
+    public static <T extends gpsl.syntax.model.SyntaxTreeElement> ParseResult<T> linkWithPositions(ParseResultWithPositions<T> parseResult, Map<String, Object> externalSymbols) {
+        if (parseResult.result() instanceof ParseResult.Failure<T> failure) {
+            return failure; // Return parse errors as-is
+        }
+        
+        @SuppressWarnings("unchecked")
+        T element = ((ParseResult.Success<T>) parseResult.result()).value();
+        ParseContext parseContext = new ParseContext(parseResult.source(), parseResult.positionMap());
+        SymbolResolver resolver = new SymbolResolver(parseContext);
+        Context symbolContext = new Context(externalSymbols);
+        element.accept(resolver, symbolContext);
+        return parseContext.toResult(element);
+    }
+    
+    /**
+     * Link symbol references in an expression without position tracking.
+     * Useful for programmatically constructed ASTs.
+     * Errors will not have source code or position information.
      * 
      * @param expression the expression to link
-     * @param source the original source code (for error formatting)
-     * @param positionMap the position map from parsing (for error reporting)
+     * @return ParseResult with linking errors, or success with the same expression
+     */
+    public static ParseResult<Expression> link(Expression expression) {
+        return link(expression, new HashMap<>());
+    }
+    
+    /**
+     * Link symbol references in an expression with external context, without position tracking.
+     * Useful for programmatically constructed ASTs.
+     * Errors will not have source code or position information.
+     * 
+     * @param expression the expression to link
      * @param externalSymbols external symbols available for resolution
      * @return ParseResult with linking errors, or success with the same expression
      */
-    public static ParseResult<Expression> link(Expression expression, String source, PositionMap positionMap, Map<String, Object> externalSymbols) {
-        ParseContext parseContext = new ParseContext(source, positionMap);
+    public static ParseResult<Expression> link(Expression expression, Map<String, Object> externalSymbols) {
+        ParseContext parseContext = new ParseContext("");
         SymbolResolver resolver = new SymbolResolver(parseContext);
         Context symbolContext = new Context(externalSymbols);
         expression.accept(resolver, symbolContext);
@@ -122,30 +157,28 @@ public class Reader {
     }
     
     /**
-     * Link symbol references in declarations using an empty context.
-     * Performs in-place symbol resolution and returns errors if any.
+     * Link symbol references in declarations without position tracking.
+     * Useful for programmatically constructed ASTs.
+     * Errors will not have source code or position information.
      * 
      * @param declarations the declarations to link
-     * @param source the original source code (for error formatting)
-     * @param positionMap the position map from parsing (for error reporting)
      * @return ParseResult with linking errors, or success with the same declarations
      */
-    public static ParseResult<Declarations> link(Declarations declarations, String source, PositionMap positionMap) {
-        return link(declarations, source, positionMap, new HashMap<>());
+    public static ParseResult<Declarations> link(Declarations declarations) {
+        return link(declarations, new HashMap<>());
     }
     
     /**
-     * Link symbol references in declarations using the provided context.
-     * Performs in-place symbol resolution and returns errors if any.
+     * Link symbol references in declarations with external context, without position tracking.
+     * Useful for programmatically constructed ASTs.
+     * Errors will not have source code or position information.
      * 
      * @param declarations the declarations to link
-     * @param source the original source code (for error formatting)
-     * @param positionMap the position map from parsing (for error reporting)
      * @param externalSymbols external symbols available for resolution
      * @return ParseResult with linking errors, or success with the same declarations
      */
-    public static ParseResult<Declarations> link(Declarations declarations, String source, PositionMap positionMap, Map<String, Object> externalSymbols) {
-        ParseContext parseContext = new ParseContext(source, positionMap);
+    public static ParseResult<Declarations> link(Declarations declarations, Map<String, Object> externalSymbols) {
+        ParseContext parseContext = new ParseContext("");
         SymbolResolver resolver = new SymbolResolver(parseContext);
         Context symbolContext = new Context(externalSymbols);
         declarations.accept(resolver, symbolContext);
@@ -153,30 +186,28 @@ public class Reader {
     }
     
     /**
-     * Link symbol references in an automaton using an empty context.
-     * Performs in-place symbol resolution and returns errors if any.
+     * Link symbol references in an automaton without position tracking.
+     * Useful for programmatically constructed ASTs.
+     * Errors will not have source code or position information.
      * 
      * @param automaton the automaton to link
-     * @param source the original source code (for error formatting)
-     * @param positionMap the position map from parsing (for error reporting)
      * @return ParseResult with linking errors, or success with the same automaton
      */
-    public static ParseResult<Automaton> link(Automaton automaton, String source, PositionMap positionMap) {
-        return link(automaton, source, positionMap, new HashMap<>());
+    public static ParseResult<Automaton> link(Automaton automaton) {
+        return link(automaton, new HashMap<>());
     }
     
     /**
-     * Link symbol references in an automaton using the provided context.
-     * Performs in-place symbol resolution and returns errors if any.
+     * Link symbol references in an automaton with external context, without position tracking.
+     * Useful for programmatically constructed ASTs.
+     * Errors will not have source code or position information.
      * 
      * @param automaton the automaton to link
-     * @param source the original source code (for error formatting)
-     * @param positionMap the position map from parsing (for error reporting)
      * @param externalSymbols external symbols available for resolution
      * @return ParseResult with linking errors, or success with the same automaton
      */
-    public static ParseResult<Automaton> link(Automaton automaton, String source, PositionMap positionMap, Map<String, Object> externalSymbols) {
-        ParseContext parseContext = new ParseContext(source, positionMap);
+    public static ParseResult<Automaton> link(Automaton automaton, Map<String, Object> externalSymbols) {
+        ParseContext parseContext = new ParseContext("");
         SymbolResolver resolver = new SymbolResolver(parseContext);
         Context symbolContext = new Context(externalSymbols);
         automaton.accept(resolver, symbolContext);

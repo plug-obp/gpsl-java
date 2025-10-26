@@ -41,3 +41,4 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+gpsl-core/src/main/antlr/gpsl/parser/.antlr/*

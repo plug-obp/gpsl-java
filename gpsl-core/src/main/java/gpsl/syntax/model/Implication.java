@@ -1,7 +1,7 @@
 package gpsl.syntax.model;
 
 /**
- * Represents logical implication (->).
+ * Represents logical implication ({@code ->}).
  */
 public record Implication(String operator, Expression left, Expression right) 
     implements BinaryExpression {

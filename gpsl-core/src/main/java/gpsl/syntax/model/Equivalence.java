@@ -1,7 +1,7 @@
 package gpsl.syntax.model;
 
 /**
- * Represents logical equivalence (<->).
+ * Represents logical equivalence ({@code <->}).
  */
 public record Equivalence(String operator, Expression left, Expression right) 
     implements BinaryExpression {

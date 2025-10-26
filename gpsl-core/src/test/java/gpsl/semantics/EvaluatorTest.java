@@ -1,4 +1,5 @@
 package gpsl.semantics;
+import gpsl.syntax.TestHelpers;
 
 import gpsl.syntax.Reader;
 import gpsl.syntax.model.*;
@@ -25,7 +26,7 @@ class EvaluatorTest {
     @Test
     void testEvaluateLiteralTrue() {
         Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
-        Expression expr = Reader.readExpression("true");
+        Expression expr = TestHelpers.parseExpressionOrFail("true");
         
         assertTrue(evaluator.visitTrue((True) expr, null));
     }
@@ -33,7 +34,7 @@ class EvaluatorTest {
     @Test
     void testEvaluateLiteralFalse() {
         Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
-        Expression expr = Reader.readExpression("false");
+        Expression expr = TestHelpers.parseExpressionOrFail("false");
         
         assertFalse(evaluator.visitFalse((False) expr, null));
     }
@@ -41,7 +42,7 @@ class EvaluatorTest {
     @Test
     void testEvaluateAtomTrue() {
         Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
-        Expression expr = Reader.readExpression("|true|");
+        Expression expr = TestHelpers.parseExpressionOrFail("|true|");
         
         assertTrue(expr.accept(evaluator, null));
     }
@@ -49,7 +50,7 @@ class EvaluatorTest {
     @Test
     void testEvaluateAtomFalse() {
         Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
-        Expression expr = Reader.readExpression("|false|");
+        Expression expr = TestHelpers.parseExpressionOrFail("|false|");
         
         assertFalse(expr.accept(evaluator, null));
     }
@@ -62,10 +63,10 @@ class EvaluatorTest {
         context.put("x > 0", true);
         context.put("y < 10", false);
         
-        Expression expr1 = Reader.readExpression("|x > 0|");
+        Expression expr1 = TestHelpers.parseExpressionOrFail("|x > 0|");
         assertTrue(expr1.accept(evaluator, context));
         
-        Expression expr2 = Reader.readExpression("|y < 10|");
+        Expression expr2 = TestHelpers.parseExpressionOrFail("|y < 10|");
         assertFalse(expr2.accept(evaluator, context));
     }
     
@@ -73,13 +74,13 @@ class EvaluatorTest {
     void testEvaluateNegation() {
         Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
         
-        Expression expr1 = Reader.readExpression("!true");
+        Expression expr1 = TestHelpers.parseExpressionOrFail("!true");
         assertFalse(expr1.accept(evaluator, null));
         
-        Expression expr2 = Reader.readExpression("!false");
+        Expression expr2 = TestHelpers.parseExpressionOrFail("!false");
         assertTrue(expr2.accept(evaluator, null));
         
-        Expression expr3 = Reader.readExpression("!!true");
+        Expression expr3 = TestHelpers.parseExpressionOrFail("!!true");
         assertTrue(expr3.accept(evaluator, null));
     }
     
@@ -87,50 +88,50 @@ class EvaluatorTest {
     void testEvaluateConjunction() {
         Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
         
-        assertTrue(Reader.readExpression("true and true").accept(evaluator, null));
-        assertFalse(Reader.readExpression("true and false").accept(evaluator, null));
-        assertFalse(Reader.readExpression("false and true").accept(evaluator, null));
-        assertFalse(Reader.readExpression("false and false").accept(evaluator, null));
+        assertTrue(TestHelpers.parseExpressionOrFail("true and true").accept(evaluator, null));
+        assertFalse(TestHelpers.parseExpressionOrFail("true and false").accept(evaluator, null));
+        assertFalse(TestHelpers.parseExpressionOrFail("false and true").accept(evaluator, null));
+        assertFalse(TestHelpers.parseExpressionOrFail("false and false").accept(evaluator, null));
     }
     
     @Test
     void testEvaluateDisjunction() {
         Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
         
-        assertTrue(Reader.readExpression("true or true").accept(evaluator, null));
-        assertTrue(Reader.readExpression("true or false").accept(evaluator, null));
-        assertTrue(Reader.readExpression("false or true").accept(evaluator, null));
-        assertFalse(Reader.readExpression("false or false").accept(evaluator, null));
+        assertTrue(TestHelpers.parseExpressionOrFail("true or true").accept(evaluator, null));
+        assertTrue(TestHelpers.parseExpressionOrFail("true or false").accept(evaluator, null));
+        assertTrue(TestHelpers.parseExpressionOrFail("false or true").accept(evaluator, null));
+        assertFalse(TestHelpers.parseExpressionOrFail("false or false").accept(evaluator, null));
     }
     
     @Test
     void testEvaluateExclusiveDisjunction() {
         Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
         
-        assertFalse(Reader.readExpression("true xor true").accept(evaluator, null));
-        assertTrue(Reader.readExpression("true xor false").accept(evaluator, null));
-        assertTrue(Reader.readExpression("false xor true").accept(evaluator, null));
-        assertFalse(Reader.readExpression("false xor false").accept(evaluator, null));
+        assertFalse(TestHelpers.parseExpressionOrFail("true xor true").accept(evaluator, null));
+        assertTrue(TestHelpers.parseExpressionOrFail("true xor false").accept(evaluator, null));
+        assertTrue(TestHelpers.parseExpressionOrFail("false xor true").accept(evaluator, null));
+        assertFalse(TestHelpers.parseExpressionOrFail("false xor false").accept(evaluator, null));
     }
     
     @Test
     void testEvaluateImplication() {
         Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
         
-        assertTrue(Reader.readExpression("true -> true").accept(evaluator, null));
-        assertFalse(Reader.readExpression("true -> false").accept(evaluator, null));
-        assertTrue(Reader.readExpression("false -> true").accept(evaluator, null));
-        assertTrue(Reader.readExpression("false -> false").accept(evaluator, null));
+        assertTrue(TestHelpers.parseExpressionOrFail("true -> true").accept(evaluator, null));
+        assertFalse(TestHelpers.parseExpressionOrFail("true -> false").accept(evaluator, null));
+        assertTrue(TestHelpers.parseExpressionOrFail("false -> true").accept(evaluator, null));
+        assertTrue(TestHelpers.parseExpressionOrFail("false -> false").accept(evaluator, null));
     }
     
     @Test
     void testEvaluateEquivalence() {
         Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
         
-        assertTrue(Reader.readExpression("true <-> true").accept(evaluator, null));
-        assertFalse(Reader.readExpression("true <-> false").accept(evaluator, null));
-        assertFalse(Reader.readExpression("false <-> true").accept(evaluator, null));
-        assertTrue(Reader.readExpression("false <-> false").accept(evaluator, null));
+        assertTrue(TestHelpers.parseExpressionOrFail("true <-> true").accept(evaluator, null));
+        assertFalse(TestHelpers.parseExpressionOrFail("true <-> false").accept(evaluator, null));
+        assertFalse(TestHelpers.parseExpressionOrFail("false <-> true").accept(evaluator, null));
+        assertTrue(TestHelpers.parseExpressionOrFail("false <-> false").accept(evaluator, null));
     }
     
     @Test
@@ -143,15 +144,15 @@ class EvaluatorTest {
         context.put("c", true);
         
         // (a and b) or c
-        Expression expr1 = Reader.readExpression("(|a| and |b|) or |c|");
+        Expression expr1 = TestHelpers.parseExpressionOrFail("(|a| and |b|) or |c|");
         assertTrue(expr1.accept(evaluator, context));
         
         // a and (b or c)
-        Expression expr2 = Reader.readExpression("|a| and (|b| or |c|)");
+        Expression expr2 = TestHelpers.parseExpressionOrFail("|a| and (|b| or |c|)");
         assertTrue(expr2.accept(evaluator, context));
         
         // !(a and !b)
-        Expression expr3 = Reader.readExpression("!(|a| and !|b|)");
+        Expression expr3 = TestHelpers.parseExpressionOrFail("!(|a| and !|b|)");
         assertFalse(expr3.accept(evaluator, context));
     }
     
@@ -214,25 +215,25 @@ class EvaluatorTest {
         Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
         
         assertThrows(UnsupportedOperationException.class,
-            () -> Reader.readExpression("N true").accept(evaluator, null));
+            () -> TestHelpers.parseExpressionOrFail("N true").accept(evaluator, null));
         
         assertThrows(UnsupportedOperationException.class,
-            () -> Reader.readExpression("F true").accept(evaluator, null));
+            () -> TestHelpers.parseExpressionOrFail("F true").accept(evaluator, null));
         
         assertThrows(UnsupportedOperationException.class,
-            () -> Reader.readExpression("G true").accept(evaluator, null));
+            () -> TestHelpers.parseExpressionOrFail("G true").accept(evaluator, null));
         
         assertThrows(UnsupportedOperationException.class,
-            () -> Reader.readExpression("true U false").accept(evaluator, null));
+            () -> TestHelpers.parseExpressionOrFail("true U false").accept(evaluator, null));
         
         assertThrows(UnsupportedOperationException.class,
-            () -> Reader.readExpression("true W false").accept(evaluator, null));
+            () -> TestHelpers.parseExpressionOrFail("true W false").accept(evaluator, null));
         
         assertThrows(UnsupportedOperationException.class,
-            () -> Reader.readExpression("true M false").accept(evaluator, null));
+            () -> TestHelpers.parseExpressionOrFail("true M false").accept(evaluator, null));
         
         assertThrows(UnsupportedOperationException.class,
-            () -> Reader.readExpression("true R false").accept(evaluator, null));
+            () -> TestHelpers.parseExpressionOrFail("true R false").accept(evaluator, null));
     }
     
     @Test
@@ -253,7 +254,7 @@ class EvaluatorTest {
     void testDeclarationsThrowUnsupportedOperation() {
         Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
         
-        Declarations decls = Reader.readDeclarations("x = true y = false");
+        Declarations decls = TestHelpers.parseDeclarationsOrFail("x = true y = false");
         
         assertThrows(UnsupportedOperationException.class,
             () -> decls.accept(evaluator, null));
@@ -272,7 +273,7 @@ class EvaluatorTest {
         
         // false and |never-evaluated| should short-circuit
         evaluatedAtoms.clear();
-        Expression expr = Reader.readExpression("false and |never-evaluated|");
+        Expression expr = TestHelpers.parseExpressionOrFail("false and |never-evaluated|");
         assertFalse(expr.accept(evaluator, null));
         assertFalse(evaluatedAtoms.containsKey("never-evaluated"));
     }
@@ -289,7 +290,7 @@ class EvaluatorTest {
         
         // true or |never-evaluated| should short-circuit
         evaluatedAtoms.clear();
-        Expression expr = Reader.readExpression("true or |never-evaluated|");
+        Expression expr = TestHelpers.parseExpressionOrFail("true or |never-evaluated|");
         assertTrue(expr.accept(evaluator, null));
         assertFalse(evaluatedAtoms.containsKey("never-evaluated"));
     }
@@ -335,22 +336,22 @@ class EvaluatorTest {
         Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
         
         // Test all conjunction variants
-        assertTrue(Reader.readExpression("true & true").accept(evaluator, null));
-        assertTrue(Reader.readExpression("true && true").accept(evaluator, null));
-        assertTrue(Reader.readExpression("true /\\ true").accept(evaluator, null));
-        assertTrue(Reader.readExpression("true * true").accept(evaluator, null));
-        assertTrue(Reader.readExpression("true ∧ true").accept(evaluator, null));
+        assertTrue(TestHelpers.parseExpressionOrFail("true & true").accept(evaluator, null));
+        assertTrue(TestHelpers.parseExpressionOrFail("true && true").accept(evaluator, null));
+        assertTrue(TestHelpers.parseExpressionOrFail("true /\\ true").accept(evaluator, null));
+        assertTrue(TestHelpers.parseExpressionOrFail("true * true").accept(evaluator, null));
+        assertTrue(TestHelpers.parseExpressionOrFail("true ∧ true").accept(evaluator, null));
         
         // Test all disjunction variants
-        assertTrue(Reader.readExpression("true | false").accept(evaluator, null));
-        assertTrue(Reader.readExpression("true || false").accept(evaluator, null));
-        assertTrue(Reader.readExpression("true \\/ false").accept(evaluator, null));
-        assertTrue(Reader.readExpression("true + false").accept(evaluator, null));
-        assertTrue(Reader.readExpression("true ∨ false").accept(evaluator, null));
+        assertTrue(TestHelpers.parseExpressionOrFail("true | false").accept(evaluator, null));
+        assertTrue(TestHelpers.parseExpressionOrFail("true || false").accept(evaluator, null));
+        assertTrue(TestHelpers.parseExpressionOrFail("true \\/ false").accept(evaluator, null));
+        assertTrue(TestHelpers.parseExpressionOrFail("true + false").accept(evaluator, null));
+        assertTrue(TestHelpers.parseExpressionOrFail("true ∨ false").accept(evaluator, null));
         
         // Test all negation variants
-        assertFalse(Reader.readExpression("!true").accept(evaluator, null));
-        assertFalse(Reader.readExpression("~true").accept(evaluator, null));
-        assertFalse(Reader.readExpression("not true").accept(evaluator, null));
+        assertFalse(TestHelpers.parseExpressionOrFail("!true").accept(evaluator, null));
+        assertFalse(TestHelpers.parseExpressionOrFail("~true").accept(evaluator, null));
+        assertFalse(TestHelpers.parseExpressionOrFail("not true").accept(evaluator, null));
     }
 }

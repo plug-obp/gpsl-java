@@ -10,22 +10,213 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import rege.reader.infra.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Provides utilities for reading and parsing GPSL expressions and declarations.
- * This class creates ANTLR4 parsers, builds syntax models, and links symbol references.
+ * GPSL parser with comprehensive error reporting and position tracking.
+ * All parsing returns ParseResult with errors collected (never thrown).
  */
 public class Reader {
 
     /**
-     * Creates an ANTLR4 parser for the given input string.
+     * Parse a GPSL expression from source text.
+     * 
+     * @param source the GPSL expression source
+     * @return ParseResult containing expression or errors with positions
+     */
+    public static ParseResult<Expression> parseExpression(String source) {
+        ParseContext parseContext = new ParseContext(source);
+        
+        // Phase 1: Lexing and Parsing
+        GPSLParser parser = createParser(source, parseContext);
+        GPSLParser.FormulaContext tree = parser.formula();
+        
+        if (parseContext.hasErrors()) {
+            return parseContext.toResult(null);
+        }
+        
+        // Phase 2: Build AST with position tracking
+        Expression expr = buildSyntaxModel(tree, parseContext);
+        
+        // Phase 3: Symbol resolution
+        SymbolResolver resolver = new SymbolResolver(parseContext);
+        Context symbolContext = new Context();
+        expr.accept(resolver, symbolContext);
+        
+        return parseContext.toResult(expr);
+    }
+    
+    /**
+     * Parse GPSL expression from source text with external symbol context.
+     * This method allows providing predefined symbols (e.g., from external sources).
+     * 
+     * @param source the GPSL expression source
+     * @param externalSymbols map of externally defined symbols (e.g., atoms from LTL3BA)
+     * @return ParseResult containing expression or errors
+     */
+    public static ParseResult<Expression> parseExpressionWithContext(
+            String source,
+            Map<String, Object> externalSymbols) {
+        
+        ParseContext parseContext = new ParseContext(source);
+        
+        GPSLParser parser = createParser(source, parseContext);
+        GPSLParser.FormulaContext tree = parser.formula();
+        
+        if (parseContext.hasErrors()) {
+            return parseContext.toResult(null);
+        }
+        
+        Expression expr = buildSyntaxModel(tree, parseContext);
+        
+        SymbolResolver resolver = new SymbolResolver(parseContext);
+        Context symbolContext = new Context(externalSymbols);
+        expr.accept(resolver, symbolContext);
+        
+        return parseContext.toResult(expr);
+    }
+    
+    /**
+     * Parse GPSL declarations from source text.
+     * 
+     * @param source the GPSL declarations source
+     * @return ParseResult containing declarations or errors
+     */
+    public static ParseResult<Declarations> parseDeclarations(String source) {
+        ParseContext parseContext = new ParseContext(source);
+        
+        GPSLParser parser = createParser(source, parseContext);
+        GPSLParser.BlockContext tree = parser.block();
+        
+        if (parseContext.hasErrors()) {
+            return parseContext.toResult(null);
+        }
+        
+        Declarations decls = buildSyntaxModel(tree, parseContext);
+        
+        SymbolResolver resolver = new SymbolResolver(parseContext);
+        Context symbolContext = new Context();
+        decls.accept(resolver, symbolContext);
+        
+        return parseContext.toResult(decls);
+    }
+
+    /**
+     * Parse with external symbols (for imports).
+     * 
+     * @param source the source text
+     * @param externalSymbols symbols from imported modules
+     * @return ParseResult with declarations
+     */
+    public static ParseResult<Declarations> parseDeclarationsWithContext(
+            String source,
+            Map<String, Object> externalSymbols) {
+        
+        ParseContext parseContext = new ParseContext(source);
+        
+        GPSLParser parser = createParser(source, parseContext);
+        GPSLParser.BlockContext tree = parser.block();
+        
+        if (parseContext.hasErrors()) {
+            return parseContext.toResult(null);
+        }
+        
+        Declarations decls = buildSyntaxModel(tree, parseContext);
+        
+        SymbolResolver resolver = new SymbolResolver(parseContext);
+        Context symbolContext = new Context(externalSymbols);
+        decls.accept(resolver, symbolContext);
+        
+        return parseContext.toResult(decls);
+    }
+
+    /**
+     * Parse expression and return with position map.
+     * Useful for LSP implementations that need position tracking.
+     * 
+     * @param source the source text
+     * @return ParseResult with expression and accessible position map
+     */
+    public static ParseResultWithPositions<Expression> parseExpressionWithPositions(String source) {
+        ParseContext parseContext = new ParseContext(source);
+        ParseResult<Expression> result = parseExpression(source);
+        return new ParseResultWithPositions<>(result, parseContext.positionMap());
+    }
+
+    /**
+     * Parse declarations and return with position map.
+     * 
+     * @param source the source text
+     * @return ParseResult with declarations and accessible position map
+     */
+    public static ParseResultWithPositions<Declarations> parseDeclarationsWithPositions(String source) {
+        ParseContext parseContext = new ParseContext(source);
+        ParseResult<Declarations> result = parseDeclarations(source);
+        return new ParseResultWithPositions<>(result, parseContext.positionMap());
+    }
+
+    /**
+     * Creates an ANTLR4 parser for the given input string with error listener.
      *
-     * @param input the GPSL source code to parse
+     * @param source the GPSL source code to parse
+     * @param parseContext the parse context for error collection
      * @return a configured GPSLParser instance
      */
+    private static GPSLParser createParser(String source, ParseContext parseContext) {
+        CharStream chars = CharStreams.fromString(source);
+        GPSLLexer lexer = new GPSLLexer(chars);
+        
+        // Remove default error listeners and add our custom one
+        lexer.removeErrorListeners();
+        lexer.addErrorListener(new GPSLErrorListener(parseContext));
+        
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        GPSLParser parser = new GPSLParser(tokens);
+        
+        // Remove default error listeners and add our custom one
+        parser.removeErrorListeners();
+        parser.addErrorListener(new GPSLErrorListener(parseContext));
+        
+        return parser;
+    }
+
+    /**
+     * Builds a syntax model from an ANTLR4 parse tree.
+     *
+     * @param antlr4Tree the ANTLR4 parse tree
+     * @param parseContext the parse context for position tracking
+     * @param <T> the expected return type
+     * @return the syntax model element corresponding to the parse tree
+     */
+    private static <T> T buildSyntaxModel(ParserRuleContext antlr4Tree, ParseContext parseContext) {
+        Antlr4ToGPSLMapper syntaxBuilder = new Antlr4ToGPSLMapper(parseContext);
+        ParseTreeWalker.DEFAULT.walk(syntaxBuilder, antlr4Tree);
+        return syntaxBuilder.getValue(antlr4Tree);
+    }
+
+    /**
+     * Wrapper for ParseResult that includes position map.
+     * Useful for IDE integrations.
+     */
+    public record ParseResultWithPositions<T>(
+        ParseResult<T> result,
+        PositionMap positionMap
+    ) {
+        public java.util.Optional<rege.reader.infra.Range> rangeOf(gpsl.syntax.model.SyntaxTreeElement node) {
+            return positionMap.get(node);
+        }
+    }
+
+    // ========== LEGACY API (for backward compatibility with tests) ==========
+
+    /**
+     * Creates an ANTLR4 parser for the given input string.
+     * @deprecated Use parseExpression() or parseDeclarations() for better error handling
+     */
+    @Deprecated
     public static GPSLParser antlr4Parser(String input) {
         CharStream chars = CharStreams.fromString(input);
         GPSLLexer lexer = new GPSLLexer(chars);
@@ -34,107 +225,100 @@ public class Reader {
     }
 
     /**
-     * Builds a syntax model from an ANTLR4 parse tree.
-     *
-     * @param antlr4Tree the ANTLR4 parse tree
-     * @param <T> the expected return type
-     * @return the syntax model element corresponding to the parse tree
-     */
-    private static <T> T buildSyntaxModel(ParserRuleContext antlr4Tree) {
-        Antlr4ToGPSLMapper syntaxBuilder = new Antlr4ToGPSLMapper();
-        ParseTreeWalker.DEFAULT.walk(syntaxBuilder, antlr4Tree);
-        return syntaxBuilder.getValue(antlr4Tree);
-    }
-
-    /**
      * Reads and parses a GPSL expression from the input string.
-     *
-     * @param input the GPSL expression as a string
-     * @return the parsed Expression
+     * @deprecated Use parseExpression() for better error handling
      */
+    @Deprecated
     public static Expression readExpression(String input) {
-        GPSLParser parser = antlr4Parser(input);
-        GPSLParser.FormulaContext tree = parser.formula();
-        return buildSyntaxModel(tree);
+        try {
+            return parseExpression(input).orElseThrow();
+        } catch (ParseException e) {
+            throw new RuntimeException("Parse error: " + e.getMessage(), e);
+        }
     }
 
     /**
      * Reads and parses GPSL declarations from the input string.
-     *
-     * @param input the GPSL declarations as a string
-     * @return the parsed Declarations
+     * @deprecated Use parseDeclarations() for better error handling
      */
+    @Deprecated
     public static Declarations readDeclarations(String input) {
-        GPSLParser parser = antlr4Parser(input);
-        GPSLParser.BlockContext tree = parser.block();
-        return buildSyntaxModel(tree);
+        try {
+            return parseDeclarations(input).orElseThrow();
+        } catch (ParseException e) {
+            throw new RuntimeException("Parse error: " + e.getMessage(), e);
+        }
     }
 
     /**
      * Links symbol references in a syntax tree using the provided context.
-     * This resolves all named references to their definitions.
-     *
-     * @param tree the syntax tree to link
-     * @param context the symbol context (may be null for empty context)
+     * @deprecated Symbol resolution is now integrated into parse methods
      */
+    @Deprecated
     public static void link(Declarations tree, Map<String, Object> context) {
+        ParseContext parseContext = new ParseContext("");
         Context symbolContext = context != null ? new Context(context) : new Context();
-        tree.accept(new SymbolResolver(), symbolContext);
+        SymbolResolver resolver = new SymbolResolver(parseContext);
+        tree.accept(resolver, symbolContext);
+        
+        if (parseContext.hasErrors()) {
+            throw new RuntimeException("Symbol resolution errors: " + parseContext.errors());
+        }
     }
 
     /**
      * Links symbol references in a syntax tree using an empty context.
-     *
-     * @param tree the syntax tree to link
+     * @deprecated Symbol resolution is now integrated into parse methods
      */
+    @Deprecated
     public static void link(Declarations tree) {
         link(tree, new HashMap<>());
     }
 
     /**
      * Links symbol references in an automaton using the provided context.
-     * This resolves atom references in transition guards.
-     *
-     * @param automaton the automaton to link
-     * @param context the symbol context (atom name to Atom mapping)
+     * @deprecated Symbol resolution is now integrated into parse methods
      */
+    @Deprecated
     public static void link(Automaton automaton, Map<String, Object> context) {
+        ParseContext parseContext = new ParseContext("");
         Context symbolContext = context != null ? new Context(context) : new Context();
-        automaton.accept(new SymbolResolver(), symbolContext);
+        SymbolResolver resolver = new SymbolResolver(parseContext);
+        automaton.accept(resolver, symbolContext);
+        
+        if (parseContext.hasErrors()) {
+            throw new RuntimeException("Symbol resolution errors: " + parseContext.errors());
+        }
     }
 
     /**
      * Links symbol references in an automaton using an empty context.
-     *
-     * @param automaton the automaton to link
+     * @deprecated Symbol resolution is now integrated into parse methods
      */
+    @Deprecated
     public static void link(Automaton automaton) {
         link(automaton, new HashMap<>());
     }
 
     /**
      * Reads GPSL declarations from input and links all symbol references.
-     * This is a convenience method that combines reading and linking.
-     *
-     * @param input the GPSL declarations as a string
-     * @return the parsed and linked Declarations
+     * @deprecated Use parseDeclarations() for better error handling
      */
+    @Deprecated
     public static Declarations readAndLinkDeclarations(String input) {
-        Declarations declarations = readDeclarations(input);
-        link(declarations);
-        return declarations;
+        return readDeclarations(input);
     }
 
     /**
      * Reads GPSL declarations from input and links symbol references using the provided context.
-     *
-     * @param input the GPSL declarations as a string
-     * @param context the initial symbol context
-     * @return the parsed and linked Declarations
+     * @deprecated Use parseDeclarationsWithContext() for better error handling
      */
+    @Deprecated
     public static Declarations readAndLinkDeclarations(String input, Map<String, Object> context) {
-        Declarations declarations = readDeclarations(input);
-        link(declarations, context);
-        return declarations;
+        try {
+            return parseDeclarationsWithContext(input, context).orElseThrow();
+        } catch (ParseException e) {
+            throw new RuntimeException("Parse error: " + e.getMessage(), e);
+        }
     }
 }

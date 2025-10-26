@@ -4,6 +4,7 @@ import gpsl.parser.GPSLParser;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static gpsl.syntax.TestHelpers.*;
 
 /**
  * Tests for GPSL parser ANTLR4 parse tree generation.

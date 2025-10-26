@@ -1,4 +1,5 @@
 package gpsl.ltl3ba;
+import gpsl.syntax.TestHelpers;
 
 import gpsl.syntax.Reader;
 import gpsl.syntax.model.*;
@@ -15,7 +16,7 @@ class Expression2AutomatonTest {
     @Test
     void testEventually() throws Exception {
         // Test: F(p) - Eventually p
-        Expression formula = Reader.readExpression("F(|p|)");
+        Expression formula = TestHelpers.parseExpressionOrFail("F(|p|)");
         
         Automaton automaton = Expression2Automaton.convert(formula);
         
@@ -47,7 +48,7 @@ class Expression2AutomatonTest {
     @Test
     void testGlobally() throws Exception {
         // Test: G(p) - Globally p (safety property)
-        Expression formula = Reader.readExpression("G(|p|)");
+        Expression formula = TestHelpers.parseExpressionOrFail("G(|p|)");
         
         Automaton automaton = Expression2Automaton.convert(formula);
         
@@ -64,7 +65,7 @@ class Expression2AutomatonTest {
     @Test
     void testNext() throws Exception {
         // Test: X(p) - Next p
-        Expression formula = Reader.readExpression("X(|p|)");
+        Expression formula = TestHelpers.parseExpressionOrFail("X(|p|)");
         
         Automaton automaton = Expression2Automaton.convert(formula);
         
@@ -77,7 +78,7 @@ class Expression2AutomatonTest {
     @Test
     void testUntil() throws Exception {
         // Test: p U q - p until q
-        Expression formula = Reader.readExpression("|p| U |q|");
+        Expression formula = TestHelpers.parseExpressionOrFail("|p| U |q|");
         
         Automaton automaton = Expression2Automaton.convert(formula);
         
@@ -92,7 +93,7 @@ class Expression2AutomatonTest {
     @Test
     void testRelease() throws Exception {
         // Test: p R q - p releases q
-        Expression formula = Reader.readExpression("|p| R |q|");
+        Expression formula = TestHelpers.parseExpressionOrFail("|p| R |q|");
         
         Automaton automaton = Expression2Automaton.convert(formula);
         
@@ -105,7 +106,7 @@ class Expression2AutomatonTest {
     @Test
     void testImplication() throws Exception {
         // Test: p -> q
-        Expression formula = Reader.readExpression("|p| -> |q|");
+        Expression formula = TestHelpers.parseExpressionOrFail("|p| -> |q|");
         
         Automaton automaton = Expression2Automaton.convert(formula);
         
@@ -117,7 +118,7 @@ class Expression2AutomatonTest {
     @Test
     void testComplexFormula() throws Exception {
         // Test: G(p -> F(q)) - Globally, if p then eventually q
-        Expression formula = Reader.readExpression("G(|p| -> F(|q|))");
+        Expression formula = TestHelpers.parseExpressionOrFail("G(|p| -> F(|q|))");
         
         Automaton automaton = Expression2Automaton.convert(formula);
         
@@ -138,7 +139,7 @@ class Expression2AutomatonTest {
     @Test
     void testEventuallyGlobally() throws Exception {
         // Test: F(G(p)) - Eventually globally p (stability)
-        Expression formula = Reader.readExpression("F(G(|p|))");
+        Expression formula = TestHelpers.parseExpressionOrFail("F(G(|p|))");
         
         Automaton automaton = Expression2Automaton.convert(formula);
         
@@ -151,7 +152,7 @@ class Expression2AutomatonTest {
     @Test
     void testGloballyEventually() throws Exception {
         // Test: G(F(p)) - Globally eventually p (liveness/fairness)
-        Expression formula = Reader.readExpression("G(F(|p|))");
+        Expression formula = TestHelpers.parseExpressionOrFail("G(F(|p|))");
         
         Automaton automaton = Expression2Automaton.convert(formula);
         
@@ -164,7 +165,7 @@ class Expression2AutomatonTest {
     @Test
     void testStateNaming() throws Exception {
         // Verify that states with "init" and "accept" are properly identified
-        Expression formula = Reader.readExpression("F(|p|)");
+        Expression formula = TestHelpers.parseExpressionOrFail("F(|p|)");
         
         Automaton automaton = Expression2Automaton.convert(formula);
         
@@ -183,7 +184,7 @@ class Expression2AutomatonTest {
 
     @Test
     void testTransitionSourceAndTarget() throws Exception {
-        Expression formula = Reader.readExpression("F(|p|)");
+        Expression formula = TestHelpers.parseExpressionOrFail("F(|p|)");
         
         Automaton automaton = Expression2Automaton.convert(formula);
         
@@ -198,7 +199,7 @@ class Expression2AutomatonTest {
 
     @Test
     void testTransitionPriority() throws Exception {
-        Expression formula = Reader.readExpression("F(|p|)");
+        Expression formula = TestHelpers.parseExpressionOrFail("F(|p|)");
         
         Automaton automaton = Expression2Automaton.convert(formula);
         
@@ -212,7 +213,7 @@ class Expression2AutomatonTest {
     @Test
     void testAtomLinking() throws Exception {
         // Test that atom references in guards are properly linked
-        Expression formula = Reader.readExpression("|p| U |q|");
+        Expression formula = TestHelpers.parseExpressionOrFail("|p| U |q|");
         
         Automaton automaton = Expression2Automaton.convert(formula);
         
@@ -227,7 +228,7 @@ class Expression2AutomatonTest {
     @Test
     void testMultipleAtoms() throws Exception {
         // Test formula with multiple different atoms
-        Expression formula = Reader.readExpression("G(|p| -> F(|q|)) & G(|r| -> F(|s|))");
+        Expression formula = TestHelpers.parseExpressionOrFail("G(|p| -> F(|q|)) & G(|r| -> F(|s|))");
         
         Automaton automaton = Expression2Automaton.convert(formula);
         
@@ -240,7 +241,7 @@ class Expression2AutomatonTest {
     @Test
     void testNegation() throws Exception {
         // Test: !p
-        Expression formula = Reader.readExpression("!|p|");
+        Expression formula = TestHelpers.parseExpressionOrFail("!|p|");
         
         Automaton automaton = Expression2Automaton.convert(formula);
         
@@ -252,7 +253,7 @@ class Expression2AutomatonTest {
     @Test
     void testDisjunction() throws Exception {
         // Test: p | q
-        Expression formula = Reader.readExpression("|p| | |q|");
+        Expression formula = TestHelpers.parseExpressionOrFail("|p| | |q|");
         
         Automaton automaton = Expression2Automaton.convert(formula);
         
@@ -264,7 +265,7 @@ class Expression2AutomatonTest {
     @Test
     void testTrueFormula() throws Exception {
         // Test: true (should produce trivial automaton)
-        Expression formula = Reader.readExpression("true");
+        Expression formula = TestHelpers.parseExpressionOrFail("true");
         
         Automaton automaton = Expression2Automaton.convert(formula);
         
@@ -277,7 +278,7 @@ class Expression2AutomatonTest {
     @Test
     void testStateEquality() throws Exception {
         // Test that states with the same name are considered equal
-        Expression formula = Reader.readExpression("F(|p|)");
+        Expression formula = TestHelpers.parseExpressionOrFail("F(|p|)");
         
         Automaton automaton = Expression2Automaton.convert(formula);
         

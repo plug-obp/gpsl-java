@@ -3,6 +3,7 @@ package gpsl.ltl3ba;
 import gpsl.syntax.Reader;
 import gpsl.syntax.model.Automaton;
 import gpsl.syntax.model.Expression;
+import rege.reader.infra.ParseException;
 
 public class Expression2Automaton {
 
@@ -15,18 +16,17 @@ public class Expression2Automaton {
         //Fetch buchi automaton text from LTL3BA
         var automatonText = LTL3BA.getInstance().convert(ltlFormula);
         
-        //Read automaton from text
-        var automaton = AutomatonReaderFromLTL3BA.read(automatonText);
-
-        // Convert atom map to Object map for linking
+        // Convert atom map to Object map for parsing context
         java.util.Map<String, Object> atomContext = new java.util.HashMap<>(transformer.getNameToAtomMap());
-        Reader.link(automaton, atomContext);
+        
+        //Read automaton from text with atom context
+        var automaton = AutomatonReaderFromLTL3BA.read(automatonText, atomContext);
        
         return automaton;
     }
 
     private static class AutomatonReaderFromLTL3BA {
-        static Automaton read(String automatonText) {
+        static Automaton read(String automatonText, java.util.Map<String, Object> context) throws ParseException {
             // Parse LTL3BA output format (CSV-like: source,target,guard,...)
             String[] lines = automatonText.split("\n");
             
@@ -71,8 +71,8 @@ public class Expression2Automaton {
                     acceptStates.add(targetState);
                 }
                 
-                // Parse guard expression
-                Expression guard = Reader.readExpression(guardStr);
+                // Parse guard expression with context
+                Expression guard = Reader.parseExpressionWithContext(guardStr, context).orElseThrow();
                 
                 // Create transition with priority 0
                 gpsl.syntax.model.Transition transition = new gpsl.syntax.model.Transition(

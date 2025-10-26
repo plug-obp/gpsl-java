@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static gpsl.syntax.TestHelpers.*;
 
 /**
  * Tests for the Reader class, including symbol resolution and linking.
@@ -15,7 +16,7 @@ class ReaderTest {
 
     @Test
     void testReadExpression() {
-        Expression expr = Reader.readExpression("true and false");
+        Expression expr = parseExpressionOrFail("true and false");
         assertInstanceOf(Conjunction.class, expr);
         
         Conjunction conj = (Conjunction) expr;
@@ -25,7 +26,7 @@ class ReaderTest {
 
     @Test
     void testReadDeclarations() {
-        Declarations decls = Reader.readDeclarations("a = true b = false");
+        Declarations decls = parseDeclarationsOrFail("a = true b = false");
         assertNotNull(decls);
         assertEquals(2, decls.declarations().size());
         assertEquals("a", decls.declarations().get(0).name());
@@ -34,8 +35,7 @@ class ReaderTest {
 
     @Test
     void testLinkSimpleReference() {
-        Declarations decls = Reader.readDeclarations("a = true b = a");
-        Reader.link(decls);
+        Declarations decls = parseDeclarationsOrFail("a = true b = a");
         
         ExpressionDeclaration declB = decls.declarations().get(1);
         assertInstanceOf(Reference.class, declB.expression());
@@ -48,7 +48,7 @@ class ReaderTest {
     @Test
     void testLinkWithLetExpression() {
         String input = "result = let x = true in x and false";
-        Declarations decls = Reader.readDeclarations(input);
+        Declarations decls = parseDeclarationsOrFail(input);
         Reader.link(decls);
         
         ExpressionDeclaration resultDecl = decls.declarations().get(0);
@@ -66,7 +66,7 @@ class ReaderTest {
     @Test
     void testLinkNestedLetExpressions() {
         String input = "result = let x = true in let y = x in y and false";
-        Declarations decls = Reader.readDeclarations(input);
+        Declarations decls = parseDeclarationsOrFail(input);
         Reader.link(decls);
         
         ExpressionDeclaration resultDecl = decls.declarations().get(0);
@@ -78,8 +78,7 @@ class ReaderTest {
         Map<String, Object> context = new HashMap<>();
         context.put("external", new True());
         
-        Declarations decls = Reader.readDeclarations("a = external");
-        Reader.link(decls, context);
+        Declarations decls = parseDeclarationsOrFail("a = external", context);
         
         ExpressionDeclaration declA = decls.declarations().get(0);
         assertInstanceOf(Reference.class, declA.expression());
@@ -92,7 +91,7 @@ class ReaderTest {
     @Test
     void testReadAndLinkDeclarations() {
         String input = "a = true b = a c = b and a";
-        Declarations decls = Reader.readAndLinkDeclarations(input);
+        Declarations decls = parseDeclarationsOrFail(input);
         
         // Check that all references are resolved
         ExpressionDeclaration declB = decls.declarations().get(1);
@@ -119,7 +118,7 @@ class ReaderTest {
         context.put("ext", new False());
         
         String input = "a = ext b = a or ext";
-        Declarations decls = Reader.readAndLinkDeclarations(input, context);
+        Declarations decls = parseDeclarationsOrFail(input, context);
         
         ExpressionDeclaration declA = decls.declarations().get(0);
         assertInstanceOf(Reference.class, declA.expression());
@@ -130,8 +129,7 @@ class ReaderTest {
 
     @Test
     void testUndefinedSymbolThrowsException() {
-        Declarations decls = Reader.readDeclarations("a = undefined_symbol");
-        assertThrows(Context.SymbolNotFoundException.class, () -> Reader.link(decls));
+        assertDeclarationsParseError("a = undefined_symbol", "undefined-symbol");
     }
 
     @Test
@@ -146,7 +144,7 @@ class ReaderTest {
                 ([] ((aliceFlagUP -> (<> aliceCS)) && (bobFlagUP -> (<> bobCS))))
             """;
         
-        Declarations decls = Reader.readAndLinkDeclarations(input);
+        Declarations decls = parseDeclarationsOrFail(input);
         assertEquals(3, decls.declarations().size());
         
         ExpressionDeclaration fairnessDecl = decls.declarations().get(2);
@@ -158,7 +156,7 @@ class ReaderTest {
     @Test
     void testAutomatonDeclaration() {
         String input = "a = states s0, s1; initial s0; accept s1; s0 [true] s1; s1 [false] s0";
-        Declarations decls = Reader.readAndLinkDeclarations(input);
+        Declarations decls = parseDeclarationsOrFail(input);
         
         assertEquals(1, decls.declarations().size());
         ExpressionDeclaration automDecl = decls.declarations().get(0);
@@ -178,7 +176,7 @@ class ReaderTest {
     @Test
     void testAutomatonWithPriority() {
         String input = "a = states s0; initial s0; accept s0; s0 10 [true] s0; s0 5 [false] s0";
-        Declarations decls = Reader.readAndLinkDeclarations(input);
+        Declarations decls = parseDeclarationsOrFail(input);
         
         ExpressionDeclaration automDecl = decls.declarations().get(0);
         LetExpression letExpr = (LetExpression) automDecl.expression();
@@ -193,7 +191,7 @@ class ReaderTest {
     @Test
     void testNFASemantics() {
         String input = "a = nfa states s0; initial s0; accept s0; s0 [true] s0";
-        Declarations decls = Reader.readAndLinkDeclarations(input);
+        Declarations decls = parseDeclarationsOrFail(input);
         
         ExpressionDeclaration automDecl = decls.declarations().get(0);
         LetExpression letExpr = (LetExpression) automDecl.expression();
@@ -205,7 +203,7 @@ class ReaderTest {
     @Test
     void testBuchiSemantics() {
         String input = "a = buchi states s0; initial s0; accept s0; s0 [true] s0";
-        Declarations decls = Reader.readAndLinkDeclarations(input);
+        Declarations decls = parseDeclarationsOrFail(input);
         
         ExpressionDeclaration automDecl = decls.declarations().get(0);
         LetExpression letExpr = (LetExpression) automDecl.expression();

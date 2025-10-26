@@ -1,4 +1,5 @@
 package gpsl.semantics;
+import gpsl.syntax.TestHelpers;
 
 import gpsl.syntax.Reader;
 import gpsl.syntax.model.*;
@@ -27,7 +28,7 @@ class SemanticsTest {
     @Test
     void testSemanticsWithExpression() throws Exception {
         // Test: Create semantics from an expression F(p)
-        Expression expr = Reader.readExpression("F(|p|)");
+        Expression expr = TestHelpers.parseExpressionOrFail("F(|p|)");
         TestAtomEvaluator evaluator = new TestAtomEvaluator();
         
         Semantics<Map<String, Boolean>> semantics = new Semantics<>(expr, evaluator);
@@ -64,7 +65,7 @@ class SemanticsTest {
     
     @Test
     void testInitialStatesFromExpression() throws Exception {
-        Expression expr = Reader.readExpression("F(|p|)");
+        Expression expr = TestHelpers.parseExpressionOrFail("F(|p|)");
         TestAtomEvaluator evaluator = new TestAtomEvaluator();
         
         Semantics<Map<String, Boolean>> semantics = new Semantics<>(expr, evaluator);
@@ -80,7 +81,7 @@ class SemanticsTest {
     
     @Test
     void testActionsFromExpression() throws Exception {
-        Expression expr = Reader.readExpression("F(|p|)");
+        Expression expr = TestHelpers.parseExpressionOrFail("F(|p|)");
         TestAtomEvaluator evaluator = new TestAtomEvaluator();
         
         Semantics<Map<String, Boolean>> semantics = new Semantics<>(expr, evaluator);
@@ -101,7 +102,7 @@ class SemanticsTest {
     
     @Test
     void testExecuteFromExpression() throws Exception {
-        Expression expr = Reader.readExpression("F(|p|)");
+        Expression expr = TestHelpers.parseExpressionOrFail("F(|p|)");
         TestAtomEvaluator evaluator = new TestAtomEvaluator();
         
         Semantics<Map<String, Boolean>> semantics = new Semantics<>(expr, evaluator);
@@ -126,7 +127,7 @@ class SemanticsTest {
     
     @Test
     void testIsAcceptingFromExpression() throws Exception {
-        Expression expr = Reader.readExpression("F(|p|)");
+        Expression expr = TestHelpers.parseExpressionOrFail("F(|p|)");
         TestAtomEvaluator evaluator = new TestAtomEvaluator();
         
         Semantics<Map<String, Boolean>> semantics = new Semantics<>(expr, evaluator);
@@ -208,7 +209,7 @@ class SemanticsTest {
     @Test
     void testComplexExpressionSemantics() throws Exception {
         // Test: G(p -> F(q))
-        Expression expr = Reader.readExpression("G(|p| -> F(|q|))");
+        Expression expr = TestHelpers.parseExpressionOrFail("G(|p| -> F(|q|))");
         TestAtomEvaluator evaluator = new TestAtomEvaluator();
         
         Semantics<Map<String, Boolean>> semantics = new Semantics<>(expr, evaluator);
@@ -234,7 +235,7 @@ class SemanticsTest {
     
     @Test
     void testNullEvaluatorThrowsException() throws Exception {
-        Expression expr = Reader.readExpression("F(|p|)");
+        Expression expr = TestHelpers.parseExpressionOrFail("F(|p|)");
         
         assertThrows(NullPointerException.class, () -> {
             new Semantics<>(expr, null);
@@ -267,7 +268,7 @@ class SemanticsTest {
     
     @Test
     void testGetAutomatonSemantics() throws Exception {
-        Expression expr = Reader.readExpression("F(|p|)");
+        Expression expr = TestHelpers.parseExpressionOrFail("F(|p|)");
         TestAtomEvaluator evaluator = new TestAtomEvaluator();
         
         Semantics<Map<String, Boolean>> semantics = new Semantics<>(expr, evaluator);

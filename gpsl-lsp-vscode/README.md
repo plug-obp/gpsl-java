@@ -86,6 +86,7 @@ automaton = buchi
 ```
 
 This creates the runnable script at:
+
 - macOS/Linux: `gpsl-lsp/build/install/gpsl-lsp/bin/gpsl-lsp`
 - Windows: `gpsl-lsp\\build\\install\\gpsl-lsp\\bin\\gpsl-lsp.bat`
 
@@ -96,6 +97,15 @@ cd gpsl-lsp-vscode
 pnpm install
 pnpm run compile
 ```
+
+## Troubleshooting
+
+If you get an error like "couldn't create connection to server" or "ENOENT", see [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for solutions.
+
+Common issues:
+- LSP server not built → Run `./gradlew :gpsl-lsp:installDist`
+- Java 23 not found → Install from [Adoptium](https://adoptium.net/)
+- Extension not compiled → Run `pnpm run compile` in `gpsl-lsp-vscode`
 
 ## Development
 

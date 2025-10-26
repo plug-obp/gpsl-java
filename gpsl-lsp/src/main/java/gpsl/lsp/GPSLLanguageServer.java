@@ -29,7 +29,9 @@ public class GPSLLanguageServer implements LanguageServer, LanguageClientAware {
     @Override
     public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
         ServerCapabilities caps = new ServerCapabilities();
-        caps.setTextDocumentSync(TextDocumentSyncKind.Incremental);
+        // Use Full sync - server receives complete document on every change
+        // Simpler and more reliable than incremental sync
+        caps.setTextDocumentSync(TextDocumentSyncKind.Full);
         return CompletableFuture.completedFuture(new InitializeResult(caps));
     }
 

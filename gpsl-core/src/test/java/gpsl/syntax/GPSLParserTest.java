@@ -8,6 +8,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static gpsl.syntax.TestHelpers.*;
 
 /**
@@ -64,6 +65,60 @@ class GPSLParserTest {
         assertEquals("(formula (atom \"a>2\"))", parseExpression("\"a>2\""));
         assertEquals("(formula (atom \"to\\|to\"))", parseExpression("\"to\\|to\""));
         assertEquals("(formula (atom \"to\\\"to\"))", parseExpression("\"to\\\"to\""));
+    }
+
+    @Test
+    void testAtomPipeMultiline() {
+        // Multiline pipe atoms - toStringTree preserves actual newlines
+        String result1 = parseExpression("|line1\nline2|");
+        assertTrue(result1.contains("|line1"));
+        assertTrue(result1.contains("line2|"));
+        assertTrue(result1.startsWith("(formula (atom "));
+        
+        String result2 = parseExpression("|first\nsecond\nthird|");
+        assertTrue(result2.contains("|first"));
+        assertTrue(result2.contains("second"));
+        assertTrue(result2.contains("third|"));
+        
+        // Multiline with escaped pipe
+        String result3 = parseExpression("|line1\\|escaped\nline2|");
+        assertTrue(result3.contains("\\|"));
+        assertTrue(result3.contains("line1"));
+        assertTrue(result3.contains("line2|"));
+        
+        // Multiline in declarations
+        String result4 = parseDeclarations("a = |multi\nline\natom|");
+        assertTrue(result4.contains("formulaDeclaration"));
+        assertTrue(result4.contains("|multi"));
+        assertTrue(result4.contains("line"));
+        assertTrue(result4.contains("atom|"));
+    }
+
+    @Test
+    void testAtomQuoteMultiline() {
+        // Multiline quote atoms - toStringTree preserves actual newlines  
+        String result1 = parseExpression("\"line1\nline2\"");
+        assertTrue(result1.contains("\"line1"));
+        assertTrue(result1.contains("line2\""));
+        assertTrue(result1.startsWith("(formula (atom "));
+        
+        String result2 = parseExpression("\"first\nsecond\nthird\"");
+        assertTrue(result2.contains("\"first"));
+        assertTrue(result2.contains("second"));
+        assertTrue(result2.contains("third\""));
+        
+        // Multiline with escaped quotes
+        String result3 = parseExpression("\"line1\\\"escaped\nline2\"");
+        assertTrue(result3.contains("\\\""));
+        assertTrue(result3.contains("line1"));
+        assertTrue(result3.contains("line2\""));
+        
+        // Multiline in declarations
+        String result4 = parseDeclarations("a = \"multi\nline\natom\"");
+        assertTrue(result4.contains("formulaDeclaration"));
+        assertTrue(result4.contains("\"multi"));
+        assertTrue(result4.contains("line"));
+        assertTrue(result4.contains("atom\""));
     }
 
     @Test

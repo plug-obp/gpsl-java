@@ -95,15 +95,33 @@ wrelease1 = p R q
 wrelease2 = p WR q
 wrelease3 = p weak-release q
 
-// Atoms - pipe delimited
+// Atoms - pipe delimited (single line)
 aliceCS = |{Alice}1@CS|
 bobCS = |{Bob}1@CS|
 systemFlag = |{sys}1:flags[0] = true|
 escapedPipe = |this has \| escaped pipes|
 
-// Atoms - quote delimited
+// Atoms - quote delimited (single line)
 quotedAtom1 = "simple atom"
 quotedAtom2 = "atom with \"escaped\" quotes"
+
+// Atoms - multiline pipe delimited
+multilinePipe = |this is a
+multiline atom that spans
+several lines|
+
+multilinePipeComplex = |{Process}1@State
+  with multiple lines
+  and \| escaped pipes|
+
+// Atoms - multiline quote delimited
+multilineQuote = "this is a
+multiline quoted atom
+spanning multiple lines"
+
+multilineQuoteEscaped = "multiline with
+\"escaped quotes\" and
+special characters"
 
 // Complex formula with parentheses
 complex1 = (p and q) or (r and s)

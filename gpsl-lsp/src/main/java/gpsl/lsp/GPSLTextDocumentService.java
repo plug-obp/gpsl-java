@@ -2,8 +2,6 @@ package gpsl.lsp;
 
 import gpsl.syntax.Reader;
 import gpsl.syntax.PositionMap;
-import gpsl.syntax.model.Declarations;
-import gpsl.syntax.model.Expression;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import rege.reader.infra.ParseError;
@@ -33,8 +31,10 @@ public class GPSLTextDocumentService implements TextDocumentService {
         var uri = params.getTextDocument().getUri();
         var changes = params.getContentChanges();
         if (!changes.isEmpty()) {
-            // Simplest: treat last change as full text
-            String text = changes.get(changes.size() - 1).getText();
+            // Get full document text from the change
+            // LSP sends full document when TextDocumentSyncKind is Full
+            var change = changes.get(0);
+            String text = change.getText();
             openDocs.put(uri, text);
             publishDiagnostics(uri, text);
         }
@@ -51,21 +51,22 @@ public class GPSLTextDocumentService implements TextDocumentService {
     public void didSave(DidSaveTextDocumentParams params) { }
 
     private void publishDiagnostics(String uri, String text) {
-        var decls = Reader.parseDeclarationsWithPositions(text);
-        var expr = Reader.parseExpressionWithPositions(text);
-        var chosen = pickBest(decls, expr);
+        // Try parsing as declarations first (normal .gpsl files)
+        var declsResult = Reader.parseDeclarationsWithPositions(text);
+        
+        // Only try expression if it's clearly not a declarations file
+        // (i.e., declarations failed and text doesn't contain '=')
+        Reader.ParseResultWithPositions<?> chosen = declsResult;
+        // if (declsResult.result().isSuccess() || text.contains("=")) {
+        //     chosen = declsResult;
+        // } else {
+        //     // Might be a single expression
+        //     var exprResult = Reader.parseExpressionWithPositions(text);
+        //     chosen = exprResult.result().isSuccess() ? exprResult : declsResult;
+        // }
+        
         var diags = toDiagnostics(chosen.result());
         server.client().publishDiagnostics(new PublishDiagnosticsParams(uri, diags));
-    }
-
-    private static Reader.ParseResultWithPositions<?> pickBest(
-            Reader.ParseResultWithPositions<Declarations> decls,
-            Reader.ParseResultWithPositions<Expression> expr) {
-        if (decls.result().isSuccess()) return decls;
-        if (expr.result().isSuccess()) return expr;
-        int d = ((ParseResult.Failure<?>) decls.result()).errors().size();
-        int e = ((ParseResult.Failure<?>) expr.result()).errors().size();
-        return d >= e ? decls : expr;
     }
 
     private static List<Diagnostic> toDiagnostics(ParseResult<?> result) {

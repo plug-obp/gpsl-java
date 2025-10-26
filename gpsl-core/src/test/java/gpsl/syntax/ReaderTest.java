@@ -218,4 +218,70 @@ class ReaderTest {
         
         assertEquals(AutomatonSemanticsKind.BUCHI, automaton.semanticsKind());
     }
+
+    @Test
+    void testMultilineAtomPipe() {
+        // Test multiline pipe atom parsing and linking
+        String input = "a = |first line\nsecond line\nthird line|";
+        Expression expr = parseExpressionOrFail("|first line\nsecond line\nthird line|");
+        assertInstanceOf(Atom.class, expr);
+        
+        Atom atom = (Atom) expr;
+        assertEquals("first line\nsecond line\nthird line", atom.value());
+        
+        // Test in declarations
+        Declarations decls = parseDeclarationsOrFail(input);
+        assertEquals(1, decls.declarations().size());
+        ExpressionDeclaration decl = decls.declarations().get(0);
+        assertInstanceOf(Atom.class, decl.expression());
+        assertEquals("first line\nsecond line\nthird line", ((Atom) decl.expression()).value());
+    }
+
+    @Test
+    void testMultilineAtomQuote() {
+        // Test multiline quote atom parsing and linking
+        String input = "a = \"first line\nsecond line\nthird line\"";
+        Expression expr = parseExpressionOrFail("\"first line\nsecond line\nthird line\"");
+        assertInstanceOf(Atom.class, expr);
+        
+        Atom atom = (Atom) expr;
+        assertEquals("first line\nsecond line\nthird line", atom.value());
+        
+        // Test in declarations
+        Declarations decls = parseDeclarationsOrFail(input);
+        assertEquals(1, decls.declarations().size());
+        ExpressionDeclaration decl = decls.declarations().get(0);
+        assertInstanceOf(Atom.class, decl.expression());
+        assertEquals("first line\nsecond line\nthird line", ((Atom) decl.expression()).value());
+    }
+
+    @Test
+    void testMultilineAtomWithEscapes() {
+        // Test multiline pipe atom with escaped pipe - escape is processed, so \| becomes |
+        Expression pipeExpr = parseExpressionOrFail("|line1\\|escaped\nline2|");
+        assertInstanceOf(Atom.class, pipeExpr);
+        assertEquals("line1|escaped\nline2", ((Atom) pipeExpr).value());
+        
+        // Test multiline quote atom with escaped quote - escape is processed, so \" becomes "
+        Expression quoteExpr = parseExpressionOrFail("\"line1\\\"escaped\nline2\"");
+        assertInstanceOf(Atom.class, quoteExpr);
+        assertEquals("line1\"escaped\nline2", ((Atom) quoteExpr).value());
+    }
+
+    @Test
+    void testMultilineAtomInComplexExpression() {
+        // Test multiline atoms in formulas
+        String input = "result = |multi\nline| and \"another\nmultiline\"";
+        Declarations decls = parseDeclarationsOrFail(input);
+        
+        ExpressionDeclaration decl = decls.declarations().get(0);
+        assertInstanceOf(Conjunction.class, decl.expression());
+        
+        Conjunction conj = (Conjunction) decl.expression();
+        assertInstanceOf(Atom.class, conj.left());
+        assertInstanceOf(Atom.class, conj.right());
+        
+        assertEquals("multi\nline", ((Atom) conj.left()).value());
+        assertEquals("another\nmultiline", ((Atom) conj.right()).value());
+    }
 }

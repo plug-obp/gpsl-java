@@ -1,13 +1,18 @@
 {
   "name": "gpsl-lsp-vscode",
   "displayName": "GPSL Language Support",
-  "description": "Language Server Protocol (LSP) client for GPSL (gpsl-java)",
+  "description": "Syntax highlighting and LSP client for GPSL - a temporal logic specification language",
   "publisher": "obp3",
   "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/plug-obp/gpsl-java.git"
+  },
   "engines": {
     "vscode": "^1.90.0"
   },
   "categories": ["Programming Languages"],
+  "keywords": ["gpsl", "temporal logic", "LTL", "specification", "verification", "automata"],
   "activationEvents": [
     "onLanguage:gpsl"
   ],
@@ -19,6 +24,19 @@
         "aliases": ["GPSL"],
         "extensions": [".gpsl"],
         "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "gpsl",
+        "scopeName": "source.gpsl",
+        "path": "./syntaxes/gpsl.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "gpsl",
+        "path": "./snippets/gpsl.json"
       }
     ]
   },

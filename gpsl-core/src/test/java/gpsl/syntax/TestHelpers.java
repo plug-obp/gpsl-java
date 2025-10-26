@@ -164,4 +164,17 @@ public class TestHelpers {
         var result = Reader.parseDeclarationsWithPositions(source);
         return result.positionMap();
     }
+    
+    /**
+     * Convert expression to automaton or fail test.
+     */
+    public static Automaton convertToAutomatonOrFail(Expression expression) {
+        ParseResult<Automaton> result = gpsl.ltl3ba.Expression2Automaton.convert(expression);
+        
+        if (result instanceof ParseResult.Failure<Automaton> failure) {
+            fail("Automaton conversion failed:\n" + failure.formatErrors());
+        }
+        
+        return ((ParseResult.Success<Automaton>) result).value();
+    }
 }

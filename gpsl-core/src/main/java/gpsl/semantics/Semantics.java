@@ -50,12 +50,15 @@ public class Semantics<T> implements DependentSemanticRelation<T, Transition, St
         if (element instanceof Automaton automaton) {
             return automaton;
         } else if (element instanceof Expression expression) {
-            try {
-                return Expression2Automaton.convert(expression);
-            } catch (Exception e) {
+            var result = Expression2Automaton.convert(expression);
+            if (result instanceof rege.reader.infra.ParseResult.Success<Automaton> success) {
+                return success.value();
+            } else if (result instanceof rege.reader.infra.ParseResult.Failure<Automaton> failure) {
                 throw new SemanticConversionException(
-                    "Failed to convert expression to automaton: " + e.getMessage(), e
+                    "Failed to convert expression to automaton:\n" + failure.formatErrors()
                 );
+            } else {
+                throw new SemanticConversionException("Unexpected ParseResult type");
             }
         } else {
             throw new IllegalArgumentException(
@@ -130,6 +133,10 @@ public class Semantics<T> implements DependentSemanticRelation<T, Transition, St
      * Exception thrown when conversion to automaton fails.
      */
     public static class SemanticConversionException extends RuntimeException {
+        public SemanticConversionException(String message) {
+            super(message);
+        }
+        
         public SemanticConversionException(String message, Throwable cause) {
             super(message, cause);
         }

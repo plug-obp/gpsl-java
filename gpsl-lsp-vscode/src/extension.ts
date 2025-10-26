@@ -21,7 +21,10 @@ export function activate(context: vscode.ExtensionContext) {
   };
 
   client = new LanguageClient('gpsl-lsp', 'GPSL Language Server', serverOptions, clientOptions);
-  context.subscriptions.push(client.start());
+  // Start the client (returns a Promise in v9)
+  client.start().catch(err => console.error('GPSL LSP start error:', err));
+  // Dispose by stopping the client when the extension deactivates
+  context.subscriptions.push({ dispose: () => { client?.stop(); } });
 }
 
 export function deactivate(): Thenable<void> | undefined {

@@ -3,22 +3,25 @@
 This is a minimal VS Code client for the GPSL Language Server in this repo.
 
 ## Prerequisites
+
 - Java 21+ (repo uses toolchains 23)
 - Build the server distribution:
 
-```
+```bash
 ./gradlew :gpsl-lsp:installDist
 ```
 
 This creates the runnable script at:
+
 - macOS/Linux: `gpsl-lsp/build/install/gpsl-lsp/bin/gpsl-lsp`
 - Windows: `gpsl-lsp\\build\\install\\gpsl-lsp\\bin\\gpsl-lsp.bat`
 
 ## Develop
-```
+
+```bash
 cd gpsl-lsp-vscode
-npm install
-npm run compile
+pnpm install
+pnpm run compile
 ```
 
 In VS Code, run the "Launch Extension" configuration (F5) and open a folder with `.gpsl` files.

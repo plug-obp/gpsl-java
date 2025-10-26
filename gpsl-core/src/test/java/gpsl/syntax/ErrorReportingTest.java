@@ -20,7 +20,7 @@ class ErrorReportingTest {
     
     @Test
     void testUnclosedParenthesis() {
-        var result = Reader.parseExpression("(true");
+        var result = Reader.parseAndLinkExpression("(true");
         
         assertTrue(result.isFailure(), "Should fail for unclosed parenthesis");
         
@@ -35,7 +35,7 @@ class ErrorReportingTest {
     @Test
     void testUnexpectedToken() {
         // Missing operator between operands
-        var result = Reader.parseExpression("(true false)");
+        var result = Reader.parseAndLinkExpression("(true false)");
         
         assertTrue(result.isFailure(), "Should fail for unexpected token");
         
@@ -50,7 +50,7 @@ class ErrorReportingTest {
     
     @Test
     void testInvalidOperator() {
-        var result = Reader.parseExpression("true ++ false");
+        var result = Reader.parseAndLinkExpression("true ++ false");
         
         assertTrue(result.isFailure(), "Should fail for invalid operator");
         
@@ -61,14 +61,14 @@ class ErrorReportingTest {
     
     @Test
     void testMissingOperand() {
-        var result = Reader.parseExpression("and true");
+        var result = Reader.parseAndLinkExpression("and true");
         
         assertTrue(result.isFailure(), "Should fail for missing left operand");
     }
     
     @Test
     void testEmptyInput() {
-        var result = Reader.parseExpression("");
+        var result = Reader.parseAndLinkExpression("");
         
         assertTrue(result.isFailure(), "Should fail for empty input");
         
@@ -79,7 +79,7 @@ class ErrorReportingTest {
     
     @Test
     void testWhitespaceOnly() {
-        var result = Reader.parseExpression("   \n  \t  ");
+        var result = Reader.parseAndLinkExpression("   \n  \t  ");
         
         assertTrue(result.isFailure(), "Should fail for whitespace-only input");
     }
@@ -88,7 +88,7 @@ class ErrorReportingTest {
     
     @Test
     void testUndefinedSymbol_SingleReference() {
-        var result = Reader.parseExpression("x");
+        var result = Reader.parseAndLinkExpression("x");
         
         assertTrue(result.isFailure(), "Should fail for undefined symbol");
         
@@ -113,7 +113,7 @@ class ErrorReportingTest {
     
     @Test
     void testUndefinedSymbol_InExpression() {
-        var result = Reader.parseExpression("true and x");
+        var result = Reader.parseAndLinkExpression("true and x");
         
         assertTrue(result.isFailure(), "Should fail for undefined symbol in expression");
         
@@ -134,7 +134,7 @@ class ErrorReportingTest {
     
     @Test
     void testUndefinedSymbol_MultipleReferences() {
-        var result = Reader.parseExpression("a and b or c");
+        var result = Reader.parseAndLinkExpression("a and b or c");
         
         assertTrue(result.isFailure(), "Should fail for multiple undefined symbols");
         
@@ -159,7 +159,7 @@ class ErrorReportingTest {
     
     @Test
     void testUndefinedSymbol_NestedExpression() {
-        var result = Reader.parseExpression("(x and y) or (z and w)");
+        var result = Reader.parseAndLinkExpression("(x and y) or (z and w)");
         
         assertTrue(result.isFailure());
         
@@ -172,7 +172,7 @@ class ErrorReportingTest {
     
     @Test
     void testDuplicateSymbol() {
-        var result = Reader.parseDeclarations("x = true\nx = false");
+        var result = Reader.parseAndLinkDeclarations("x = true\nx = false");
         
         assertTrue(result.isFailure(), "Should fail for duplicate symbol");
         
@@ -194,7 +194,7 @@ class ErrorReportingTest {
     
     @Test
     void testDuplicateSymbol_Multiple() {
-        var result = Reader.parseDeclarations("a = true\nb = false\na = false\nb = true");
+        var result = Reader.parseAndLinkDeclarations("a = true\nb = false\na = false\nb = true");
         
         assertTrue(result.isFailure());
         
@@ -211,7 +211,7 @@ class ErrorReportingTest {
     
     @Test
     void testLetExpression_UndefinedSymbolInBody() {
-        var result = Reader.parseExpression("let x = true in y");
+        var result = Reader.parseAndLinkExpression("let x = true in y");
         
         assertTrue(result.isFailure(), "Should fail for undefined symbol in let body");
         
@@ -232,7 +232,7 @@ class ErrorReportingTest {
     
     @Test
     void testLetExpression_DuplicateBinding() {
-        var result = Reader.parseExpression("let x = true, x = false in x");
+        var result = Reader.parseAndLinkExpression("let x = true, x = false in x");
         
         assertTrue(result.isFailure(), "Should fail for duplicate binding in let");
         
@@ -246,7 +246,7 @@ class ErrorReportingTest {
     
     @Test
     void testLetExpression_UndefinedInBinding() {
-        var result = Reader.parseExpression("let x = y in x");
+        var result = Reader.parseAndLinkExpression("let x = y in x");
         
         assertTrue(result.isFailure(), "Should fail for undefined symbol in binding");
         
@@ -263,7 +263,7 @@ class ErrorReportingTest {
     
     @Test
     void testErrorMessage_ContainsSymbolName() {
-        var result = Reader.parseExpression("undefined_var");
+        var result = Reader.parseAndLinkExpression("undefined_var");
         
         if (result instanceof ParseResult.Failure<Expression> failure) {
             ParseError error = failure.errors().get(0);
@@ -274,7 +274,7 @@ class ErrorReportingTest {
     
     @Test
     void testErrorMessage_HasErrorCode() {
-        var result = Reader.parseExpression("x");
+        var result = Reader.parseAndLinkExpression("x");
         
         if (result instanceof ParseResult.Failure<Expression> failure) {
             ParseError error = failure.errors().get(0);
@@ -286,7 +286,7 @@ class ErrorReportingTest {
     
     @Test
     void testFormattedErrors_ShowsSourceCode() {
-        var result = Reader.parseExpression("a and b");
+        var result = Reader.parseAndLinkExpression("a and b");
         
         if (result instanceof ParseResult.Failure<Expression> failure) {
             String formatted = failure.formatErrors();
@@ -302,7 +302,7 @@ class ErrorReportingTest {
     
     @Test
     void testFormattedErrors_MultipleErrors() {
-        var result = Reader.parseExpression("x and y");
+        var result = Reader.parseAndLinkExpression("x and y");
         
         if (result instanceof ParseResult.Failure<Expression> failure) {
             String formatted = failure.formatErrors();
@@ -319,7 +319,7 @@ class ErrorReportingTest {
     
     @Test
     void testPosition_SimpleReference() {
-        var result = Reader.parseExpression("xyz");
+        var result = Reader.parseAndLinkExpression("xyz");
         
         if (result instanceof ParseResult.Failure<Expression> failure) {
             ParseError error = failure.errors().get(0);
@@ -335,7 +335,7 @@ class ErrorReportingTest {
     
     @Test
     void testPosition_ReferenceAfterWhitespace() {
-        var result = Reader.parseExpression("   x");
+        var result = Reader.parseAndLinkExpression("   x");
         
         if (result instanceof ParseResult.Failure<Expression> failure) {
             ParseError error = failure.errors().get(0);
@@ -349,7 +349,7 @@ class ErrorReportingTest {
     
     @Test
     void testPosition_ReferenceInComplexExpression() {
-        var result = Reader.parseExpression("true and (false or x)");
+        var result = Reader.parseAndLinkExpression("true and (false or x)");
         
         if (result instanceof ParseResult.Failure<Expression> failure) {
             ParseError error = failure.errors().get(0);
@@ -363,7 +363,7 @@ class ErrorReportingTest {
     
     @Test
     void testPosition_SecondOccurrence() {
-        var result = Reader.parseDeclarations("x = true\nx = false");
+        var result = Reader.parseAndLinkDeclarations("x = true\nx = false");
         
         if (result instanceof ParseResult.Failure<Declarations> failure) {
             ParseError error = failure.errors().get(0);
@@ -378,7 +378,7 @@ class ErrorReportingTest {
     
     @Test
     void testMultilineError_UndefinedOnSecondLine() {
-        var result = Reader.parseExpression("true and\nx");
+        var result = Reader.parseAndLinkExpression("true and\nx");
         
         if (result instanceof ParseResult.Failure<Expression> failure) {
             ParseError error = failure.errors().get(0);
@@ -394,7 +394,7 @@ class ErrorReportingTest {
     
     @Test
     void testMultilineError_FormattedOutput() {
-        var result = Reader.parseExpression("a and\nb or\nc");
+        var result = Reader.parseAndLinkExpression("a and\nb or\nc");
         
         if (result instanceof ParseResult.Failure<Expression> failure) {
             String formatted = failure.formatErrors();
@@ -411,7 +411,7 @@ class ErrorReportingTest {
     @Test
     void testErrorRecovery_ContinuesAfterFirstError() {
         // Parser should report all undefined symbols, not stop at the first one
-        var result = Reader.parseExpression("a and b and c");
+        var result = Reader.parseAndLinkExpression("a and b and c");
         
         if (result instanceof ParseResult.Failure<Expression> failure) {
             assertEquals(3, failure.errors().size(), 
@@ -423,7 +423,7 @@ class ErrorReportingTest {
     void testErrorRecovery_ReportsBothSyntaxAndSemanticErrors() {
         // If we have both syntax and semantic errors, both should be reported
         // This test verifies that syntax errors are caught first
-        var result = Reader.parseExpression("((x)");
+        var result = Reader.parseAndLinkExpression("((x)");
         
         if (result instanceof ParseResult.Failure<Expression> failure) {
             // Should have syntax error for unclosed paren
@@ -435,21 +435,21 @@ class ErrorReportingTest {
     
     @Test
     void testNoErrorForValidExpression() {
-        var result = Reader.parseExpression("true and false");
+        var result = Reader.parseAndLinkExpression("true and false");
         
         assertTrue(result.isSuccess(), "Should succeed for valid expression");
     }
     
     @Test
     void testNoErrorForValidLetExpression() {
-        var result = Reader.parseExpression("let x = true in x");
+        var result = Reader.parseAndLinkExpression("let x = true in x");
         
         assertTrue(result.isSuccess(), "Should succeed for valid let expression");
     }
     
     @Test
     void testNoErrorForValidDeclarations() {
-        var result = Reader.parseDeclarations("x = true\ny = false\nz = x and y");
+        var result = Reader.parseAndLinkDeclarations("x = true\ny = false\nz = x and y");
         
         assertTrue(result.isSuccess(), "Should succeed for valid declarations");
     }
@@ -504,7 +504,7 @@ class ErrorReportingTest {
     
     @Test
     void testUnicodeInErrors() {
-        var result = Reader.parseExpression("α and β");
+        var result = Reader.parseAndLinkExpression("α and β");
         
         if (result instanceof ParseResult.Failure<Expression> failure) {
             String formatted = failure.formatErrors();
@@ -516,7 +516,7 @@ class ErrorReportingTest {
     @Test
     void testVeryLongIdentifier() {
         String longId = "x".repeat(100);
-        var result = Reader.parseExpression(longId);
+        var result = Reader.parseAndLinkExpression(longId);
         
         if (result instanceof ParseResult.Failure<Expression> failure) {
             ParseError error = failure.errors().get(0);
@@ -528,7 +528,7 @@ class ErrorReportingTest {
     @Test
     void testSpecialCharactersInAtoms() {
         // Atoms can contain special characters, should not cause issues in error reporting
-        var result = Reader.parseExpression("|a@#$| and x");
+        var result = Reader.parseAndLinkExpression("|a@#$| and x");
         
         if (result instanceof ParseResult.Failure<Expression> failure) {
             assertEquals(1, failure.errors().size(), 

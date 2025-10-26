@@ -13,9 +13,10 @@ public class TestHelpers {
     
     /**
      * Parse expression or fail test with formatted error.
+     * This method performs symbol resolution.
      */
     public static Expression parseExpressionOrFail(String source) {
-        ParseResult<Expression> result = Reader.parseExpression(source);
+        ParseResult<Expression> result = Reader.parseAndLinkExpression(source);
         
         if (result instanceof ParseResult.Failure<Expression> failure) {
             fail("Parse failed:\n" + failure.formatErrors());
@@ -29,37 +30,10 @@ public class TestHelpers {
      * This is useful for testing the Antlr4ToGPSLMapper without requiring defined symbols.
      */
     public static Expression parseExpressionWithoutResolution(String source) {
-        // Create a context with permissive mode that allows undefined symbols
-        java.util.Map<String, Object> permissiveContext = new java.util.HashMap<>();
-        // We'll just extract all identifiers and add them as "dummy" symbols
-        // This is a hack for testing, but it allows AST construction tests to work
-        
-        // For now, we'll try parsing with an empty context and if it fails with undefined-symbol,
-        // we'll extract the symbol names and add them
         ParseResult<Expression> result = Reader.parseExpression(source);
         
         if (result instanceof ParseResult.Failure<Expression> failure) {
-            // Extract undefined symbols from errors and retry with dummy expressions
-            for (ParseError error : failure.errors()) {
-                if (error.code().map(c -> c.equals("undefined-symbol")).orElse(false)) {
-                    // Extract symbol name from error message
-                    String msg = error.message();
-                    if (msg.contains("undefined symbol '")) {
-                        int start = msg.indexOf("'") + 1;
-                        int end = msg.indexOf("'", start);
-                        String symbolName = msg.substring(start, end);
-                        // Use a True expression as a dummy placeholder
-                        permissiveContext.put(symbolName, new True());
-                    }
-                }
-            }
-            
-            // Retry with the symbols defined
-            result = Reader.parseExpression(source, permissiveContext);
-        }
-        
-        if (result instanceof ParseResult.Failure<Expression> failure2) {
-            fail("Parse failed:\n" + failure2.formatErrors());
+            fail("Parse failed:\n" + failure.formatErrors());
         }
         
         return ((ParseResult.Success<Expression>) result).value();
@@ -67,9 +41,10 @@ public class TestHelpers {
     
     /**
      * Parse declarations or fail test.
+     * This method performs symbol resolution.
      */
     public static Declarations parseDeclarationsOrFail(String source) {
-        ParseResult<Declarations> result = Reader.parseDeclarations(source);
+        ParseResult<Declarations> result = Reader.parseAndLinkDeclarations(source);
         
         if (result instanceof ParseResult.Failure<Declarations> failure) {
             fail("Parse failed:\n" + failure.formatErrors());
@@ -93,9 +68,10 @@ public class TestHelpers {
     
     /**
      * Assert that parsing fails with specific error code.
+     * This performs symbol resolution to catch linking errors.
      */
     public static void assertParseError(String source, String expectedErrorCode) {
-        ParseResult<Expression> result = Reader.parseExpression(source);
+        ParseResult<Expression> result = Reader.parseAndLinkExpression(source);
         
         assertTrue(result.isFailure(), "Expected parse to fail");
         
@@ -111,9 +87,10 @@ public class TestHelpers {
     
     /**
      * Assert parsing fails with error at specific position.
+     * This performs symbol resolution to catch linking errors.
      */
     public static void assertParseErrorAt(String source, int line, int column, String expectedCode) {
-        ParseResult<Expression> result = Reader.parseExpression(source);
+        ParseResult<Expression> result = Reader.parseAndLinkExpression(source);
         
         assertTrue(result.isFailure(), "Expected parse to fail");
         
@@ -133,9 +110,10 @@ public class TestHelpers {
     
     /**
      * Assert declarations parsing fails with error code.
+     * This performs symbol resolution to catch linking errors.
      */
     public static void assertDeclarationsParseError(String source, String expectedErrorCode) {
-        ParseResult<Declarations> result = Reader.parseDeclarations(source);
+        ParseResult<Declarations> result = Reader.parseAndLinkDeclarations(source);
         
         assertTrue(result.isFailure(), "Expected parse to fail");
         

@@ -34,14 +34,16 @@ public class Reader {
      * 
      * @param source the source text to parse
      * @param parserFn function that calls the appropriate parser method (e.g., GPSLParser::formula)
-     * @param externalSymbols external symbols for symbol resolution (can be empty)
+     * @param externalSymbols external symbols for symbol resolution (can be empty, ignored if doLink is false)
+     * @param doLink whether to perform symbol resolution/linking
      * @param <T> the expected return type
      * @return ParseResult containing the parsed model or errors
      */
     private static <T> ParseResult<T> parse(
             String source,
             ParserFunction parserFn,
-            Map<String, Object> externalSymbols) {
+            Map<String, Object> externalSymbols,
+            boolean doLink) {
         
         ParseContext parseContext = new ParseContext(source);
         
@@ -56,27 +58,29 @@ public class Reader {
         // Phase 2: Build AST with position tracking
         T model = buildSyntaxModel(tree, parseContext);
         
-        // Phase 3: Symbol resolution
-        SymbolResolver resolver = new SymbolResolver(parseContext);
-        Context symbolContext = new Context(externalSymbols);
-        ((gpsl.syntax.model.SyntaxTreeElement) model).accept(resolver, symbolContext);
+        // Phase 3: Symbol resolution (optional)
+        if (doLink) {
+            SymbolResolver resolver = new SymbolResolver(parseContext);
+            Context symbolContext = new Context(externalSymbols);
+            ((gpsl.syntax.model.SyntaxTreeElement) model).accept(resolver, symbolContext);
+        }
         
         return parseContext.toResult(model);
     }
 
     /**
-     * Parse a GPSL expression from source text.
+     * Parse a GPSL expression from source text (without symbol resolution).
      * 
      * @param source the GPSL expression source
      * @return ParseResult containing expression or errors with positions
      */
     public static ParseResult<Expression> parseExpression(String source) {
-        return parse(source, GPSLParser::formula, new HashMap<>());
+        return parse(source, GPSLParser::formula, new HashMap<>(), false);
     }
     
     /**
      * Parse GPSL expression from source text with external symbol context.
-     * This method allows providing predefined symbols (e.g., from external sources).
+     * This method performs symbol resolution with the provided external symbols.
      * 
      * @param source the GPSL expression source
      * @param externalSymbols map of externally defined symbols (e.g., atoms from LTL3BA)
@@ -85,22 +89,22 @@ public class Reader {
     public static ParseResult<Expression> parseExpression(
             String source,
             Map<String, Object> externalSymbols) {
-        return parse(source, GPSLParser::formula, externalSymbols);
+        return parse(source, GPSLParser::formula, externalSymbols, true);
     }
     
     /**
-     * Parse GPSL declarations from source text.
+     * Parse GPSL declarations from source text (without symbol resolution).
      * 
      * @param source the GPSL declarations source
      * @return ParseResult containing declarations or errors
      */
     public static ParseResult<Declarations> parseDeclarations(String source) {
-        return parse(source, GPSLParser::block, new HashMap<>());
+        return parse(source, GPSLParser::block, new HashMap<>(), false);
     }
 
     /**
      * Parse GPSL declarations from source text with external symbol context.
-     * This method allows providing predefined symbols (e.g., from imports).
+     * This method performs symbol resolution with the provided external symbols.
      * 
      * @param source the source text
      * @param externalSymbols symbols from imported modules
@@ -109,7 +113,27 @@ public class Reader {
     public static ParseResult<Declarations> parseDeclarations(
             String source,
             Map<String, Object> externalSymbols) {
-        return parse(source, GPSLParser::block, externalSymbols);
+        return parse(source, GPSLParser::block, externalSymbols, true);
+    }
+    
+    /**
+     * Parse and link GPSL expression (performs symbol resolution).
+     * 
+     * @param source the GPSL expression source
+     * @return ParseResult containing linked expression or errors
+     */
+    public static ParseResult<Expression> parseAndLinkExpression(String source) {
+        return parse(source, GPSLParser::formula, new HashMap<>(), true);
+    }
+    
+    /**
+     * Parse and link GPSL declarations (performs symbol resolution).
+     * 
+     * @param source the GPSL declarations source
+     * @return ParseResult containing linked declarations or errors
+     */
+    public static ParseResult<Declarations> parseAndLinkDeclarations(String source) {
+        return parse(source, GPSLParser::block, new HashMap<>(), true);
     }
 
     /**
@@ -281,16 +305,20 @@ public class Reader {
 
     /**
      * Reads GPSL declarations from input and links all symbol references.
-     * @deprecated Use parseDeclarations() for better error handling
+     * @deprecated Use parseAndLinkDeclarations() for better error handling
      */
     @Deprecated
     public static Declarations readAndLinkDeclarations(String input) {
-        return readDeclarations(input);
+        try {
+            return parseAndLinkDeclarations(input).orElseThrow();
+        } catch (ParseException e) {
+            throw new RuntimeException("Parse error: " + e.getMessage(), e);
+        }
     }
 
     /**
      * Reads GPSL declarations from input and links symbol references using the provided context.
-     * @deprecated Use parseDeclarations() for better error handling
+     * @deprecated Use parseDeclarations(source, externalSymbols) for better error handling
      */
     @Deprecated
     public static Declarations readAndLinkDeclarations(String input, Map<String, Object> context) {

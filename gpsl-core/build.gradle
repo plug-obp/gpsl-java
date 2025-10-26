@@ -12,6 +12,14 @@ repositories {
             password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
         }
     }
+
+    maven {
+        url = uri("https://maven.pkg.github.com/plug-obp/rege-java")
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 java {
@@ -32,6 +40,7 @@ compileTestJava {
 dependencies {
     antlr 'org.antlr:antlr4:4.13.2'
     implementation ('org.obpcdl:obp3-runtime:1.0.+')
+    implementation ('org.obpcdl:reader-infra:1.0.0')
     implementation project(':gpsl-ltl3ba')
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'

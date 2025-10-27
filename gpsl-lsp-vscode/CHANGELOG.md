@@ -5,6 +5,13 @@ All notable changes to the GPSL VS Code extension.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2025-01-29
+
+### Changed
+
+- Updated minimum Java requirement from 17 to 23
+- Updated all documentation and error messages to reflect Java 23 requirement
+
 ## [1.0.0] - 2025-01-29
 
 ### Added
@@ -38,4 +45,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 First public release.
 
+[1.0.1]: https://github.com/plug-obp/gpsl-java/releases/tag/v1.0.1
 [1.0.0]: https://github.com/plug-obp/gpsl-java/releases/tag/v1.0.0

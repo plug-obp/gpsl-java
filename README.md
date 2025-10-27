@@ -82,10 +82,11 @@ cd gpsl-java
 
 ### Using the VS Code Extension
 
-Install from VS Code Marketplace:
-1. Open VS Code Extensions (Ctrl+Shift+X / Cmd+Shift+X)
-2. Search for "GPSL Language Support"
-3. Click Install
+Install from GitHub Releases:
+1. Download the latest `.vsix` file from [GitHub Releases](https://github.com/plug-obp/gpsl-java/releases)
+2. Open VS Code
+3. Run command: Extensions: Install from VSIX... (Ctrl+Shift+P / Cmd+Shift+P)
+4. Select the downloaded `.vsix` file
 
 Or install from source:
 ```bash
@@ -137,4 +138,4 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) file for
 
 - [GPSL Website](http://www.obpcdl.org/gpsl/)
 - [Issue Tracker](https://github.com/plug-obp/gpsl-java/issues)
-- [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=obp3.gpsl-lsp-vscode)
+- [Releases](https://github.com/plug-obp/gpsl-java/releases)

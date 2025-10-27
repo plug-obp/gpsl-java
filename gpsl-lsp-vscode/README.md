@@ -62,17 +62,25 @@ The extension automatically searches for Java in this order:
 
 ## Installation
 
-### From VS Code Marketplace
+### From GitHub Releases
 
-1. Open VS Code Extensions (Ctrl+Shift+X / Cmd+Shift+X)
-2. Search for "GPSL Language Support"
-3. Click Install
+1. Download the latest `.vsix` file from the [releases page](https://github.com/plug-obp/gpsl-java/releases)
+2. Open VS Code
+3. Run command: Extensions: Install from VSIX... (Ctrl+Shift+P / Cmd+Shift+P)
+4. Select the downloaded `.vsix` file
 
-### From VSIX File
+### From Source
 
-1. Download `.vsix` from [releases page](https://github.com/plug-obp/gpsl-java/releases)
-2. In VS Code: Extensions → "..." menu → "Install from VSIX..."
-3. Select the downloaded file
+Build and install from source:
+
+```bash
+cd gpsl-lsp-vscode
+npm install
+npm run bundle-server
+npm run compile
+npm run package
+code --install-extension gpsl-lsp-vscode-*.vsix
+```
 
 ## Configuration
 

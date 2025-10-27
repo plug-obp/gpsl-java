@@ -32,6 +32,10 @@ public class GPSLLanguageServer implements LanguageServer, LanguageClientAware {
         // Use Full sync - server receives complete document on every change
         // Simpler and more reliable than incremental sync
         caps.setTextDocumentSync(TextDocumentSyncKind.Full);
+        
+        // Enable Go to Definition
+        caps.setDefinitionProvider(true);
+        
         return CompletableFuture.completedFuture(new InitializeResult(caps));
     }
 

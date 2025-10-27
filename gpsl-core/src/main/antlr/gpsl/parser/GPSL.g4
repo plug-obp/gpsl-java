@@ -36,7 +36,7 @@ automatonDecl   : (NFA | BUCHI)? stateDecl ';' initialDecl ';' acceptDecl ';'
 automaton       : letDecl? automatonDecl;
 
 CONJUNCTION: 'and' | '&' | '&&' | '/\\' | '*' | '∧';
-DISJUNCTION: 'or' | '|' | '||' | '\\/' | '+' | '∨';
+DISJUNCTION: 'or' | '||' | '\\/' | '+' | '∨';  // Removed single '|' to avoid conflict with PIPEATOM
 EQUIVALENCE: 'iff' | '<->' | '<=>' | '⟺' | '↔';
 EVENTUALLY: 'eventually' | 'F' | '<>' | '\u25C7' /*♢*/;
 FALSE: 'false' | '0';

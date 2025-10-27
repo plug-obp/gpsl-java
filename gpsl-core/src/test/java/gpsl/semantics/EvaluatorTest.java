@@ -344,8 +344,7 @@ class EvaluatorTest {
         assertTrue(TestHelpers.parseExpressionOrFail("true * true").accept(evaluator, null));
         assertTrue(TestHelpers.parseExpressionOrFail("true ∧ true").accept(evaluator, null));
         
-        // Test all disjunction variants
-        assertTrue(TestHelpers.parseExpressionOrFail("true | false").accept(evaluator, null));
+        // Test all disjunction variants (single | removed to avoid conflict with PIPEATOM)
         assertTrue(TestHelpers.parseExpressionOrFail("true || false").accept(evaluator, null));
         assertTrue(TestHelpers.parseExpressionOrFail("true \\/ false").accept(evaluator, null));
         assertTrue(TestHelpers.parseExpressionOrFail("true + false").accept(evaluator, null));

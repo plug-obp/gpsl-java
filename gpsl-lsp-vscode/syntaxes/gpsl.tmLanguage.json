@@ -162,7 +162,7 @@
         },
         {
           "name": "keyword.operator.logical.disjunction.gpsl",
-          "match": "\\b(or)\\b|\\|{1,2}|\\\\\\/|\\+|∨"
+          "match": "\\b(or)\\b|\\|{2}|\\\\\\/|\\+|∨"
         },
         {
           "name": "keyword.operator.logical.xor.gpsl",
@@ -188,7 +188,7 @@
       "patterns": [
         {
           "name": "string.quoted.pipe.gpsl",
-          "begin": "\\|(?![|\\s])",
+          "begin": "\\|",
           "end": "\\|",
           "patterns": [
             {

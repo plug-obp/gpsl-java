@@ -59,6 +59,15 @@ class GPSLParserTest {
     }
 
     @Test
+    void testAtomPipeSpace() {
+        assertEquals("(formula (atom | x|))", parseExpression("| x|"));
+        assertEquals("(formula (atom |  a-b|))", parseExpression("|  a-b|"));
+        assertEquals("(formula (atom |   a>2|))", parseExpression("|   a>2|"));
+        assertEquals("(formula (atom |to\\|to    |))", parseExpression("|to\\|to    |"));
+        assertEquals("(formula (atom |to\\\"to |))", parseExpression("|to\\\"to |"));
+    }
+
+    @Test
     void testAtomQuote() {
         assertEquals("(formula (atom \"x\"))", parseExpression("\"x\""));
         assertEquals("(formula (atom \"a-b\"))", parseExpression("\"a-b\""));
@@ -226,7 +235,8 @@ class GPSLParserTest {
     @Test
     void testDisjunction() {
         assertEquals("(formula (formula (literal true)) or (formula (literal false)))", parseExpression("true or false"));
-        assertEquals("(formula (formula (literal true)) | (formula (literal false)))", parseExpression("true | false"));
+        // Single | removed from DISJUNCTION to avoid conflict with PIPEATOM
+        // assertEquals("(formula (formula (literal true)) | (formula (literal false)))", parseExpression("true | false"));
         assertEquals("(formula (formula (literal true)) || (formula (literal false)))", parseExpression("true || false"));
         assertEquals("(formula (formula (literal true)) \\/ (formula (literal false)))", parseExpression("true \\/ false"));
         assertEquals("(formula (formula (literal true)) + (formula (literal false)))", parseExpression("true + false"));

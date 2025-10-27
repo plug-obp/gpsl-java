@@ -110,7 +110,8 @@ class GPSLRobustnessTest {
     
     @Test
     void testAllDisjunctionVariants() {
-        String[] variants = {"or", "|", "||", "\\/", "+", "∨"};
+        // Single | removed from DISJUNCTION to avoid conflict with PIPEATOM
+        String[] variants = {"or", "||", "\\/", "+", "∨"};
         for (String op : variants) {
             Expression expr = parseExpressionOrFail("true " + op + " false");
             assertInstanceOf(Disjunction.class, expr, "Failed for operator: " + op);

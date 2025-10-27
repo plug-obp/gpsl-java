@@ -1,0 +1,22 @@
+
+
+// Complex example combining everything
+complexSystem *= let
+    // State predicates
+    idle = |{proc}@idle|,
+    critical = |{proc}@critical|,
+    requesting = |{proc}@requesting|,
+    
+    // Flags
+    flag = |{sys}:flag = true|,
+    
+    // Safety property
+    safety = [] (critical -> (!next critical)),
+    
+    // Liveness property  
+    liveness = [] (requesting -> (<> critical)),
+    
+    // Combined specification
+    spec = safety and liveness
+in
+    spec

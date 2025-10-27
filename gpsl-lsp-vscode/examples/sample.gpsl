@@ -22,7 +22,7 @@ conj6 = p ∧ q
 
 // Logical operators - disjunction
 disj1 = p or q
-disj2 = p | q
+disj2 = p || q
 disj3 = p || q
 disj4 = p \/ q
 disj5 = p + q
@@ -177,7 +177,7 @@ myNFA = nfa
     initial s0;
     accept s2;
     s0 [true] s1;
-    s1 [p and q] s2;
+    s1 [internalHelper] s2;
     s2 [false] s0
 
 // Büchi automaton (default - no prefix needed)
@@ -242,9 +242,12 @@ multilineFormula =
     ([] (<> y)) and
     (<> ([] z))
 
+complexSystem2 = complexSystem 
+
 // Test: Atoms vs Disjunction operator - should highlight correctly
 testAtomVsOr1 = |{Alice}@CS| or |{Bob}@CS|        // Both |...| are atoms, 'or' is operator
-testAtomVsOr2 = p | q                             // Single | is disjunction operator
+testAtomVsOr2 = p || q                            // Double || is disjunction operator (single | reserved for atoms)
 testAtomVsOr3 = p || q                            // Double || is disjunction operator
-testAtomVsOr4 = |atom1| | |atom2|                 // Two atoms with single | operator between
+testAtomVsOr4 = |atom1| or |atom2|                // Two atoms with 'or' operator between
 testAtomVsOr5 = (|flag| or p) and q              // Atom and keyword 'or'
+

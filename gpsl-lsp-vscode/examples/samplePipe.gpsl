@@ -1,0 +1,10 @@
+// Simple declarations with literals
+pp = true
+qq = false
+r = 1
+s = 0
+
+disj2 = pp || qq
+disj3 = pp || qq
+
+

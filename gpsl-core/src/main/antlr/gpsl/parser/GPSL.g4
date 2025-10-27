@@ -38,7 +38,7 @@ automaton       : letDecl? automatonDecl;
 CONJUNCTION: 'and' | '&' | '&&' | '/\\' | '*' | '∧';
 DISJUNCTION: 'or' | '||' | '\\/' | '+' | '∨';  // Removed single '|' to avoid conflict with PIPEATOM
 EQUIVALENCE: 'iff' | '<->' | '<=>' | '⟺' | '↔';
-EVENTUALLY: 'eventually' | 'F' | '<>' | '\u25C7' /*♢*/;
+EVENTUALLY: 'eventually' | 'F' | '<>' | '\u25C7' /*◇*/ | '\u2662' /*♢*/;
 FALSE: 'false' | '0';
 GLOBALLY: 'globally' | 'always' | 'G' | '[]' | '\u2610' /* ☐ */;
 IMPLICATION: 'implies' | '->' | '=>' | '→' | '⟹';

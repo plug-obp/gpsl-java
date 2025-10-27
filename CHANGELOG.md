@@ -5,7 +5,7 @@ All notable changes to the GPSL project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.0] - 2025-01-29
 
 ### Added
 
@@ -75,5 +75,4 @@ See also:
 - [gpsl-lsp-vscode/CHANGELOG.md](gpsl-lsp-vscode/CHANGELOG.md) - VS Code extension changes
 - Individual module build.gradle files for dependency versions
 
-[Unreleased]: https://github.com/plug-obp/gpsl-java/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/plug-obp/gpsl-java/releases/tag/v0.1.0
+[1.0.0]: https://github.com/plug-obp/gpsl-java/releases/tag/v1.0.0

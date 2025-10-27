@@ -41,10 +41,12 @@ Advanced language features powered by a Java-based language server:
 
 - **Diagnostics**: Real-time error checking and validation
 - **Go to Definition**: Navigate to symbol definitions
-- **Find References**: Find all usages of symbols
-- **Code Completion**: Context-aware suggestions
-- **Hover Information**: Documentation and type information
-- **Document Symbols**: Outline view and symbol navigation
+
+**Planned Features**:
+- Find References
+- Code Completion
+- Hover Information
+- Document Symbols (outline view)
 
 ### Editor Features
 

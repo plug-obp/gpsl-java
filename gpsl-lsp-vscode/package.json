@@ -38,11 +38,24 @@
         "language": "gpsl",
         "path": "./snippets/gpsl.json"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "GPSL",
+      "properties": {
+        "gpsl.javaHome": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the Java installation (e.g., /usr/lib/jvm/java-17). If not set, the extension will use JAVA_HOME or search for Java on the system PATH.",
+          "scope": "machine-overridable"
+        }
+      }
+    }
   },
   "scripts": {
     "compile": "tsc -p .",
-    "watch": "tsc -w -p ."
+    "watch": "tsc -w -p .",
+    "package": "vsce package --no-dependencies",
+    "bundle-server": "node scripts/bundle-server.js"
   },
   "devDependencies": {
     "@types/node": "^20.12.12",

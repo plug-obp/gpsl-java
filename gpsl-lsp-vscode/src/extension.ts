@@ -5,37 +5,79 @@ import { LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-lan
 
 let client: LanguageClient | undefined;
 
-export function activate(context: vscode.ExtensionContext) {
-  const serverScript = process.platform === 'win32' ? 'gpsl-lsp.bat' : 'gpsl-lsp';
-  const serverPath = path.join(context.asAbsolutePath('..'), 'gpsl-lsp', 'build', 'install', 'gpsl-lsp', 'bin', serverScript);
+function findJavaExecutable(): string | null {
+  // 1. Check user configuration
+  const config = vscode.workspace.getConfiguration('gpsl');
+  const configuredJavaHome = config.get<string>('javaHome');
+  
+  if (configuredJavaHome) {
+    const javaPath = path.join(configuredJavaHome, 'bin', process.platform === 'win32' ? 'java.exe' : 'java');
+    if (fs.existsSync(javaPath)) {
+      console.log(`Using configured Java: ${javaPath}`);
+      return javaPath;
+    } else {
+      console.warn(`Configured Java not found at: ${javaPath}`);
+    }
+  }
 
-  // Check if server exists
-  if (!fs.existsSync(serverPath)) {
-    const message = `GPSL LSP server not found at: ${serverPath}\n\nPlease build it first by running:\n./gradlew :gpsl-lsp:installDist`;
+  // 2. Check JAVA_HOME environment variable
+  const javaHome = process.env.JAVA_HOME;
+  if (javaHome) {
+    const javaPath = path.join(javaHome, 'bin', process.platform === 'win32' ? 'java.exe' : 'java');
+    if (fs.existsSync(javaPath)) {
+      console.log(`Using JAVA_HOME: ${javaPath}`);
+      return javaPath;
+    } else {
+      console.warn(`JAVA_HOME set but java not found at: ${javaPath}`);
+    }
+  }
+
+  // 3. Try system java
+  const javaCommand = process.platform === 'win32' ? 'java.exe' : 'java';
+  console.log(`Using system Java: ${javaCommand}`);
+  return javaCommand;
+}
+
+export function activate(context: vscode.ExtensionContext) {
+  const javaExecutable = findJavaExecutable();
+  
+  if (!javaExecutable) {
+    const message = 'Java 17 or higher is required for GPSL language support.\n\n' +
+                   'Please install Java and either:\n' +
+                   '1. Set JAVA_HOME environment variable, or\n' +
+                   '2. Configure "gpsl.javaHome" in VS Code settings';
     vscode.window.showErrorMessage(message);
-    console.error(message);
+    console.error('Java not found');
     return;
   }
 
-  // Log server path for debugging
-  console.log(`GPSL LSP server path: ${serverPath}`);
-
-  // Set JAVA_HOME to use Java 23 (required for the LSP server)
-  const env = { ...process.env };
-  if (process.platform === 'darwin') {
-    const javaHome = '/Library/Java/JavaVirtualMachines/temurin-23.jdk/Contents/Home';
-    if (fs.existsSync(javaHome)) {
-      env.JAVA_HOME = javaHome;
-      console.log(`Using JAVA_HOME: ${javaHome}`);
-    } else {
-      console.warn(`Java 23 not found at ${javaHome}, using system default`);
-    }
+  // Look for bundled server first, then fall back to development location
+  const serverScript = process.platform === 'win32' ? 'gpsl-lsp.bat' : 'gpsl-lsp';
+  const bundledServerPath = path.join(context.extensionPath, 'server', 'bin', serverScript);
+  const devServerPath = path.join(context.extensionPath, '..', 'gpsl-lsp', 'build', 'install', 'gpsl-lsp', 'bin', serverScript);
+  
+  let serverPath: string;
+  if (fs.existsSync(bundledServerPath)) {
+    serverPath = bundledServerPath;
+    console.log(`Using bundled LSP server: ${serverPath}`);
+  } else if (fs.existsSync(devServerPath)) {
+    serverPath = devServerPath;
+    console.log(`Using development LSP server: ${serverPath}`);
+  } else {
+    const message = 'GPSL LSP server not found.\n\n' +
+                   'If you are developing the extension, please build it first:\n' +
+                   './gradlew :gpsl-lsp:installDist';
+    vscode.window.showErrorMessage(message);
+    console.error('LSP server not found at:', bundledServerPath, 'or', devServerPath);
+    return;
   }
 
   const serverOptions: ServerOptions = {
     command: serverPath,
     args: [],
-    options: { env }
+    options: {
+      env: process.env
+    }
   };
 
   const clientOptions: LanguageClientOptions = {

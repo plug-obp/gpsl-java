@@ -66,6 +66,7 @@ eventually1 = eventually p
 eventually2 = F p
 eventually3 = <> p
 eventually4 = ◇ p
+eventually5 = ♢ p
 
 // Temporal operators - globally (always)
 globally1 = globally p

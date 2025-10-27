@@ -41,12 +41,12 @@ Advanced language features powered by a Java-based language server:
 
 - **Diagnostics**: Real-time error checking and validation
 - **Go to Definition**: Navigate to symbol definitions
+- **Document Symbols**: Outline view showing document structure (declarations, let bindings, automaton components)
 
 **Planned Features**:
 - Find References
 - Code Completion
 - Hover Information
-- Document Symbols (outline view)
 
 ### Editor Features
 

@@ -58,6 +58,27 @@ public class GPSLTextDocumentService implements TextDocumentService {
     @Override
     public void didSave(DidSaveTextDocumentParams params) { }
 
+    @Override
+    public CompletableFuture<List<Either<SymbolInformation, DocumentSymbol>>> documentSymbol(DocumentSymbolParams params) {
+        String uri = params.getTextDocument().getUri();
+        ParsedDocument parsed = parsedDocs.get(uri);
+        
+        if (parsed == null) {
+            return CompletableFuture.completedFuture(Collections.emptyList());
+        }
+        
+        // Use visitor to extract document symbols
+        DocumentSymbolVisitor visitor = new DocumentSymbolVisitor();
+        List<DocumentSymbol> symbols = parsed.declarations.accept(visitor, parsed.positionMap);
+        
+        // Wrap in Either for LSP (supports both flat SymbolInformation and hierarchical DocumentSymbol)
+        List<Either<SymbolInformation, DocumentSymbol>> result = symbols.stream()
+            .map(Either::<SymbolInformation, DocumentSymbol>forRight)
+            .collect(java.util.stream.Collectors.toList());
+        
+        return CompletableFuture.completedFuture(result);
+    }
+
         @Override
     public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> definition(DefinitionParams params) {
         String uri = params.getTextDocument().getUri();

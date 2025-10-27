@@ -62,8 +62,8 @@ ACCEPT: 'accept';
 reserved: CONJUNCTION | DISJUNCTION | EQUIVALENCE | EVENTUALLY | FALSE | GLOBALLY | IMPLICATION | IN | LET | NEGATION | NEXT | SUNTIL | WUNTIL | SRELEASE | WRELEASE | TRUE | XOR;
 
 ATOMINLINE : PIPEATOM | QUOTEATOM;
-PIPEATOM : '|' ('\\|' | ~'|')* '|';
-QUOTEATOM: '"' ('\\"' | ~'"')* '"';
+PIPEATOM : '|' ('\\|' | ~[|])* '|';
+QUOTEATOM: '"' ('\\"' | ~["])* '"';
 
 IDENTIFIER : [a-zA-Z][a-zA-Z_0-9]*;
 NATURAL: [0-9]+;

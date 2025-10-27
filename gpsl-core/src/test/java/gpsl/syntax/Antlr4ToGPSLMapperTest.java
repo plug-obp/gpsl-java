@@ -62,6 +62,27 @@ class Antlr4ToGPSLMapperTest {
     }
 
     @Test
+    void testMultilineAtomPipe() {
+        String input = """
+                |this is a
+                multiline atom|""";
+        Atom atom = (Atom) parseExpressionOrFail(input);
+        assertEquals("this is a\nmultiline atom", atom.value());
+        assertEquals("|", atom.delimiter());
+    }
+
+    @Test
+    void testMultilineAtomQuote() {
+        String input = """
+                "this is a
+                multiline quoted atom"
+                """;
+        Atom atom = (Atom) parseExpressionOrFail(input.trim());
+        assertEquals("this is a\nmultiline quoted atom", atom.value());
+        assertEquals("\"", atom.delimiter());
+    }
+
+    @Test
     void testUnaryNegation() {
         Negation neg1 = (Negation) parseExpressionOrFail("!true");
         assertEquals("!", neg1.operator());

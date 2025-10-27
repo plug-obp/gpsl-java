@@ -93,9 +93,36 @@ public class PositionMap {
             start.getStartIndex()
         );
         
+        // For multiline tokens, ANTLR doesn't correctly track the stop line number.
+        // We need to calculate it ourselves by counting newlines in the token text.
+        String tokenText = stop.getText();
+        int newlineCount = 0;
+        int lastNewlineIndex = -1;
+        
+        for (int i = 0; i < tokenText.length(); i++) {
+            if (tokenText.charAt(i) == '\n') {
+                newlineCount++;
+                lastNewlineIndex = i;
+            }
+        }
+        
+        // Calculate the actual end line and column
+        int endLine = stop.getLine() + newlineCount;
+        int endColumn;
+        
+        if (lastNewlineIndex >= 0) {
+            // Multiline token: column is relative to the last newline
+            String lastLine = tokenText.substring(lastNewlineIndex + 1);
+            // For the last line, we start at column 1 (since we're after a newline)
+            endColumn = lastLine.length() + 1;
+        } else {
+            // Single-line token: use stop position + token length
+            endColumn = stop.getCharPositionInLine() + tokenText.length() + 1;
+        }
+        
         Position endPos = new Position(
-            stop.getLine(),
-            stop.getCharPositionInLine() + stop.getText().length() + 1,
+            endLine,
+            endColumn,
             stop.getStopIndex() + 1
         );
         

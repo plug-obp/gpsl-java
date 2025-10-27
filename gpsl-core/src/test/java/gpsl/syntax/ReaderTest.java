@@ -284,4 +284,61 @@ class ReaderTest {
         assertEquals("multi\nline", ((Atom) conj.left()).value());
         assertEquals("another\nmultiline", ((Atom) conj.right()).value());
     }
+
+    @Test
+    void testMultilineAtomPositions() {
+        String input = """
+                multilinePipe = |this is a
+                multiline atom that spans
+                several lines|
+                """;
+        
+        var resultWithPos = Reader.parseDeclarationsWithPositions(input);
+        assertTrue(resultWithPos.result() instanceof ParseResult.Success);
+        
+        var success = (ParseResult.Success<Declarations>) resultWithPos.result();
+        Declarations decls = success.value();
+        
+        assertEquals(1, decls.declarations().size());
+        ExpressionDeclaration decl = decls.declarations().get(0);
+        assertEquals("multilinePipe", decl.name());
+        
+        // Check that the declaration has a position
+        var declRange = resultWithPos.positionMap().get(decl);
+        assertTrue(declRange.isPresent(), "Declaration should have a position");
+        
+        // The declaration should span from line 1 to line 3 (1-based)
+        Range range = declRange.get();
+        assertEquals(1, range.start().line(), "Should start on line 1");
+        assertEquals(3, range.end().line(), "Should end on line 3 (multiline)");
+        assertTrue(range.end().line() > range.start().line(), 
+                   "Multiline atom range should span multiple lines");
+    }
+
+    @Test
+    void testMultilineQuoteAtomPositions() {
+        String input = """
+                multilineQuote = "this is a
+                multiline quoted atom
+                spanning multiple lines"
+                """;
+        
+        var resultWithPos = Reader.parseDeclarationsWithPositions(input);
+        assertTrue(resultWithPos.result() instanceof ParseResult.Success);
+        
+        var success = (ParseResult.Success<Declarations>) resultWithPos.result();
+        Declarations decls = success.value();
+        
+        assertEquals(1, decls.declarations().size());
+        ExpressionDeclaration decl = decls.declarations().get(0);
+        
+        // Check that the declaration has a multiline position
+        var declRange = resultWithPos.positionMap().get(decl);
+        assertTrue(declRange.isPresent());
+        
+        Range range = declRange.get();
+        assertEquals(1, range.start().line());
+        assertEquals(3, range.end().line(), "Should end on line 3 (multiline)");
+        assertTrue(range.end().line() > range.start().line());
+    }
 }

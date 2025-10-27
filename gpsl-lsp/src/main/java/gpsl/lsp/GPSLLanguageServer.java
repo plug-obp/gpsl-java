@@ -36,6 +36,9 @@ public class GPSLLanguageServer implements LanguageServer, LanguageClientAware {
         // Enable Go to Definition
         caps.setDefinitionProvider(true);
         
+        // Enable Document Symbols (outline view)
+        caps.setDocumentSymbolProvider(true);
+        
         return CompletableFuture.completedFuture(new InitializeResult(caps));
     }
 

@@ -72,11 +72,22 @@ export function activate(context: vscode.ExtensionContext) {
     return;
   }
 
+  // Prepare environment with correct JAVA_HOME if we found a specific Java installation
+  const serverEnv = { ...process.env };
+  
+  // If javaExecutable is a full path (not just "java"), set JAVA_HOME
+  if (javaExecutable.includes(path.sep)) {
+    // Extract JAVA_HOME from the executable path (remove /bin/java)
+    const javaHome = path.dirname(path.dirname(javaExecutable));
+    serverEnv.JAVA_HOME = javaHome;
+    console.log(`Setting JAVA_HOME for LSP server: ${javaHome}`);
+  }
+
   const serverOptions: ServerOptions = {
     command: serverPath,
     args: [],
     options: {
-      env: process.env
+      env: serverEnv
     }
   };
 

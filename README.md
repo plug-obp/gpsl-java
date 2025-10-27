@@ -64,7 +64,7 @@ This repository contains multiple components:
 ## Requirements
 
 - Java 23 or higher
-- Gradle 8.8 or higher (included via wrapper)
+- Gradle 9.1 or higher (included via wrapper)
 
 ### Building
 

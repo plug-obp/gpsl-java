@@ -388,10 +388,11 @@ class GPSLRobustnessTest {
         LetExpression letExpr = (LetExpression) automDecl.expression();
         Automaton automaton = (Automaton) letExpr.expression();
         
+        // Transitions should be sorted in ascending order (1, 5, 10) where 1 > 5 > 10 in priority
         assertEquals(3, automaton.transitions().size());
-        assertEquals(10, automaton.transitions().get(0).priority());
+        assertEquals(1, automaton.transitions().get(0).priority());
         assertEquals(5, automaton.transitions().get(1).priority());
-        assertEquals(1, automaton.transitions().get(2).priority());
+        assertEquals(10, automaton.transitions().get(2).priority());
     }
 
     // ========== REAL-WORLD LTL PATTERNS ==========

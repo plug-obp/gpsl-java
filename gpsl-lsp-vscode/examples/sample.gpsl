@@ -196,13 +196,13 @@ myBuchi2 = buchi
     init [true] loop;
     loop [p or q] loop
 
-// Automaton with priorities
+// Automaton with priorities (lower number = higher priority: 0 > 1 > 2 > ...)
 priorityAutomaton = states s0, s1;
     initial s0;
     accept s1;
-    s0 10 [p] s1;
-    s0 5 [q] s1;
-    s1 1 [true] s0
+    s0 1 [p] s1;          // Priority 1: evaluated first
+    s0 5 [q] s1;          // Priority 5: evaluated only if priority 1 fails
+    s1 10 [true] s0       // Priority 10: lowest priority
 
 // Automaton with let binding for guards
 automatonWithLet = let

@@ -158,9 +158,9 @@ class AutomatonSemanticsTest {
     
     @Test
     void testActionsWithPrioritySelection() {
-        // Lower priority value processed first (selected)
+        // Priority 1 has higher precedence than priority 2 (1 > 2 in execution order)
         Transition t1 = new Transition(s0, 1, atomP, s1);
-        // Higher priority value processed second (should be ignored if t1 enabled)
+        // Priority 2 has lower precedence (should be ignored if t1 is enabled)
         Transition t2 = new Transition(s0, 2, atomQ, s2);
         
         Automaton automaton = new Automaton(
@@ -168,13 +168,13 @@ class AutomatonSemanticsTest {
             Set.of(s0, s1, s2),
             Set.of(s0),
             Set.of(s1, s2),
-            List.of(t1, t2) // Must be in increasing priority order
+            List.of(t1, t2) // Must be in ascending numerical order (lower values = higher priority)
         );
         
         AutomatonSemantics<Map<String, Boolean>> semantics = 
             new AutomatonSemantics<>(automaton, MAP_EVALUATOR);
         
-        // Both guards enabled, but only first enabled priority should fire
+        // Both guards enabled, but only highest priority (lowest number) should fire
         Map<String, Boolean> input = Map.of("p", true, "q", true);
         List<Transition> actions = semantics.actions(input, s0);
         assertEquals(1, actions.size());
@@ -184,9 +184,9 @@ class AutomatonSemanticsTest {
     
     @Test
     void testActionsWithPriorityFallback() {
-        // Higher priority transition with false guard
+        // Priority 2 has lower precedence (higher number)
         Transition t1 = new Transition(s0, 2, atomP, s1);
-        // Lower priority transition with true guard (should be selected)
+        // Priority 1 has higher precedence (lower number, should be selected when enabled)
         Transition t2 = new Transition(s0, 1, atomQ, s2);
         
         Automaton automaton = new Automaton(
@@ -194,13 +194,13 @@ class AutomatonSemanticsTest {
             Set.of(s0, s1, s2),
             Set.of(s0),
             Set.of(s1, s2),
-            List.of(t2, t1)
+            List.of(t2, t1)  // Ascending order: 1, 2
         );
         
         AutomatonSemantics<Map<String, Boolean>> semantics = 
             new AutomatonSemantics<>(automaton, MAP_EVALUATOR);
         
-        // Higher priority disabled, lower priority enabled
+        // Priority 1 (t2) disabled, priority 2 (t1) enabled - should select t1
         Map<String, Boolean> input = Map.of("p", false, "q", true);
         List<Transition> actions = semantics.actions(input, s0);
         assertEquals(1, actions.size());
@@ -286,7 +286,7 @@ class AutomatonSemanticsTest {
     
     @Test
     void testActionsThrowsOnUnsortedPriorities() {
-        // Incorrectly ordered transitions (higher priority before lower)
+        // Incorrectly ordered transitions (higher number before lower number)
         Transition t1 = new Transition(s0, 2, trueExpr, s1);
         Transition t2 = new Transition(s0, 1, trueExpr, s2);
         
@@ -295,7 +295,7 @@ class AutomatonSemanticsTest {
             Set.of(s0, s1, s2),
             Set.of(s0),
             Set.of(s1, s2),
-            List.of(t1, t2) // Wrong order!
+            List.of(t1, t2) // Wrong order! Should be [t2, t1] for ascending (1, 2)
         );
         
         AutomatonSemantics<Map<String, Boolean>> semantics = 

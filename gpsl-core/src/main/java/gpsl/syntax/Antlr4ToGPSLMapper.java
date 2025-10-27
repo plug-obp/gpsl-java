@@ -250,8 +250,8 @@ public class Antlr4ToGPSLMapper extends GPSLBaseListener {
                 .map(this::<Transition>getValue)
                 .collect(Collectors.toList());
         
-        // Sort transitions by priority (descending)
-        transitions.sort((a, b) -> Integer.compare(b.priority(), a.priority()));
+        // Sort transitions by priority (ascending: 0, 1, 2, ... where 0 > 1 > 2 in precedence)
+        transitions.sort((a, b) -> Integer.compare(a.priority(), b.priority()));
         
         // Convert state names to a set for the automaton
         Set<State> states = stateNames.stream()

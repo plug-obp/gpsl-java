@@ -44,15 +44,18 @@ public class AutomatonSemantics<T> implements DependentSemanticRelation<T, Trans
      * Computes the enabled actions (transitions) from a given configuration.
      * Returns transitions with the highest priority whose guards are satisfied.
      * 
+     * Priority semantics: Lower numerical values have higher precedence (0 > 1 > 2 > 3...).
+     * Transitions must be sorted in ascending numerical order.
+     * 
      * The algorithm:
      * 1. Filters transitions by source state (configuration)
-     * 2. Evaluates guards in priority order (highest first)
-     * 3. Returns all enabled transitions at the highest priority level
+     * 2. Evaluates guards in priority order (lowest number/highest priority first)
+     * 3. Returns all enabled transitions at the highest priority level (lowest number)
      * 
      * @param input the input context for guard evaluation
      * @param configuration the current state
-     * @return list of enabled transitions at the highest priority
-     * @throws IllegalStateException if transitions are not sorted by priority
+     * @return list of enabled transitions at the highest priority (lowest number)
+     * @throws IllegalStateException if transitions are not sorted in ascending numerical order
      */
     public List<Transition> actions(T input, State configuration) {
         Objects.requireNonNull(configuration, "Configuration cannot be null");
@@ -66,7 +69,7 @@ public class AutomatonSemantics<T> implements DependentSemanticRelation<T, Trans
             return List.of();
         }
         
-        // Find enabled transitions at the highest priority
+        // Find enabled transitions at the highest priority (lowest numerical value)
         List<Transition> enabledTransitions = new ArrayList<>();
         int currentPriority = Integer.MIN_VALUE;
         boolean hasEnabledTransitionAtCurrentPriority = false;
@@ -86,15 +89,15 @@ public class AutomatonSemantics<T> implements DependentSemanticRelation<T, Trans
                 }
             }
             
-            // Verify transitions are sorted in increasing priority order
+            // Verify transitions are sorted in ascending numerical order
             if (transition.priority() < currentPriority) {
                 throw new IllegalStateException(
-                    "Transitions must be sorted in increasing priority order in the automaton. " +
+                    "Transitions must be sorted in ascending numerical priority order (0, 1, 2...). " +
                     "Found priority " + transition.priority() + " after priority " + currentPriority
                 );
             }
             
-            // If we've found enabled transitions and moved to a lower priority, stop
+            // If we've found enabled transitions and moved to a lower priority (higher number), stop
             if (hasEnabledTransitionAtCurrentPriority && transition.priority() > currentPriority) {
                 break;
             }

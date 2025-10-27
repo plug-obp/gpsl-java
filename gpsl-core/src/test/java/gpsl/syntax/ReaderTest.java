@@ -189,10 +189,10 @@ class ReaderTest {
         LetExpression letExpr = (LetExpression) automDecl.expression();
         Automaton automaton = (Automaton) letExpr.expression();
         
-        // Transitions should be sorted by priority (descending)
+        // Transitions should be sorted by priority (ascending: 0 > 1 > 2 > ... where lower number = higher priority)
         assertEquals(2, automaton.transitions().size());
-        assertEquals(10, automaton.transitions().get(0).priority());
-        assertEquals(5, automaton.transitions().get(1).priority());
+        assertEquals(5, automaton.transitions().get(0).priority());  // Priority 5 comes first (higher precedence)
+        assertEquals(10, automaton.transitions().get(1).priority()); // Priority 10 comes second (lower precedence)
     }
 
     @Test

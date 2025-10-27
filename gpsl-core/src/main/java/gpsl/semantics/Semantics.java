@@ -81,9 +81,11 @@ public class Semantics<T> implements DependentSemanticRelation<T, Transition, St
      * Computes the enabled actions (transitions) from a given configuration.
      * Returns transitions with the highest priority whose guards are satisfied.
      * 
+     * Priority semantics: Lower numerical values have higher precedence (0 > 1 > 2 > 3...).
+     * 
      * @param input the input context for guard evaluation
      * @param configuration the current state
-     * @return list of enabled transitions at the highest priority
+     * @return list of enabled transitions at the highest priority (lowest numerical value)
      */
     public List<Transition> actions(T input, State configuration) {
         return automatonSemantics.actions(input, configuration);

@@ -174,13 +174,16 @@ myNFA = nfa
 ```
 
 ### Automaton with Priorities
+
+Priorities determine which transitions are evaluated first. Lower numbers indicate higher priority (0 > 1 > 2 > 3...).
+
 ```gpsl
 priorityAuto = states s0, s1;
     initial s0;
     accept s1;
-    s0 10 [guard1] s1;    // Higher priority
-    s0 5 [guard2] s1;     // Lower priority
-    s1 1 [true] s0
+    s0 1 [guard1] s1;     // Priority 1 (higher precedence, evaluated first)
+    s0 5 [guard2] s1;     // Priority 5 (lower precedence, evaluated only if priority 1 fails)
+    s1 10 [true] s0       // Priority 10 (lowest precedence)
 ```
 
 ### Automaton with Let

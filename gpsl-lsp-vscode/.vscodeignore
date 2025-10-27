@@ -10,5 +10,12 @@ vsc-extension-quickstart.md
 **/*.ts
 !server/**/*.jar
 scripts/**
-node_modules/**
 *.vsix
+pnpm-lock.yaml
+node_modules/**/test/**
+node_modules/**/tests/**
+node_modules/**/*.md
+node_modules/**/.github/**
+node_modules/**/docs/**
+node_modules/**/example/**
+node_modules/**/examples/**

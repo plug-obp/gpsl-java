@@ -40,9 +40,23 @@ jobs:
       
     - name: Build Java components
       run: ./gradlew build
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_ACTOR: ${{ github.actor }}
+        GITHUB_SHA: ${{ github.sha }}
+        GITHUB_RUN_NUMBER: ${{ github.run_number }}
+        GITHUB_REF_NAME: ${{ github.ref_name }}
+        GITHUB_REF_TYPE: ${{ github.ref_type }}
       
     - name: Build LSP distribution
       run: ./gradlew :gpsl-lsp:installDist
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_ACTOR: ${{ github.actor }}
+        GITHUB_SHA: ${{ github.sha }}
+        GITHUB_RUN_NUMBER: ${{ github.run_number }}
+        GITHUB_REF_NAME: ${{ github.ref_name }}
+        GITHUB_REF_TYPE: ${{ github.ref_type }}
       
     - name: Install extension dependencies
       working-directory: gpsl-lsp-vscode

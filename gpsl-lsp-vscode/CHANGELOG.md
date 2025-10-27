@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the GPSL VS Code extension will be documented in this file.
+All notable changes to the GPSL VS Code extension.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -8,34 +8,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Initial release of GPSL Language Support extension
+
 - Full syntax highlighting for GPSL specifications
-- Language Server Protocol integration with advanced features:
-  - Go to Definition
-  - Find References
-  - Code Completion
-  - Real-time diagnostics
-  - Hover information
-  - Document symbols
-- Configurable Java home path setting
-- Automatic Java detection (user setting → JAVA_HOME → system PATH)
-- Auto-closing pairs for brackets and quotes
-- Smart indentation
-- Comment toggling support
+- Language Server Protocol (LSP) integration:
+  - Real-time diagnostics and error checking
+  - Go to Definition (Ctrl+Click or F12)
+  - Document Symbols / Outline view (Ctrl+Shift+O)
+- Configurable Java path detection (`gpsl.javaHome` setting)
+- Automatic Java detection (setting → JAVA_HOME → system PATH)
+- Auto-closing pairs for brackets, quotes, and pipes
+- Smart indentation and comment toggling
+- Code snippets for common GPSL patterns
+- Comprehensive documentation with troubleshooting guide
 
 ### Changed
-- Single `|` operator removed from disjunction (breaking change)
-  - Use `||` or `or` for logical disjunction
-  - Single `|` is now reserved exclusively for atom delimiters
+
+- **BREAKING**: Removed single `|` from disjunction operators
+  - Single `|` is now reserved exclusively for atom delimiters: `|atom|`
+  - Use `||` or `or` for logical disjunction instead
 - Added support for both diamond Unicode characters (◇ U+25C7 and ♢ U+2662)
+
+### Planned (Future Releases)
+
+- Find References
+- Code Completion
+- Hover Information
 
 ## [0.1.0] - TBD
 
-### Added
-- First public release
-- Basic GPSL language support
-- LSP integration for advanced IDE features
-- Comprehensive documentation
+First public release.
 
 [Unreleased]: https://github.com/plug-obp/gpsl-java/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/plug-obp/gpsl-java/releases/tag/v0.1.0

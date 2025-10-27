@@ -12,6 +12,7 @@ vsc-extension-quickstart.md
 scripts/**
 *.vsix
 pnpm-lock.yaml
+package-lock.json
 node_modules/**/test/**
 node_modules/**/tests/**
 node_modules/**/*.md
@@ -19,3 +20,4 @@ node_modules/**/.github/**
 node_modules/**/docs/**
 node_modules/**/example/**
 node_modules/**/examples/**
+docs/**

@@ -4,46 +4,40 @@
 
 Full language support for **GPSL** (General Purpose Specification Language) - a temporal logic specification language for formal verification and automata generation.
 
+## Documentation
+
+- **[SYNTAX_REFERENCE.md](docs/SYNTAX_REFERENCE.md)** - Complete GPSL syntax and operator reference with examples
+- **[TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** - Common issues and solutions
+- **[CHANGELOG.md](CHANGELOG.md)** - Version history and release notes
+
+For developers:
+- **[VERSION_MANAGEMENT.md](docs/VERSION_MANAGEMENT.md)** - Release process and versioning guidelines
+
 ## Features
 
 ### Syntax Highlighting
 
-Full syntax highlighting for all GPSL constructs:
+Full syntax highlighting for all GPSL constructs including:
+- Propositional logic operators (and, or, not, implies, iff, xor)
+- Temporal logic operators (next, eventually, globally, until, release)
+- Boolean literals and atoms (pipe-delimited `|...|` and quoted `"..."`)
+- Let expressions with bindings
+- NFA and Büchi automata declarations
+- Comments (line `//` and block `/* */`)
 
-- **Propositional Logic Operators**
-  - Conjunction: `and`, `&`, `&&`, `/\`, `*`, `∧`
-  - Disjunction: `or`, `||`, `\/`, `+`, `∨` (Note: single `|` is reserved for atom delimiters)
-  - Negation: `not`, `!`, `~`
-  - Implication: `implies`, `->`, `=>`, `→`, `⟹`
-  - Equivalence: `iff`, `<->`, `<=>`, `⟺`, `↔`
-  - XOR: `xor`, `^`, `⊻`, `⊕`
+> **Note**: Single `|` is reserved for atom delimiters. Use `||` or `or` for disjunction.
 
-- **Temporal Logic Operators**
-  - Next: `next`, `N`, `X`, `o`, `()`, `◯`
-  - Eventually: `eventually`, `F`, `<>`, `♢`, `◇`
-  - Globally: `globally`, `always`, `G`, `[]`, `☐`
-  - Until (strong): `until`, `U`, `SU`, `strong-until`
-  - Until (weak): `W`, `WU`, `weak-until`
-  - Release (strong): `M`, `SR`, `strong-release`
-  - Release (weak): `R`, `WR`, `weak-release`
-
-- **Other Language Features**
-  - Boolean literals: `true`, `false`, `0`, `1`
-  - Atoms: `|...|` (pipe-delimited) and `"..."` (quoted)
-  - Let expressions with bindings
-  - NFA and Büchi automata declarations
-  - Comments: `//` (line) and `/* */` (block)
-  - Declaration operators: `=` (internal), `*=` (external)
+See [SYNTAX_REFERENCE.md](docs/SYNTAX_REFERENCE.md) for complete operator list and examples.
 
 ### Language Server Protocol (LSP)
 
 Advanced language features powered by a Java-based language server:
 
-- **Diagnostics**: Real-time error checking and validation
-- **Go to Definition**: Navigate to symbol definitions
-- **Document Symbols**: Outline view showing document structure (declarations, let bindings, automaton components)
+- **Diagnostics** - Real-time error checking and validation
+- **Go to Definition** - Navigate to symbol definitions (Ctrl+Click or F12)
+- **Document Symbols** - Outline view showing document structure (Ctrl+Shift+O)
 
-**Planned Features**:
+Future planned features:
 - Find References
 - Code Completion
 - Hover Information
@@ -51,50 +45,38 @@ Advanced language features powered by a Java-based language server:
 ### Editor Features
 
 - Auto-closing pairs for `()`, `[]`, `{}`, `||`, `""`
-- Comment toggling with line and block comments
+- Comment toggling (Ctrl+/ for line, Shift+Alt+A for block)
 - Bracket matching and highlighting
 - Smart indentation
 
 ## Requirements
 
-This extension requires **Java 17 or higher** to run the GPSL Language Server.
+**Java 17 or higher** is required to run the GPSL Language Server.
 
-The extension will automatically look for Java in the following order:
-1. The `gpsl.javaHome` setting in VS Code
-2. The `JAVA_HOME` environment variable
-3. The system `PATH`
+The extension automatically searches for Java in this order:
+1. `gpsl.javaHome` setting in VS Code
+2. `JAVA_HOME` environment variable  
+3. System `PATH`
 
-### Installing Java
-
-If you don't have Java installed, you can download it from:
-- [Eclipse Temurin](https://adoptium.net/) (recommended)
-- [Oracle JDK](https://www.oracle.com/java/technologies/downloads/)
-- [OpenJDK](https://openjdk.org/)
-
-To verify Java is installed, run:
-```bash
-java -version
-```
+> For Java installation instructions and troubleshooting, see [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md#java-installation).
 
 ## Installation
 
 ### From VS Code Marketplace
 
-1. Open VS Code
-2. Go to Extensions (Ctrl+Shift+X / Cmd+Shift+X)
-3. Search for "GPSL Language Support"
-4. Click Install
+1. Open VS Code Extensions (Ctrl+Shift+X / Cmd+Shift+X)
+2. Search for "GPSL Language Support"
+3. Click Install
 
 ### From VSIX File
 
-1. Download the `.vsix` file from the [releases page](https://github.com/plug-obp/gpsl-java/releases)
-2. In VS Code, go to Extensions
-3. Click the "..." menu → "Install from VSIX..."
-4. Select the downloaded file
+1. Download `.vsix` from [releases page](https://github.com/plug-obp/gpsl-java/releases)
+2. In VS Code: Extensions → "..." menu → "Install from VSIX..."
+3. Select the downloaded file
 
 ## Configuration
 
-You can configure the extension through VS Code settings:
+Configure the extension via VS Code settings:
 
 ```json
 {
@@ -102,11 +84,10 @@ You can configure the extension through VS Code settings:
 }
 ```
 
-### Settings
-
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
-| `gpsl.javaHome` | string | `""` | Path to the Java installation. If not set, uses JAVA_HOME or system PATH. |
+| `gpsl.javaHome` | string | `""` | Path to Java installation (Java 17+). If empty, uses JAVA_HOME or PATH. |
+
 
 ## GPSL Language Examples
 
@@ -114,8 +95,8 @@ You can configure the extension through VS Code settings:
 
 ```gpsl
 // Define propositions
-p = request;
-q = grant;
+p = |request|;
+q = |grant|;
 
 // Temporal properties
 safety = always (p -> eventually q);
@@ -123,66 +104,41 @@ liveness = always eventually p;
 mutual_exclusion = always !(p && q);
 ```
 
-### Let Expressions
+### Automaton Example
 
 ```gpsl
-formula = let x = true, y = false in x || y
-```
-
-### Büchi Automaton
-
-```gpsl
-automaton = buchi
-    states s0, s1;
+myAutomaton = states s0, s1;
     initial s0;
     accept s1;
     s0 [p] s1;
     s1 [q] s0
 ```
 
-### Atoms
-
-```gpsl
-// Pipe-delimited atoms
-atom1 = |my atom|
-atom2 = |complex/path/atom|
-
-// Quoted atoms  
-atom3 = "another atom"
-```
+For more examples and complete syntax reference, see [SYNTAX_REFERENCE.md](docs/SYNTAX_REFERENCE.md).
 
 ## Troubleshooting
 
-### "Could not find Java executable"
+See [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for common issues and solutions.
 
-Make sure Java 17 or higher is installed and either:
-- Set the `gpsl.javaHome` setting to point to your Java installation directory, or
-- Set the `JAVA_HOME` environment variable, or
-- Add Java to your system `PATH`
+Quick checks:
 
-### Language Server Not Starting
-
-1. Check the Output panel in VS Code (View → Output)
-2. Select "GPSL Language Server" from the dropdown
-3. Look for error messages that might indicate what went wrong
-
-### Extension Not Activating
-
-The extension only activates when you open a `.gpsl` file. Create or open a file with the `.gpsl` extension to trigger activation.
+- **Extension not activating?** Open a `.gpsl` file to trigger activation
+- **Java errors?** See [Java installation guide](docs/TROUBLESHOOTING.md#java-installation)
+- **Server not starting?** Check Output panel: View → Output → "GPSL Language Server"
 
 ## Development
 
 ### Building from Source
 
 ```bash
-# Clone the repository
+# Clone repository
 git clone https://github.com/plug-obp/gpsl-java.git
 cd gpsl-java
 
-# Build the Java components
+# Build Java components
 ./gradlew build
 
-# Build and package the extension
+# Build extension
 cd gpsl-lsp-vscode
 npm install
 npm run bundle-server  # Bundles the LSP server
@@ -190,38 +146,18 @@ npm run compile        # Compiles TypeScript
 npm run package        # Creates .vsix file
 ```
 
-The `.vsix` file can be installed in VS Code using "Install from VSIX...".
-
-### Testing During Development
-
-1. Build the LSP server:
-   ```bash
-   ./gradlew :gpsl-lsp:installDist
-   ```
-
-2. Compile the extension:
-   ```bash
-   cd gpsl-lsp-vscode
-   npm install
-   npm run compile
-   ```
-
-3. In VS Code, run the "Launch Extension" configuration (F5) to open an Extension Development Host
-
-4. Open a `.gpsl` file to test the language features
+See [VERSION_MANAGEMENT.md](docs/VERSION_MANAGEMENT.md) for release process.
 
 ## Contributing
 
-Contributions are welcome! Please see the [main repository](https://github.com/plug-obp/gpsl-java) for contribution guidelines.
+Contributions welcome! See the [main repository](https://github.com/plug-obp/gpsl-java) for guidelines.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/plug-obp/gpsl-java/blob/main/LICENSE) file for details.
+MIT License - see [LICENSE](https://github.com/plug-obp/gpsl-java/blob/main/LICENSE) file.
 
 ## Links
 
 - [GitHub Repository](https://github.com/plug-obp/gpsl-java)
 - [Issue Tracker](https://github.com/plug-obp/gpsl-java/issues)
-- [Release Notes](https://github.com/plug-obp/gpsl-java/releases)
-
-
+- [Releases](https://github.com/plug-obp/gpsl-java/releases)

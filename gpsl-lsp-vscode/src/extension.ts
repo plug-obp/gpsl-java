@@ -42,7 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
   const javaExecutable = findJavaExecutable();
   
   if (!javaExecutable) {
-    const message = 'Java 17 or higher is required for GPSL language support.\n\n' +
+    const message = 'Java 23 or higher is required for GPSL language support.\n\n' +
                    'Please install Java and either:\n' +
                    '1. Set JAVA_HOME environment variable, or\n' +
                    '2. Configure "gpsl.javaHome" in VS Code settings';

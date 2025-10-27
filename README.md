@@ -61,8 +61,10 @@ This repository contains multiple components:
 
 ### Prerequisites
 
-- Java 17 or higher (JDK 23 recommended)
-- Gradle 8.x (wrapper included)
+## Requirements
+
+- Java 23 or higher
+- Gradle 8.8 or higher (included via wrapper)
 
 ### Building
 

@@ -51,7 +51,7 @@ Future planned features:
 
 ## Requirements
 
-**Java 17 or higher** is required to run the GPSL Language Server.
+**Java 23 or higher** is required to run the GPSL Language Server.
 
 The extension automatically searches for Java in this order:
 1. `gpsl.javaHome` setting in VS Code
@@ -86,7 +86,7 @@ Configure the extension via VS Code settings:
 
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
-| `gpsl.javaHome` | string | `""` | Path to Java installation (Java 17+). If empty, uses JAVA_HOME or PATH. |
+| `gpsl.javaHome` | string | `""` | Path to Java installation (Java 23+). If empty, uses JAVA_HOME or PATH. |
 
 
 ## GPSL Language Examples

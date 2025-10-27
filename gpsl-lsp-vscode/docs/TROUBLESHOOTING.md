@@ -6,7 +6,7 @@ This guide helps resolve common issues. For general information, see [README.md]
 
 ### Requirements
 
-The extension requires **Java 17 or higher**. The extension searches for Java in this order:
+The extension requires **Java 23 or higher**. The extension searches for Java in this order:
 
 1. `gpsl.javaHome` VS Code setting
 2. `JAVA_HOME` environment variable
@@ -22,8 +22,11 @@ Download Java from one of these sources:
 
 Or use a version manager like [SDKMAN](https://sdkman.io/):
 
+### Install Java
+
 ```bash
-sdk install java 17-tem
+# Using SDKMAN! (recommended)
+sdk install java 23-tem
 ```
 
 ### Verify Java Installation
@@ -32,7 +35,7 @@ sdk install java 17-tem
 java -version
 ```
 
-Should show version 17 or higher.
+Should show version 23 or higher.
 
 ### Configure Java Path
 
@@ -42,20 +45,29 @@ If Java is installed but not detected, set the path in VS Code settings:
 
 1. Open Settings (Ctrl+, or Cmd+,)
 2. Search for "gpsl.javaHome"
-3. Enter the Java installation path (e.g., `/usr/lib/jvm/java-17-openjdk`)
+3. Enter the Java installation path (e.g., `/usr/lib/jvm/java-23-openjdk`)
 
 **Method 2: settings.json**
 
 ```json
+```json
 {
-  "gpsl.javaHome": "/path/to/your/java17+"
+  "gpsl.javaHome": "/path/to/your/java23+"
 }
+```
+
+### Set JAVA_HOME
+
+```bash
+export JAVA_HOME=/path/to/your/java23+
+export PATH=$JAVA_HOME/bin:$PATH
+```
 ```
 
 **Method 3: Environment Variable**
 
 ```bash
-export JAVA_HOME=/path/to/your/java17+
+export JAVA_HOME=/path/to/your/java23+
 ```
 
 Add to `~/.bashrc`, `~/.zshrc`, or equivalent for persistence.
@@ -91,8 +103,10 @@ Test if the server starts correctly (for development):
 ./gradlew :gpsl-lsp:installDist
 
 # Test server startup
-JAVA_HOME=/path/to/your/java17+ \
-  gpsl-lsp/build/install/gpsl-lsp/bin/gpsl-lsp
+```bash
+# Debug LSP server (requires Java 23+)
+JAVA_HOME=/path/to/your/java23+ \
+  /path/to/gpsl-lsp/bin/gpsl-lsp
 ```
 
 The server should start and wait for LSP input (this is normal). Press Ctrl+C to exit.
@@ -128,7 +142,7 @@ The server should start and wait for LSP input (this is normal). Press Ctrl+C to
 
 **Solutions**:
 
-1. Verify Java 17+ is installed: `java -version`
+1. Verify Java 23+ is installed: `java -version`
 2. Configure Java path (see [Java Installation](#java-installation) above)
 3. Check Output panel for server errors
 4. For development: Build server with `./gradlew :gpsl-lsp:installDist`

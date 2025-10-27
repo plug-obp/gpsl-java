@@ -72,9 +72,18 @@ jobs:
       working-directory: gpsl-lsp-vscode
       run: npm run compile
       
+    - name: Extract version from tag
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+      
     - name: Package extension
       working-directory: gpsl-lsp-vscode
       run: vsce package
+      
+    - name: Get VSIX filename
+      id: vsix_file
+      working-directory: gpsl-lsp-vscode
+      run: echo "VSIX_FILE=$(ls *.vsix)" >> $GITHUB_ENV
       
     - name: Create Release
       id: create_release
@@ -93,8 +102,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./gpsl-lsp-vscode/gpsl-lsp-vscode-${{ steps.get_version.outputs.VERSION }}.vsix
-        asset_name: gpsl-lsp-vscode-${{ steps.get_version.outputs.VERSION }}.vsix
+        asset_path: ./gpsl-lsp-vscode/${{ env.VSIX_FILE }}
+        asset_name: ${{ env.VSIX_FILE }}
         asset_content_type: application/octet-stream
         
     # Optional: Publish to VS Code Marketplace

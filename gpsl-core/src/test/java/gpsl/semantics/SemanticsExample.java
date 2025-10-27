@@ -1,4 +1,5 @@
 package gpsl.semantics;
+import gpsl.syntax.TestHelpers;
 
 import gpsl.syntax.Reader;
 import gpsl.syntax.model.*;
@@ -25,7 +26,7 @@ public class SemanticsExample {
         System.out.println("=== Expression Semantics Example ===\n");
         
         // Create an LTL expression: F(p) - "eventually p"
-        Expression expr = Reader.readExpression("F(|p|)");
+        Expression expr = TestHelpers.parseExpressionOrFail("F(|p|)");
         System.out.println("Expression: F(p)");
         
         // Create an atom evaluator

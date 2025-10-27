@@ -1,0 +1,126 @@
+{
+  "Let Expression": {
+    "prefix": "let",
+    "body": [
+      "let ${1:x} = ${2:true} in ${0:$1}"
+    ],
+    "description": "Let binding with single variable"
+  },
+  "Let Expression Multiple": {
+    "prefix": "letm",
+    "body": [
+      "let",
+      "\t${1:x} = ${2:true},",
+      "\t${3:y} = ${4:false}",
+      "in ${0:$1 and $3}"
+    ],
+    "description": "Let binding with multiple variables"
+  },
+  "Büchi Automaton": {
+    "prefix": "buchi",
+    "body": [
+      "buchi",
+      "\tstates ${1:s0}, ${2:s1};",
+      "\tinitial ${1:s0};",
+      "\taccept ${2:s1};",
+      "\t${1:s0} [${3:true}] ${2:s1};",
+      "\t${2:s1} [${4:false}] ${1:s0}"
+    ],
+    "description": "Büchi automaton template"
+  },
+  "NFA": {
+    "prefix": "nfa",
+    "body": [
+      "nfa",
+      "\tstates ${1:s0}, ${2:s1};",
+      "\tinitial ${1:s0};",
+      "\taccept ${2:s1};",
+      "\t${1:s0} [${3:true}] ${2:s1};",
+      "\t${2:s1} [${4:false}] ${1:s0}"
+    ],
+    "description": "NFA (Nondeterministic Finite Automaton) template"
+  },
+  "Automaton with Priority": {
+    "prefix": "autoprio",
+    "body": [
+      "states ${1:s0}, ${2:s1};",
+      "initial ${1:s0};",
+      "accept ${2:s1};",
+      "${1:s0} ${3:10} [${4:guard1}] ${2:s1};",
+      "${1:s0} ${5:5} [${6:guard2}] ${2:s1}"
+    ],
+    "description": "Automaton with transition priorities"
+  },
+  "Always Eventually": {
+    "prefix": "alwayseventually",
+    "body": [
+      "[] (<> ${0:p})"
+    ],
+    "description": "Always eventually (infinitely often)"
+  },
+  "Eventually Always": {
+    "prefix": "eventuallyalways",
+    "body": [
+      "<> ([] ${0:p})"
+    ],
+    "description": "Eventually always (stabilization)"
+  },
+  "Safety Property": {
+    "prefix": "safety",
+    "body": [
+      "[] (${1:condition} -> ${0:property})"
+    ],
+    "description": "Safety property: always if condition then property"
+  },
+  "Liveness Property": {
+    "prefix": "liveness",
+    "body": [
+      "[] (${1:request} -> (<> ${0:grant}))"
+    ],
+    "description": "Liveness property: every request eventually gets a grant"
+  },
+  "Until": {
+    "prefix": "until",
+    "body": [
+      "${1:p} until ${0:q}"
+    ],
+    "description": "Strong until: p holds until q becomes true"
+  },
+  "Weak Until": {
+    "prefix": "wuntil",
+    "body": [
+      "${1:p} W ${0:q}"
+    ],
+    "description": "Weak until: p holds until q (or forever)"
+  },
+  "Pipe Atom": {
+    "prefix": "atom",
+    "body": [
+      "|${0:content}|"
+    ],
+    "description": "Pipe-delimited atom"
+  },
+  "External Declaration": {
+    "prefix": "external",
+    "body": [
+      "${1:name} *= ${0:formula}"
+    ],
+    "description": "External declaration (exported)"
+  },
+  "Internal Declaration": {
+    "prefix": "internal",
+    "body": [
+      "${1:name} = ${0:formula}"
+    ],
+    "description": "Internal declaration (local)"
+  },
+  "Comment Header": {
+    "prefix": "header",
+    "body": [
+      "/*",
+      " * ${0:Description}",
+      " */"
+    ],
+    "description": "Block comment header"
+  }
+}

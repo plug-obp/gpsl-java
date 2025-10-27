@@ -1,0 +1,84 @@
+{
+  "name": "gpsl-lsp-vscode",
+  "displayName": "GPSL Language Support",
+  "description": "Syntax highlighting and LSP client for GPSL - a temporal logic specification language",
+  "publisher": "obp3",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/plug-obp/gpsl-java.git"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "gpsl",
+    "temporal logic",
+    "LTL",
+    "specification",
+    "verification",
+    "automata"
+  ],
+  "activationEvents": [
+    "onLanguage:gpsl"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "gpsl",
+        "aliases": [
+          "GPSL"
+        ],
+        "extensions": [
+          ".gpsl"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "gpsl",
+        "scopeName": "source.gpsl",
+        "path": "./syntaxes/gpsl.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "gpsl",
+        "path": "./snippets/gpsl.json"
+      }
+    ],
+    "configuration": {
+      "title": "GPSL",
+      "properties": {
+        "gpsl.javaHome": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the Java installation (e.g., /usr/lib/jvm/java-17). If not set, the extension will use JAVA_HOME or search for Java on the system PATH.",
+          "scope": "machine-overridable"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p .",
+    "watch": "tsc -w -p .",
+    "package": "vsce package",
+    "bundle-server": "node scripts/bundle-server.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.6.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "packageManager": "npm@11.6.2+sha512.ee22b335fcbc95662cdf3ab8a053daf045d9cf9c6df6040d28965abb707512b2c16fa6c5eec049d34c74f78f390cebd14f697919eadb97756564d4f9eccc4954"
+}

@@ -1,4 +1,5 @@
 package gpsl.ltl3ba;
+import gpsl.syntax.TestHelpers;
 
 import gpsl.syntax.Reader;
 import gpsl.syntax.model.*;
@@ -89,56 +90,56 @@ class LTL3BATransformerTest {
     
     @Test
     void testTransformNegation() {
-        Expression expr = Reader.readExpression("!|p|");
+        Expression expr = TestHelpers.parseExpressionOrFail("!|p|");
         String result = expr.accept(transformer, null);
         assertEquals("(!atom0)", result);
     }
     
     @Test
     void testTransformNext() {
-        Expression expr = Reader.readExpression("N |p|");
+        Expression expr = TestHelpers.parseExpressionOrFail("N |p|");
         String result = expr.accept(transformer, null);
         assertEquals("(X atom0)", result);
     }
 
     @Test
     void testTransformX() {
-        Expression expr = Reader.readExpression("X |p|");
+        Expression expr = TestHelpers.parseExpressionOrFail("X |p|");
         String result = expr.accept(transformer, null);
         assertEquals("(X atom0)", result);
     }
     
     @Test
     void testTransformEventually() {
-        Expression expr = Reader.readExpression("<> |p|");
+        Expression expr = TestHelpers.parseExpressionOrFail("<> |p|");
         String result = expr.accept(transformer, null);
         assertEquals("(<> atom0)", result);
     }
     
     @Test
     void testTransformGlobally() {
-        Expression expr = Reader.readExpression("[] |p|");
+        Expression expr = TestHelpers.parseExpressionOrFail("[] |p|");
         String result = expr.accept(transformer, null);
         assertEquals("([] atom0)", result);
     }
     
     @Test
     void testTransformConjunction() {
-        Expression expr = Reader.readExpression("|p| && |q|");
+        Expression expr = TestHelpers.parseExpressionOrFail("|p| && |q|");
         String result = expr.accept(transformer, null);
         assertEquals("(atom0 && atom1)", result);
     }
     
     @Test
     void testTransformDisjunction() {
-        Expression expr = Reader.readExpression("|p| || |q|");
+        Expression expr = TestHelpers.parseExpressionOrFail("|p| || |q|");
         String result = expr.accept(transformer, null);
         assertEquals("(atom0 || atom1)", result);
     }
     
     @Test
     void testTransformExclusiveDisjunction() {
-        Expression expr = Reader.readExpression("|p| xor |q|");
+        Expression expr = TestHelpers.parseExpressionOrFail("|p| xor |q|");
         String result = expr.accept(transformer, null);
         // XOR should be encoded as (!a && b) || (a && !b)
         assertEquals("((!atom0 && atom1) || (atom0 && !atom1))", result);
@@ -146,28 +147,28 @@ class LTL3BATransformerTest {
     
     @Test
     void testTransformImplication() {
-        Expression expr = Reader.readExpression("|p| -> |q|");
+        Expression expr = TestHelpers.parseExpressionOrFail("|p| -> |q|");
         String result = expr.accept(transformer, null);
         assertEquals("(atom0 -> atom1)", result);
     }
     
     @Test
     void testTransformEquivalence() {
-        Expression expr = Reader.readExpression("|p| <-> |q|");
+        Expression expr = TestHelpers.parseExpressionOrFail("|p| <-> |q|");
         String result = expr.accept(transformer, null);
         assertEquals("(atom0 <-> atom1)", result);
     }
     
     @Test
     void testTransformStrongUntil() {
-        Expression expr = Reader.readExpression("|p| U |q|");
+        Expression expr = TestHelpers.parseExpressionOrFail("|p| U |q|");
         String result = expr.accept(transformer, null);
         assertEquals("(atom0 U atom1)", result);
     }
     
     @Test
     void testTransformWeakUntil() {
-        Expression expr = Reader.readExpression("|p| W |q|");
+        Expression expr = TestHelpers.parseExpressionOrFail("|p| W |q|");
         String result = expr.accept(transformer, null);
         // W should be encoded as ([] a) || (a U b)
         assertEquals("(([] atom0) || (atom0 U atom1))", result);
@@ -175,7 +176,7 @@ class LTL3BATransformerTest {
     
     @Test
     void testTransformStrongRelease() {
-        Expression expr = Reader.readExpression("|p| M |q|");
+        Expression expr = TestHelpers.parseExpressionOrFail("|p| M |q|");
         String result = expr.accept(transformer, null);
         // M should be encoded as b U (a && b)
         assertEquals("((atom1) U (atom0 && atom1))", result);
@@ -183,7 +184,7 @@ class LTL3BATransformerTest {
     
     @Test
     void testTransformWeakRelease() {
-        Expression expr = Reader.readExpression("|p| R |q|");
+        Expression expr = TestHelpers.parseExpressionOrFail("|p| R |q|");
         String result = expr.accept(transformer, null);
         assertEquals("(atom0 R atom1)", result);
     }
@@ -222,7 +223,7 @@ class LTL3BATransformerTest {
     @Test
     void testTransformComplexExpression() {
         // Test: [] (|p| -> <> |q|)
-        Expression expr = Reader.readExpression("[] (|p| -> <> |q|)");
+        Expression expr = TestHelpers.parseExpressionOrFail("[] (|p| -> <> |q|)");
         String result = expr.accept(transformer, null);
         assertEquals("([] (atom0 -> (<> atom1)))", result);
     }
@@ -230,7 +231,7 @@ class LTL3BATransformerTest {
     @Test
     void testTransformNestedExpression() {
         // Test: (|p| && |q|) U (|r| || |s|)
-        Expression expr = Reader.readExpression("(|p| && |q|) U (|r| || |s|)");
+        Expression expr = TestHelpers.parseExpressionOrFail("(|p| && |q|) U (|r| || |s|)");
         String result = expr.accept(transformer, null);
         assertEquals("((atom0 && atom1) U (atom2 || atom3))", result);
     }
@@ -238,7 +239,7 @@ class LTL3BATransformerTest {
     @Test
     void testTransformComplexTemporalFormula() {
         // Test: [] (<> |p| -> X |q|)
-        Expression expr = Reader.readExpression("[] (<> |p| -> N |q|)");
+        Expression expr = TestHelpers.parseExpressionOrFail("[] (<> |p| -> N |q|)");
         String result = expr.accept(transformer, null);
         assertEquals("([] ((<> atom0) -> (X atom1)))", result);
     }
@@ -246,7 +247,7 @@ class LTL3BATransformerTest {
     @Test
     void testTransformWithMixedOperators() {
         // Test: (|p| xor |q|) && (|r| W |s|)
-        Expression expr = Reader.readExpression("(|p| xor |q|) && (|r| W |s|)");
+        Expression expr = TestHelpers.parseExpressionOrFail("(|p| xor |q|) && (|r| W |s|)");
         String result = expr.accept(transformer, null);
         // XOR encoded and W encoded
         assertEquals("(((!atom0 && atom1) || (atom0 && !atom1)) && (([] atom2) || (atom2 U atom3)))", result);
@@ -255,8 +256,8 @@ class LTL3BATransformerTest {
     @Test
     void testAtomMappingConsistency() {
         // Test that atoms are mapped consistently across multiple transformations
-        Expression expr1 = Reader.readExpression("|p| && |q|");
-        Expression expr2 = Reader.readExpression("|p| || |r|");
+        Expression expr1 = TestHelpers.parseExpressionOrFail("|p| && |q|");
+        Expression expr2 = TestHelpers.parseExpressionOrFail("|p| || |r|");
         
         String result1 = expr1.accept(transformer, null);
         String result2 = expr2.accept(transformer, null);
@@ -282,7 +283,7 @@ class LTL3BATransformerTest {
     @Test
     void testTruthValues() {
         // Test: true && false
-        Expression expr = Reader.readExpression("true && false");
+        Expression expr = TestHelpers.parseExpressionOrFail("true && false");
         String result = expr.accept(transformer, null);
         assertEquals("(true && false)", result);
     }
@@ -290,7 +291,7 @@ class LTL3BATransformerTest {
     @Test
     void testMixedTruthValuesAndAtoms() {
         // Test: true && |p| || false
-        Expression expr = Reader.readExpression("(true && |p|) || false");
+        Expression expr = TestHelpers.parseExpressionOrFail("(true && |p|) || false");
         String result = expr.accept(transformer, null);
         assertEquals("((true && atom0) || false)", result);
     }

@@ -6,12 +6,20 @@ import java.util.*;
 
 /**
  * Resolves symbol references in GPSL syntax trees.
+ * Collects errors instead of throwing exceptions.
  * This visitor walks the syntax tree and:
  * - Resolves named references to their definitions
  * - Resolves state names in automata to State objects
  * - Maintains scoped symbol tables for nested let expressions
+ * - Accumulates all errors in ParseContext
  */
 public class SymbolResolver implements Visitor<Context, Void> {
+    
+    private final ParseContext parseContext;
+    
+    public SymbolResolver(ParseContext parseContext) {
+        this.parseContext = parseContext;
+    }
 
     @Override
     public Void visitLetExpression(LetExpression letExpression, Context environment) {
@@ -34,7 +42,17 @@ public class SymbolResolver implements Visitor<Context, Void> {
     public Void visitExpressionDeclaration(ExpressionDeclaration expressionDeclaration, Context environment) {
         if (expressionDeclaration.expression() != null) {
             expressionDeclaration.expression().accept(this, environment);
-            environment.define(expressionDeclaration.name(), expressionDeclaration.expression());
+            
+            // Check for duplicate symbols
+            try {
+                environment.define(expressionDeclaration.name(), expressionDeclaration.expression());
+            } catch (Context.SymbolAlreadyDefinedException e) {
+                parseContext.addError(parseContext.errorAt(
+                    expressionDeclaration,
+                    "duplicate symbol '" + expressionDeclaration.name() + "'",
+                    "duplicate-symbol"
+                ));
+            }
         }
         return null;
     }
@@ -46,7 +64,11 @@ public class SymbolResolver implements Visitor<Context, Void> {
                 Expression resolved = environment.lookup(reference.name());
                 reference.setExpression(resolved);
             } catch (Context.SymbolNotFoundException e) {
-                throw new Context.SymbolNotFoundException("Symbol " + reference.name() + " is not defined in the current scope");
+                parseContext.addError(parseContext.errorAt(
+                    reference,
+                    "undefined symbol '" + reference.name() + "'",
+                    "undefined-symbol"
+                ));
             }
         }
         return null;

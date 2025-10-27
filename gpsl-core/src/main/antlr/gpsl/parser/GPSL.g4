@@ -36,9 +36,9 @@ automatonDecl   : (NFA | BUCHI)? stateDecl ';' initialDecl ';' acceptDecl ';'
 automaton       : letDecl? automatonDecl;
 
 CONJUNCTION: 'and' | '&' | '&&' | '/\\' | '*' | '∧';
-DISJUNCTION: 'or' | '|' | '||' | '\\/' | '+' | '∨';
+DISJUNCTION: 'or' | '||' | '\\/' | '+' | '∨';  // Removed single '|' to avoid conflict with PIPEATOM
 EQUIVALENCE: 'iff' | '<->' | '<=>' | '⟺' | '↔';
-EVENTUALLY: 'eventually' | 'F' | '<>' | '\u25C7' /*♢*/;
+EVENTUALLY: 'eventually' | 'F' | '<>' | '\u25C7' /*◇*/ | '\u2662' /*♢*/;
 FALSE: 'false' | '0';
 GLOBALLY: 'globally' | 'always' | 'G' | '[]' | '\u2610' /* ☐ */;
 IMPLICATION: 'implies' | '->' | '=>' | '→' | '⟹';
@@ -62,8 +62,8 @@ ACCEPT: 'accept';
 reserved: CONJUNCTION | DISJUNCTION | EQUIVALENCE | EVENTUALLY | FALSE | GLOBALLY | IMPLICATION | IN | LET | NEGATION | NEXT | SUNTIL | WUNTIL | SRELEASE | WRELEASE | TRUE | XOR;
 
 ATOMINLINE : PIPEATOM | QUOTEATOM;
-PIPEATOM : '|' ('\\|' | ~'|')* '|';
-QUOTEATOM: '"' ('\\"' | ~'"')* '"';
+PIPEATOM : '|' ('\\|' | ~[|])* '|';
+QUOTEATOM: '"' ('\\"' | ~["])* '"';
 
 IDENTIFIER : [a-zA-Z][a-zA-Z_0-9]*;
 NATURAL: [0-9]+;

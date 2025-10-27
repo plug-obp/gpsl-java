@@ -1,0 +1,13 @@
+
+q = false
+// Internal declaration (using =)
+internalHelper = p and q
+
+// NFA (Nondeterministic Finite Automaton)
+myNFA = nfa
+    states s0, s1, s2;
+    initial s0;
+    accept s2;
+    s0 [true] s1;
+    s1 [internalHelper] s2;
+    s2 [false] s0

@@ -10,13 +10,18 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Maps ANTLR4 parse tree to GPSL syntax model.
+ * Maps ANTLR4 parse tree to GPSL syntax model with external position tracking.
  * This class walks the ANTLR4 parse tree and constructs corresponding GPSL syntax tree elements.
  */
 public class Antlr4ToGPSLMapper extends GPSLBaseListener {
     
     private final Map<ParserRuleContext, Object> valueMap = new HashMap<>();
+    private final ParseContext context;
     private Declarations tree = null;
+
+    public Antlr4ToGPSLMapper(ParseContext context) {
+        this.context = context;
+    }
 
     /**
      * Gets the constructed syntax tree.
@@ -30,6 +35,12 @@ public class Antlr4ToGPSLMapper extends GPSLBaseListener {
      */
     private void setValue(ParserRuleContext ctx, Object value) {
         valueMap.put(ctx, value);
+        
+        // Track position for AST nodes
+        if (value instanceof SyntaxTreeElement node) {
+            context.positionMap().put(node, PositionMap.rangeOf(ctx));
+            context.positionMap().putParseTree(node, ctx);
+        }
     }
 
     /**

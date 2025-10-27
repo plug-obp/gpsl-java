@@ -1,9 +1,9 @@
 package gpsl.ltl3ba;
 
-import gpsl.syntax.Reader;
 import gpsl.syntax.model.*;
 import org.junit.jupiter.api.Test;
 
+import static gpsl.syntax.TestHelpers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -15,9 +15,9 @@ class Expression2AutomatonTest {
     @Test
     void testEventually() throws Exception {
         // Test: F(p) - Eventually p
-        Expression formula = Reader.readExpression("F(|p|)");
+        Expression formula = parseExpressionOrFail("F(|p|)");
         
-        Automaton automaton = Expression2Automaton.convert(formula);
+        Automaton automaton = convertToAutomatonOrFail(formula);
         
         assertNotNull(automaton, "Automaton should not be null");
         assertEquals(AutomatonSemanticsKind.BUCHI, automaton.semanticsKind());
@@ -47,9 +47,9 @@ class Expression2AutomatonTest {
     @Test
     void testGlobally() throws Exception {
         // Test: G(p) - Globally p (safety property)
-        Expression formula = Reader.readExpression("G(|p|)");
+        Expression formula = parseExpressionOrFail("G(|p|)");
         
-        Automaton automaton = Expression2Automaton.convert(formula);
+        Automaton automaton = convertToAutomatonOrFail(formula);
         
         assertNotNull(automaton, "Automaton should not be null");
         assertEquals(AutomatonSemanticsKind.BUCHI, automaton.semanticsKind());
@@ -64,9 +64,9 @@ class Expression2AutomatonTest {
     @Test
     void testNext() throws Exception {
         // Test: X(p) - Next p
-        Expression formula = Reader.readExpression("X(|p|)");
+        Expression formula = parseExpressionOrFail("X(|p|)");
         
-        Automaton automaton = Expression2Automaton.convert(formula);
+        Automaton automaton = convertToAutomatonOrFail(formula);
         
         assertNotNull(automaton);
         assertEquals(AutomatonSemanticsKind.BUCHI, automaton.semanticsKind());
@@ -77,9 +77,9 @@ class Expression2AutomatonTest {
     @Test
     void testUntil() throws Exception {
         // Test: p U q - p until q
-        Expression formula = Reader.readExpression("|p| U |q|");
+        Expression formula = parseExpressionOrFail("|p| U |q|");
         
-        Automaton automaton = Expression2Automaton.convert(formula);
+        Automaton automaton = convertToAutomatonOrFail(formula);
         
         assertNotNull(automaton);
         assertEquals(AutomatonSemanticsKind.BUCHI, automaton.semanticsKind());
@@ -92,9 +92,9 @@ class Expression2AutomatonTest {
     @Test
     void testRelease() throws Exception {
         // Test: p R q - p releases q
-        Expression formula = Reader.readExpression("|p| R |q|");
+        Expression formula = parseExpressionOrFail("|p| R |q|");
         
-        Automaton automaton = Expression2Automaton.convert(formula);
+        Automaton automaton = convertToAutomatonOrFail(formula);
         
         assertNotNull(automaton);
         assertEquals(AutomatonSemanticsKind.BUCHI, automaton.semanticsKind());
@@ -105,9 +105,9 @@ class Expression2AutomatonTest {
     @Test
     void testImplication() throws Exception {
         // Test: p -> q
-        Expression formula = Reader.readExpression("|p| -> |q|");
+        Expression formula = parseExpressionOrFail("|p| -> |q|");
         
-        Automaton automaton = Expression2Automaton.convert(formula);
+        Automaton automaton = convertToAutomatonOrFail(formula);
         
         assertNotNull(automaton);
         assertEquals(AutomatonSemanticsKind.BUCHI, automaton.semanticsKind());
@@ -117,9 +117,9 @@ class Expression2AutomatonTest {
     @Test
     void testComplexFormula() throws Exception {
         // Test: G(p -> F(q)) - Globally, if p then eventually q
-        Expression formula = Reader.readExpression("G(|p| -> F(|q|))");
+        Expression formula = parseExpressionOrFail("G(|p| -> F(|q|))");
         
-        Automaton automaton = Expression2Automaton.convert(formula);
+        Automaton automaton = convertToAutomatonOrFail(formula);
         
         assertNotNull(automaton);
         assertEquals(AutomatonSemanticsKind.BUCHI, automaton.semanticsKind());
@@ -138,9 +138,9 @@ class Expression2AutomatonTest {
     @Test
     void testEventuallyGlobally() throws Exception {
         // Test: F(G(p)) - Eventually globally p (stability)
-        Expression formula = Reader.readExpression("F(G(|p|))");
+        Expression formula = parseExpressionOrFail("F(G(|p|))");
         
-        Automaton automaton = Expression2Automaton.convert(formula);
+        Automaton automaton = convertToAutomatonOrFail(formula);
         
         assertNotNull(automaton);
         assertEquals(AutomatonSemanticsKind.BUCHI, automaton.semanticsKind());
@@ -151,9 +151,9 @@ class Expression2AutomatonTest {
     @Test
     void testGloballyEventually() throws Exception {
         // Test: G(F(p)) - Globally eventually p (liveness/fairness)
-        Expression formula = Reader.readExpression("G(F(|p|))");
+        Expression formula = parseExpressionOrFail("G(F(|p|))");
         
-        Automaton automaton = Expression2Automaton.convert(formula);
+        Automaton automaton = convertToAutomatonOrFail(formula);
         
         assertNotNull(automaton);
         assertEquals(AutomatonSemanticsKind.BUCHI, automaton.semanticsKind());
@@ -164,9 +164,9 @@ class Expression2AutomatonTest {
     @Test
     void testStateNaming() throws Exception {
         // Verify that states with "init" and "accept" are properly identified
-        Expression formula = Reader.readExpression("F(|p|)");
+        Expression formula = parseExpressionOrFail("F(|p|)");
         
-        Automaton automaton = Expression2Automaton.convert(formula);
+        Automaton automaton = convertToAutomatonOrFail(formula);
         
         // Check initial states contain "init" in their names
         for (State state : automaton.initialStates()) {
@@ -183,9 +183,9 @@ class Expression2AutomatonTest {
 
     @Test
     void testTransitionSourceAndTarget() throws Exception {
-        Expression formula = Reader.readExpression("F(|p|)");
+        Expression formula = parseExpressionOrFail("F(|p|)");
         
-        Automaton automaton = Expression2Automaton.convert(formula);
+        Automaton automaton = convertToAutomatonOrFail(formula);
         
         // Verify all transition sources and targets are in the states set
         for (Transition t : automaton.transitions()) {
@@ -198,9 +198,9 @@ class Expression2AutomatonTest {
 
     @Test
     void testTransitionPriority() throws Exception {
-        Expression formula = Reader.readExpression("F(|p|)");
+        Expression formula = parseExpressionOrFail("F(|p|)");
         
-        Automaton automaton = Expression2Automaton.convert(formula);
+        Automaton automaton = convertToAutomatonOrFail(formula);
         
         // All transitions should have priority 0 (as set by LTL3BA converter)
         for (Transition t : automaton.transitions()) {
@@ -212,9 +212,9 @@ class Expression2AutomatonTest {
     @Test
     void testAtomLinking() throws Exception {
         // Test that atom references in guards are properly linked
-        Expression formula = Reader.readExpression("|p| U |q|");
+        Expression formula = parseExpressionOrFail("|p| U |q|");
         
-        Automaton automaton = Expression2Automaton.convert(formula);
+        Automaton automaton = convertToAutomatonOrFail(formula);
         
         // Verify all guards are properly parsed and linked
         for (Transition t : automaton.transitions()) {
@@ -227,9 +227,9 @@ class Expression2AutomatonTest {
     @Test
     void testMultipleAtoms() throws Exception {
         // Test formula with multiple different atoms
-        Expression formula = Reader.readExpression("G(|p| -> F(|q|)) & G(|r| -> F(|s|))");
+        Expression formula = parseExpressionOrFail("G(|p| -> F(|q|)) & G(|r| -> F(|s|))");
         
-        Automaton automaton = Expression2Automaton.convert(formula);
+        Automaton automaton = convertToAutomatonOrFail(formula);
         
         assertNotNull(automaton);
         assertEquals(AutomatonSemanticsKind.BUCHI, automaton.semanticsKind());
@@ -240,9 +240,9 @@ class Expression2AutomatonTest {
     @Test
     void testNegation() throws Exception {
         // Test: !p
-        Expression formula = Reader.readExpression("!|p|");
+        Expression formula = parseExpressionOrFail("!|p|");
         
-        Automaton automaton = Expression2Automaton.convert(formula);
+        Automaton automaton = convertToAutomatonOrFail(formula);
         
         assertNotNull(automaton);
         assertEquals(AutomatonSemanticsKind.BUCHI, automaton.semanticsKind());
@@ -252,9 +252,9 @@ class Expression2AutomatonTest {
     @Test
     void testDisjunction() throws Exception {
         // Test: p | q
-        Expression formula = Reader.readExpression("|p| | |q|");
+        Expression formula = parseExpressionOrFail("|p| | |q|");
         
-        Automaton automaton = Expression2Automaton.convert(formula);
+        Automaton automaton = convertToAutomatonOrFail(formula);
         
         assertNotNull(automaton);
         assertEquals(AutomatonSemanticsKind.BUCHI, automaton.semanticsKind());
@@ -264,9 +264,9 @@ class Expression2AutomatonTest {
     @Test
     void testTrueFormula() throws Exception {
         // Test: true (should produce trivial automaton)
-        Expression formula = Reader.readExpression("true");
+        Expression formula = parseExpressionOrFail("true");
         
-        Automaton automaton = Expression2Automaton.convert(formula);
+        Automaton automaton = convertToAutomatonOrFail(formula);
         
         assertNotNull(automaton);
         assertEquals(AutomatonSemanticsKind.BUCHI, automaton.semanticsKind());
@@ -277,9 +277,9 @@ class Expression2AutomatonTest {
     @Test
     void testStateEquality() throws Exception {
         // Test that states with the same name are considered equal
-        Expression formula = Reader.readExpression("F(|p|)");
+        Expression formula = parseExpressionOrFail("F(|p|)");
         
-        Automaton automaton = Expression2Automaton.convert(formula);
+        Automaton automaton = convertToAutomatonOrFail(formula);
         
         // Create sets to verify no duplicate states
         java.util.Set<String> stateNames = new java.util.HashSet<>();

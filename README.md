@@ -1,7 +1,7 @@
 # GPSL Language
 
 ![Build Status](https://github.com/plug-obp/gpsl-java/actions/workflows/build-and-publish.yml/badge.svg)
-![Tests](https://img.shields.io/badge/tests-247%20passing-success)
+![Tests](https://img.shields.io/badge/tests-308%20passing-success)
 ![Java](https://img.shields.io/badge/java-23-blue)
 
 

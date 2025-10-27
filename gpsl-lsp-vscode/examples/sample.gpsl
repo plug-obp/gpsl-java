@@ -1,0 +1,254 @@
+// GPSL Example - Syntax Highlighting Demo
+// Propositional and Temporal Logic with Let Bindings and Automata
+
+/* 
+ * Multi-line comment
+ * Boolean literals and basic operators
+ */
+
+// Simple declarations with literals
+p = true
+q = false
+r = 1
+s = 0
+
+// Logical operators - conjunction
+conj1 = p and q
+conj2 = p & q
+conj3 = p && q
+conj4 = p /\ q
+conj5 = p * q
+conj6 = p ∧ q
+
+// Logical operators - disjunction
+disj1 = p or q
+disj2 = p || q
+disj3 = p || q
+disj4 = p \/ q
+disj5 = p + q
+disj6 = p ∨ q
+
+// Logical operators - negation
+neg1 = not p
+neg2 = !p
+neg3 = ~p
+
+// Logical operators - implication
+impl1 = p implies q
+impl2 = p -> q
+impl3 = p => q
+impl4 = p → q
+impl5 = p ⟹ q
+
+// Logical operators - equivalence
+equiv1 = p iff q
+equiv2 = p <-> q
+equiv3 = p <=> q
+equiv4 = p ⟺ q
+equiv5 = p ↔ q
+
+// Logical operators - xor
+xor1 = p xor q
+xor2 = p ^ q
+xor3 = p ⊻ q
+xor4 = p ⊕ q
+
+// Temporal operators - next
+next1 = next p
+next2 = N p
+next3 = X p
+next4 = o p
+next5 = () p
+next6 = ◯ p
+
+// Temporal operators - eventually (future)
+eventually1 = eventually p
+eventually2 = F p
+eventually3 = <> p
+eventually4 = ◇ p
+eventually5 = ♢ p
+
+// Temporal operators - globally (always)
+globally1 = globally p
+globally2 = always p
+globally3 = G p
+globally4 = [] p
+globally5 = ☐ p
+
+// Temporal operators - until (strong)
+until1 = p until q
+until2 = p U q
+until3 = p SU q
+until4 = p strong-until q
+
+// Temporal operators - weak until
+wuntil1 = p W q
+wuntil2 = p WU q
+wuntil3 = p weak-until q
+
+// Temporal operators - strong release
+srelease1 = p M q
+srelease2 = p SR q
+srelease3 = p strong-release q
+
+// Temporal operators - weak release
+wrelease1 = p R q
+wrelease2 = p WR q
+wrelease3 = p weak-release q
+
+// Atoms - pipe delimited (single line)
+aliceCS = |{Alice}1@CS|
+bobCS = |{Bob}1@CS|
+systemFlag = |{sys}1:flags[0] = true|
+escapedPipe = |this has \| escaped pipes|
+
+// Atoms - quote delimited (single line)
+quotedAtom1 = "simple atom"
+quotedAtom2 = "atom with \"escaped\" quotes"
+
+// Atoms - multiline pipe delimited
+multilinePipe = |this is a
+multiline atom that spans
+several lines|
+
+multilinePipeComplex = |{Process}1@State
+  with multiple lines
+  and \| escaped pipes|
+
+// Atoms - multiline quote delimited
+multilineQuote = "this is a
+multiline quoted atom
+spanning multiple lines"
+
+multilineQuoteEscaped = "multiline with
+\"escaped quotes\" and
+special characters"
+
+// Complex formula with parentheses
+complex1 = (p and q) or (r and s)
+complex2 = (p -> q) and (q -> r)
+
+// Let expressions - INLINE style (all on one line)
+// Note: 'let' and 'in' are highlighted with italic style
+let1 = let x = true in x and false
+let2 = let x = p in x or q
+let3 = let x = true, y = false in x and y
+
+// Let expressions - MULTILINE style (let followed by newline)
+// Note: 'let' and 'in' are highlighted with bold style for better structure visibility
+let4 = let 
+    x = p, 
+    y = q,
+    z = r
+in x and y and z
+
+let5 = let
+    aliceFlag = |{sys}:flags[0]|,
+    bobFlag = |{sys}:flags[1]|
+in aliceFlag or bobFlag
+
+// Let expressions - nested (mix of inline and multiline)
+nested1 = let x = true in let y = x in y and false
+nested2 = let 
+    outer = p
+in let 
+    inner = outer and q
+in inner or r
+
+// Complex temporal formula
+safetyProperty = [] (aliceCS -> (!bobCS))
+livenessProperty = [] (aliceCS -> (<> !aliceCS))
+
+// Fairness with let binding
+fairness *= let
+    aliceFlagUP = |{sys}1:flags[0] = true|,
+    bobFlagUP = |{sys}1:flags[1] = true|
+in
+    ([] ((aliceFlagUP -> (<> aliceCS)) && (bobFlagUP -> (<> bobCS))))
+
+// External declaration (using *=)
+externalSpec *= [] (p -> (<> q))
+
+// Internal declaration (using =)
+internalHelper = p and q
+
+// NFA (Nondeterministic Finite Automaton)
+myNFA = nfa
+    states s0, s1, s2;
+    initial s0;
+    accept s2;
+    s0 [true] s1;
+    s1 [internalHelper] s2;
+    s2 [false] s0
+
+// Büchi automaton (default - no prefix needed)
+myBuchi1 = states s0, s1;
+    initial s0;
+    accept s1;
+    s0 [p] s1;
+    s1 [q] s0
+
+// Büchi automaton (explicit prefix)
+myBuchi2 = buchi
+    states init, loop;
+    initial init;
+    accept loop;
+    init [true] loop;
+    loop [p or q] loop
+
+// Automaton with priorities
+priorityAutomaton = states s0, s1;
+    initial s0;
+    accept s1;
+    s0 10 [p] s1;
+    s0 5 [q] s1;
+    s1 1 [true] s0
+
+// Automaton with let binding for guards
+automatonWithLet = let
+    guard1 = p and q,
+    guard2 = r or s
+in states s0, s1;
+    initial s0;
+    accept s1;
+    s0 [guard1] s1;
+    s1 [guard2] s0
+
+// Complex example combining everything
+complexSystem *= let
+    // State predicates
+    idle = |{proc}@idle|,
+    critical = |{proc}@critical|,
+    requesting = |{proc}@requesting|,
+    
+    // Flags
+    flag = |{sys}:flag = true|,
+    
+    // Safety property
+    safety = [] (critical -> (!next critical)),
+    
+    // Liveness property  
+    liveness = [] (requesting -> (<> critical)),
+    
+    // Combined specification
+    spec = safety and liveness
+in
+    spec
+
+// Multi-line complex formula
+multilineFormula = 
+    (p and q and r) or
+    (s and t and u) or
+    (v and w and x) implies
+    ([] (<> y)) and
+    (<> ([] z))
+
+complexSystem2 = complexSystem 
+
+// Test: Atoms vs Disjunction operator - should highlight correctly
+testAtomVsOr1 = |{Alice}@CS| or |{Bob}@CS|        // Both |...| are atoms, 'or' is operator
+testAtomVsOr2 = p || q                            // Double || is disjunction operator (single | reserved for atoms)
+testAtomVsOr3 = p || q                            // Double || is disjunction operator
+testAtomVsOr4 = |atom1| or |atom2|                // Two atoms with 'or' operator between
+testAtomVsOr5 = (|flag| or p) and q              // Atom and keyword 'or'
+

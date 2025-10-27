@@ -1,9 +1,15 @@
 package gpsl.syntax;
 
+import gpsl.parser.GPSLLexer;
 import gpsl.parser.GPSLParser;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static gpsl.syntax.TestHelpers.*;
 
 /**
  * Tests for GPSL parser ANTLR4 parse tree generation.
@@ -12,13 +18,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class GPSLParserTest {
 
     private String parseExpression(String input) {
-        GPSLParser parser = Reader.antlr4Parser(input);
+        CharStream chars = CharStreams.fromString(input);
+        GPSLLexer lexer = new GPSLLexer(chars);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        GPSLParser parser = new GPSLParser(tokens);
         GPSLParser.FormulaContext tree = parser.formula();
         return tree.toStringTree(parser);
     }
 
     private String parseDeclarations(String input) {
-        GPSLParser parser = Reader.antlr4Parser(input);
+        CharStream chars = CharStreams.fromString(input);
+        GPSLLexer lexer = new GPSLLexer(chars);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        GPSLParser parser = new GPSLParser(tokens);
         GPSLParser.BlockContext tree = parser.block();
         return tree.toStringTree(parser);
     }
@@ -47,12 +59,75 @@ class GPSLParserTest {
     }
 
     @Test
+    void testAtomPipeSpace() {
+        assertEquals("(formula (atom | x|))", parseExpression("| x|"));
+        assertEquals("(formula (atom |  a-b|))", parseExpression("|  a-b|"));
+        assertEquals("(formula (atom |   a>2|))", parseExpression("|   a>2|"));
+        assertEquals("(formula (atom |to\\|to    |))", parseExpression("|to\\|to    |"));
+        assertEquals("(formula (atom |to\\\"to |))", parseExpression("|to\\\"to |"));
+    }
+
+    @Test
     void testAtomQuote() {
         assertEquals("(formula (atom \"x\"))", parseExpression("\"x\""));
         assertEquals("(formula (atom \"a-b\"))", parseExpression("\"a-b\""));
         assertEquals("(formula (atom \"a>2\"))", parseExpression("\"a>2\""));
         assertEquals("(formula (atom \"to\\|to\"))", parseExpression("\"to\\|to\""));
         assertEquals("(formula (atom \"to\\\"to\"))", parseExpression("\"to\\\"to\""));
+    }
+
+    @Test
+    void testAtomPipeMultiline() {
+        // Multiline pipe atoms - toStringTree preserves actual newlines
+        String result1 = parseExpression("|line1\nline2|");
+        assertTrue(result1.contains("|line1"));
+        assertTrue(result1.contains("line2|"));
+        assertTrue(result1.startsWith("(formula (atom "));
+        
+        String result2 = parseExpression("|first\nsecond\nthird|");
+        assertTrue(result2.contains("|first"));
+        assertTrue(result2.contains("second"));
+        assertTrue(result2.contains("third|"));
+        
+        // Multiline with escaped pipe
+        String result3 = parseExpression("|line1\\|escaped\nline2|");
+        assertTrue(result3.contains("\\|"));
+        assertTrue(result3.contains("line1"));
+        assertTrue(result3.contains("line2|"));
+        
+        // Multiline in declarations
+        String result4 = parseDeclarations("a = |multi\nline\natom|");
+        assertTrue(result4.contains("formulaDeclaration"));
+        assertTrue(result4.contains("|multi"));
+        assertTrue(result4.contains("line"));
+        assertTrue(result4.contains("atom|"));
+    }
+
+    @Test
+    void testAtomQuoteMultiline() {
+        // Multiline quote atoms - toStringTree preserves actual newlines  
+        String result1 = parseExpression("\"line1\nline2\"");
+        assertTrue(result1.contains("\"line1"));
+        assertTrue(result1.contains("line2\""));
+        assertTrue(result1.startsWith("(formula (atom "));
+        
+        String result2 = parseExpression("\"first\nsecond\nthird\"");
+        assertTrue(result2.contains("\"first"));
+        assertTrue(result2.contains("second"));
+        assertTrue(result2.contains("third\""));
+        
+        // Multiline with escaped quotes
+        String result3 = parseExpression("\"line1\\\"escaped\nline2\"");
+        assertTrue(result3.contains("\\\""));
+        assertTrue(result3.contains("line1"));
+        assertTrue(result3.contains("line2\""));
+        
+        // Multiline in declarations
+        String result4 = parseDeclarations("a = \"multi\nline\natom\"");
+        assertTrue(result4.contains("formulaDeclaration"));
+        assertTrue(result4.contains("\"multi"));
+        assertTrue(result4.contains("line"));
+        assertTrue(result4.contains("atom\""));
     }
 
     @Test
@@ -160,7 +235,8 @@ class GPSLParserTest {
     @Test
     void testDisjunction() {
         assertEquals("(formula (formula (literal true)) or (formula (literal false)))", parseExpression("true or false"));
-        assertEquals("(formula (formula (literal true)) | (formula (literal false)))", parseExpression("true | false"));
+        // Single | removed from DISJUNCTION to avoid conflict with PIPEATOM
+        // assertEquals("(formula (formula (literal true)) | (formula (literal false)))", parseExpression("true | false"));
         assertEquals("(formula (formula (literal true)) || (formula (literal false)))", parseExpression("true || false"));
         assertEquals("(formula (formula (literal true)) \\/ (formula (literal false)))", parseExpression("true \\/ false"));
         assertEquals("(formula (formula (literal true)) + (formula (literal false)))", parseExpression("true + false"));

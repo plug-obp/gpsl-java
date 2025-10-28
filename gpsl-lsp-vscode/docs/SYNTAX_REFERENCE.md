@@ -23,6 +23,9 @@ true, false, 1, 0
 "simple atom"              // Quoted atom
 |escaped \| pipe|          // Escaped pipe
 "escaped \" quote"         // Escaped quote
+|{Process}1@State
+  with multiple lines
+  and \| escaped pipes|.   // Multiline escaped pipe
 ```
 
 ## Propositional Operators
@@ -39,7 +42,7 @@ p and q, p & q, p && q, p /\ q, p * q, p ∧ q
 
 ### Disjunction (OR)
 ```gpsl
-p or q, p | q, p || q, p \/ q, p + q, p ∨ q
+p or q, p || q, p \/ q, p + q, p ∨ q
 ```
 
 ### Exclusive OR (XOR)

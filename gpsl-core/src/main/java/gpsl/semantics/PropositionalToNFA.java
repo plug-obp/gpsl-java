@@ -23,12 +23,17 @@ public class PropositionalToNFA {
         };
     }
 
-    public static Optional<Automaton> hasNFA(SyntaxTreeElement element) {
+    public static Optional<Automaton> hasAutomaton(SyntaxTreeElement element, boolean wantBuchi) {
         return switch (element) {
-            case Automaton aut -> aut.semanticsKind() == AutomatonSemanticsKind.NFA ? Optional.of(aut) : Optional.empty();
-            case Declarations d -> hasNFA(d.declarations().getFirst());
-            case ExpressionDeclaration ed -> hasNFA(ed.expression());
-            case LetExpression le -> (le.expression() instanceof Automaton aut) && aut.semanticsKind() == AutomatonSemanticsKind.NFA ? Optional.of(aut) : Optional.empty();
+            case Automaton aut -> {
+                if (wantBuchi) {
+                    yield aut.semanticsKind() == AutomatonSemanticsKind.BUCHI ? Optional.of(aut) : Optional.empty();
+                }
+                yield aut.semanticsKind() == AutomatonSemanticsKind.NFA ? Optional.of(aut) : Optional.empty();
+            }
+            case Declarations d -> hasAutomaton(d.declarations().getFirst(), wantBuchi);
+            case ExpressionDeclaration ed -> hasAutomaton(ed.expression(), wantBuchi);
+            case LetExpression le -> hasAutomaton(le.expression(), wantBuchi);
             default -> Optional.empty();
         };
     }

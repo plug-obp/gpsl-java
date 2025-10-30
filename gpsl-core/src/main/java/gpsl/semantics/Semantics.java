@@ -48,9 +48,13 @@ public class Semantics<T> implements DependentSemanticRelation<T, Transition, St
      * @throws IllegalArgumentException if element is not an Automaton or Expression
      */
     private Automaton toAutomaton(SyntaxTreeElement element) {
-        var nfa = PropositionalToNFA.hasNFA(element);
+        var nfa = PropositionalToNFA.hasAutomaton(element, false);
         if (nfa.isPresent()) {
             return nfa.get();
+        }
+        var buchi = PropositionalToNFA.hasAutomaton(element, true);
+        if (buchi.isPresent()) {
+            return buchi.get();
         }
 
         var exp = PropositionalToNFA.toExpression(element);

@@ -23,7 +23,7 @@ dependencies {
     implementation ('org.obpcdl:obp3-runtime:1.0.+')
     implementation ('org.obpcdl:obp3-algos:1.0.+')
     implementation project(':gpsl-core')
-    implementation ('org.obpcdl:reader-infra:1.0.+')
+    implementation ('org.obpcdl:reader-infra:1.0.0-main.+')
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

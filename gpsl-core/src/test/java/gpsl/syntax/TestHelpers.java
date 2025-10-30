@@ -1,9 +1,9 @@
 package gpsl.syntax;
 
+import gpsl.toBuchi.Expression2BuchiAutomaton;
 import gpsl.syntax.model.*;
 import rege.reader.infra.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static gpsl.syntax.TestHelpers.*;
 
 /**
  * Test utilities for GPSL parsing.
@@ -151,7 +151,7 @@ public class TestHelpers {
      * Convert expression to automaton or fail test.
      */
     public static Automaton convertToAutomatonOrFail(Expression expression) {
-        ParseResult<Automaton> result = gpsl.ltl3ba.Expression2Automaton.convert(expression);
+        ParseResult<Automaton> result = Expression2BuchiAutomaton.convert(expression);
         
         if (result instanceof ParseResult.Failure<Automaton> failure) {
             fail("Automaton conversion failed:\n" + failure.formatErrors());

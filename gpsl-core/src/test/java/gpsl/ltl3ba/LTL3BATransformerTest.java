@@ -1,8 +1,8 @@
 package gpsl.ltl3ba;
 import gpsl.syntax.TestHelpers;
 
-import gpsl.syntax.Reader;
 import gpsl.syntax.model.*;
+import gpsl.toBuchi.LTL3BATransformer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

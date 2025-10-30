@@ -1,5 +1,5 @@
 rootProject.name = 'gpsl-language'
 include 'gpsl-core'
 include 'gpsl-ltl3ba'
-// include 'gpsl-models'
 include 'gpsl-lsp'
+include 'gpsl-modelchecker'

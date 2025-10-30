@@ -33,11 +33,11 @@ This module provides conversion from Linear Temporal Logic (LTL) formulas to Bü
 ## Usage Example
 
 ```java
-import gpsl.ltl3ba.Expression2Automaton;
+import gpsl.ltl3ba.Expression2BuchiAutomaton;
 
 // Convert LTL expression to Büchi automaton
 String ltlFormula = "G(p -> F q)";  // Always: p implies eventually q
-String automaton = Expression2Automaton.convert(ltlFormula);
+String automaton = Expression2BuchiAutomaton.convert(ltlFormula);
 ```
 
 ## Architecture

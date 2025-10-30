@@ -1,4 +1,4 @@
-package gpsl.ltl3ba;
+package gpsl.toBuchi;
 
 import gpsl.semantics.Evaluator.EvaluationException;
 import gpsl.syntax.model.*;

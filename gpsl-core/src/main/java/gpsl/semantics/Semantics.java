@@ -1,11 +1,12 @@
 package gpsl.semantics;
 
-import gpsl.ltl3ba.Expression2Automaton;
+import gpsl.toBuchi.Expression2BuchiAutomaton;
 import gpsl.syntax.model.*;
 import obp3.runtime.sli.DependentSemanticRelation;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Provides operational semantics for any GPSL syntax tree element.
@@ -13,7 +14,7 @@ import java.util.Objects;
  * <p>This class delegates to {@link AutomatonSemantics} for execution:
  * <ul>
  *   <li>If the element is an {@link Automaton}, it uses it directly</li>
- *   <li>If the element is an {@link Expression}, it converts it to an automaton first using {@link Expression2Automaton}</li>
+ *   <li>If the element is an {@link Expression}, it converts it to an automaton first using {@link Expression2BuchiAutomaton}</li>
  * </ul>
  * 
  * <p>This allows uniform treatment of both automata and expressions in verification and execution.
@@ -47,24 +48,25 @@ public class Semantics<T> implements DependentSemanticRelation<T, Transition, St
      * @throws IllegalArgumentException if element is not an Automaton or Expression
      */
     private Automaton toAutomaton(SyntaxTreeElement element) {
-        if (element instanceof Automaton automaton) {
-            return automaton;
-        } else if (element instanceof Expression expression) {
-            var result = Expression2Automaton.convert(expression);
-            if (result instanceof rege.reader.infra.ParseResult.Success<Automaton> success) {
-                return success.value();
-            } else if (result instanceof rege.reader.infra.ParseResult.Failure<Automaton> failure) {
-                throw new SemanticConversionException(
+        if (element instanceof Automaton a) { return a; }
+
+        var exp = PropositionalToNFA.toExpression(element);
+        return PropositionalToNFA
+                .toNFA(element)
+                .or(() -> exp.flatMap(this::toBuchi))
+                .orElseThrow(() -> new SemanticConversionException("Cannot convert element to automaton"));
+    }
+
+    private Optional<Automaton> toBuchi(Expression expression) {
+        var result = Expression2BuchiAutomaton.convert(expression);
+        if (result instanceof rege.reader.infra.ParseResult.Success<Automaton>(Automaton value)) {
+            return Optional.of(value);
+        } else if (result instanceof rege.reader.infra.ParseResult.Failure<Automaton> failure) {
+            throw new SemanticConversionException(
                     "Failed to convert expression to automaton:\n" + failure.formatErrors()
-                );
-            } else {
-                throw new SemanticConversionException("Unexpected ParseResult type");
-            }
-        } else {
-            throw new IllegalArgumentException(
-                "Semantics can only be constructed for Automaton or Expression, got: " 
-                + element.getClass().getSimpleName()
             );
+        } else {
+            throw new SemanticConversionException("Unexpected ParseResult type");
         }
     }
     

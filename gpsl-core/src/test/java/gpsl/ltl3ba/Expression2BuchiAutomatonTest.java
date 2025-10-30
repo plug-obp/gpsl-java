@@ -7,10 +7,10 @@ import static gpsl.syntax.TestHelpers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Comprehensive test suite for Expression2Automaton conversion.
+ * Comprehensive test suite for Expression2BuchiAutomaton conversion.
  * Tests conversion of GPSL expressions to Büchi automata via LTL3BA.
  */
-class Expression2AutomatonTest {
+class Expression2BuchiAutomatonTest {
 
     @Test
     void testEventually() throws Exception {

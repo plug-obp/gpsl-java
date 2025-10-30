@@ -1,5 +1,6 @@
-package gpsl.ltl3ba;
+package gpsl.toBuchi;
 
+import gpsl.ltl3ba.LTL3BA;
 import gpsl.syntax.Reader;
 import gpsl.syntax.model.Automaton;
 import gpsl.syntax.model.Expression;
@@ -9,7 +10,7 @@ import rege.reader.infra.ParseError;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Expression2Automaton {
+public class Expression2BuchiAutomaton {
 
     /**
      * Converts a GPSL expression to a Büchi automaton using LTL3BA.

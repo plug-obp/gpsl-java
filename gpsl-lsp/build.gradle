@@ -32,8 +32,8 @@ java {
 
 dependencies {
     implementation project(':gpsl-core')
-    implementation ('org.obpcdl:obp3-runtime:1.0.+')
-    implementation 'org.obpcdl:reader-infra:1.0.0'
+    implementation 'org.obpcdl:obp3-runtime:1.0.+'
+    implementation 'org.obpcdl:reader-infra:1.0.1-main.+'
     implementation 'org.eclipse.lsp4j:org.eclipse.lsp4j:0.24.0'
     implementation 'org.eclipse.lsp4j:org.eclipse.lsp4j.jsonrpc:0.24.0'
     implementation 'org.slf4j:slf4j-simple:2.0.13'

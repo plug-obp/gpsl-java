@@ -3,7 +3,7 @@
   "displayName": "GPSL Language Support",
   "description": "Syntax highlighting and LSP client for GPSL - a temporal logic specification language",
   "publisher": "obp3",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "repository": {
     "type": "git",
     "url": "https://github.com/plug-obp/gpsl-java.git"

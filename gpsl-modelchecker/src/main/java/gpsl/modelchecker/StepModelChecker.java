@@ -30,18 +30,18 @@ public class StepModelChecker<MA, MC> {
             SemanticRelation<MA, MC> modelSemantics,
             AtomEvaluator<Step<MA, MC>> atomicPropositionEvaluator,
             String property) {
-        var modelP = Reader.parseExpressionWithPositions(property);
+        var modelP = Reader.parseDeclarationsWithPositions(property);
         var model = Reader.linkWithPositions(modelP);
         switch (model) {
-            case ParseResult.Success<Expression> success -> {
+            case ParseResult.Success<Declarations> success -> {
                 this.modelSemantics = modelSemantics;
                 this.atomicPropositionEvaluator = atomicPropositionEvaluator;
-                this.propertyModel = success.value();
+                this.propertyModel = success.value().declarations().getFirst();
                 this.emptinessCheckerAlgorithm = BuchiModelCheckerModel.BuchiEmptinessCheckerAlgorithm.GS09_CDLP05_SEPARATED;
                 this.traversalAlgorithm = DepthFirstTraversal.Algorithm.WHILE;
                 this.depthBound = -1;
             }
-            case ParseResult.Failure<Expression> failure -> {
+            case ParseResult.Failure<Declarations> failure -> {
                 throw new IllegalArgumentException("Failed to parse property: " + failure.formatErrors());
             }
         }
@@ -76,7 +76,7 @@ public class StepModelChecker<MA, MC> {
         this.depthBound = depthBound;
     }
 
-    IExecutable<EmptinessCheckerAnswer<?>> modelChecker() {
+    public IExecutable<EmptinessCheckerAnswer<?>> modelChecker() {
         var propertySemantics = new Semantics<>(propertyModel, atomicPropositionEvaluator);
         var builder =
                 new ModelCheckerBuilder<MA, MC, Transition, State>()

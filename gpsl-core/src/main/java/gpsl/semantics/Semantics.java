@@ -39,7 +39,7 @@ public class Semantics<T> implements DependentSemanticRelation<T, Transition, St
         Automaton automaton = toAutomaton(element);
         this.automatonSemantics = new AutomatonSemantics<>(automaton, atomEvaluator);
     }
-    
+
     /**
      * Converts a syntax tree element to an automaton.
      * 
@@ -48,7 +48,10 @@ public class Semantics<T> implements DependentSemanticRelation<T, Transition, St
      * @throws IllegalArgumentException if element is not an Automaton or Expression
      */
     private Automaton toAutomaton(SyntaxTreeElement element) {
-        if (element instanceof Automaton a) { return a; }
+        var nfa = PropositionalToNFA.hasNFA(element);
+        if (nfa.isPresent()) {
+            return nfa.get();
+        }
 
         var exp = PropositionalToNFA.toExpression(element);
         return PropositionalToNFA

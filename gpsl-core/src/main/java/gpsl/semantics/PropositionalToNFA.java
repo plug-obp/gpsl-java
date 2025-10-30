@@ -1,6 +1,5 @@
 package gpsl.semantics;
 
-import com.ibm.icu.text.PersonNameFormatter;
 import gpsl.syntax.model.*;
 
 import java.util.List;
@@ -20,6 +19,16 @@ public class PropositionalToNFA {
             case ExpressionDeclaration ed -> Optional.of(ed.expression());
             case LetExpression le -> (le.expression() instanceof Expression expr) ? Optional.of(expr) : Optional.empty();
             case Expression expr -> Optional.of(expr);
+            default -> Optional.empty();
+        };
+    }
+
+    public static Optional<Automaton> hasNFA(SyntaxTreeElement element) {
+        return switch (element) {
+            case Automaton aut -> aut.semanticsKind() == AutomatonSemanticsKind.NFA ? Optional.of(aut) : Optional.empty();
+            case Declarations d -> hasNFA(d.declarations().getFirst());
+            case ExpressionDeclaration ed -> hasNFA(ed.expression());
+            case LetExpression le -> (le.expression() instanceof Automaton aut) && aut.semanticsKind() == AutomatonSemanticsKind.NFA ? Optional.of(aut) : Optional.empty();
             default -> Optional.empty();
         };
     }

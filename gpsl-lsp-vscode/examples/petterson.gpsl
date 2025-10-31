@@ -1,6 +1,13 @@
 exclusion  =! [] ! |a==2 && b==2|
 noDeadlock =! G !|deadlock|
 
+// Stronger than no deadlock - ensures continuous progress
+noLiveLock = !<>( (|a==1| ∨ |b==1|) ∧
+                  G(!|a==2| ∧ !|b==2|) )
+
+initialSafety = (|a==0| ∧ |b==0| ∧ !|dA| ∧ !|dB|) ->
+                [](!(|a==2| ∧ |b==2|))
+
 // recurrence: Alice or Bob will enter the critical section infinitely often
 recurrence =! []<> (|a==2| or |b==2|)
 
@@ -25,6 +32,9 @@ idling = let
         in! G (  (( aIsWaiting ∧ bNotInterested)→ F aInCriticalSection)
                 ∧(( bIsWaiting ∧ aNotInterested)→ F bInCriticalSection))
 
+// Flags accurately reflect process state
+flagConsistency = []( (|a==1| ↔ |dA|) ∧ (|b==1| ↔ |dB|) )
+
 flagDiscipline = let
                     aliceFlagUP=|a==1|,
                     aliceCS = |a==2|,
@@ -36,6 +46,17 @@ flagDiscipline = let
 
 turnFairness = [](|turn==0| -> <>|turn==1|) ∧ [](|turn==1| -> <>|turn==0|)
 
+// When turn favors A and both want in, A should enter first
+priorityRespect = []( (|a==1| ∧ |b==1| ∧ |turn == 0|) -> (!|b==2| U |a==2|) ) ∧
+                  []( (|a==1| ∧ |b==1| ∧ |turn == 1|) -> (!|a==2| U |b==2|) )
+
+// Turn variable should reflect recent activity
+turnConsistency = []( (|a==2| -> |turn == 0|) ∧ (|b==2| -> |turn == 1|) )
+
+strictAlternation = []( (|a==1| ∧ |b==1|) ->
+                      (|a==2| -> (!|b==2| U (|a==0| ∧ (!|a==2| U |b==2|)))) ∧
+                      (|b==2| -> (!|a==2| U (|b==0| ∧ (!|b==2| U |a==2|)))) )
+
 // Process B can overtake A at most once
 boundedOvertaking = [](|a==1| -> (|b==2| U (|a==2| ∨ (|b==2| U |a==2|))))
 
@@ -43,8 +64,48 @@ criticalExit = [](|a==2| -> <>|a==0|) ∧ [](|b==2| -> <>|b==0|)
 
 noSpuriousWait = [](|a==1| -> F(|a==2| ∨ !|dA|)) ∧ [](|b==1| -> F(|b==2| ∨ !|dB|))
 
+// If A enters before B starts waiting, B should not overtake unfairly
+entryOrder = []( (|a==1| ∧ !|b==1|) -> (!|b==2| W |a==2|) )
+
 // A process cannot immediately re-enter after exiting if the other is waiting
 noImmediateReentry = [](|a==2| -> X(|a==0| -> (!|b==1| W |b==2|))) ∧
                      [](|b==2| -> X(|b==0| -> (!|a==1| W |a==2|)))
 
+// One process in CS doesn't block the other from preparing
+nonInterference = [](|a==2| -> <>|b==1|) ∧ [](|b==2| -> <>|a==1|)
+
+// Processes eventually express interest if they can
+eventualInterest = []<>(|a==0| -> <>|a==1|) ∧ []<>(|b==0| -> <>|b==1|)
+
+// Both processes cannot be waiting forever simultaneously
+noMutualWaiting = !<>( G(|a==1| ∧ |b==1|) )
+
+// Critical section cannot be empty forever if someone wants in
+csNotEmpty = []( (|a==1| ∨ |b==1|) -> <> (|a==2| ∨ |b==2|) )
+
 combinedSpec = exclusion && noDeadlock && liveness && idling //&& flagDiscipline
+
+
+comprehensiveSpec =
+    // Safety
+    exclusion ∧
+    flagConsistency ∧
+    turnConsistency ∧
+    initialSafety ∧
+
+    // Liveness
+    noDeadlock ∧
+    noLiveLock ∧
+    starvationFreedom ∧
+    criticalExit ∧
+    csNotEmpty ∧
+
+    // Fairness
+    boundedOvertaking ∧
+    priorityRespect ∧
+    idling ∧
+
+    // Progress
+    liveness ∧
+    recurrence ∧
+    nonInterference

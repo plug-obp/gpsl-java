@@ -1,0 +1,50 @@
+exclusion  =! [] ! |a==2 && b==2|
+noDeadlock =! G !|deadlock|
+
+// recurrence: Alice or Bob will enter the critical section infinitely often
+recurrence =! []<> (|a==2| or |b==2|)
+
+// If a process wants to enter (flag up), it will eventually get to the CS.
+liveness   =! [](  (|a==1| -> <> |a==2|)
+                 ∧ (|b==1| -> <> |b==2|))
+
+//if a process wants to enter, it will eventually succeed (not just that it might succeed infinitely often).
+starvationFreedom =! []<>(|a==1| -> <>|a==2|) ∧ [](|b==1| -> <>|b==2|)
+
+// If the other process is idle (does not wish to enter its critical section),
+// a waiting process should eventually succeed in entering the critical section.
+// When A is waiting (a == 1) and B is not interested (dB == false),
+// A must eventually enter its critical section (a == 2).
+idling = let
+            aIsWaiting          = |a==1|,
+            bNotInterested      = |b==0|,
+            aInCriticalSection  = |a==2|,
+            bIsWaiting          = |b==1|,
+            aNotInterested      = |a==0|,
+            bInCriticalSection  = |b==2|
+        in! G (  (( aIsWaiting ∧ bNotInterested)→ F aInCriticalSection)
+                ∧(( bIsWaiting ∧ aNotInterested)→ F bInCriticalSection))
+
+flagDiscipline = let
+                    aliceFlagUP=|a==1|,
+                    aliceCS = |a==2|,
+                    bobFlagUP=|b==1|,
+                    bobCS = |b==2|
+                in! ([]   (aliceCS -> /*P*/ aliceFlagUP) //P is the past operator, currently unsupported
+                        && (bobCS   -> /*P*/ bobFlagUP  ) )
+
+
+turnFairness = [](|turn==0| -> <>|turn==1|) ∧ [](|turn==1| -> <>|turn==0|)
+
+// Process B can overtake A at most once
+boundedOvertaking = [](|a==1| -> (|b==2| U (|a==2| ∨ (|b==2| U |a==2|))))
+
+criticalExit = [](|a==2| -> <>|a==0|) ∧ [](|b==2| -> <>|b==0|)
+
+noSpuriousWait = [](|a==1| -> F(|a==2| ∨ !|dA|)) ∧ [](|b==1| -> F(|b==2| ∨ !|dB|))
+
+// A process cannot immediately re-enter after exiting if the other is waiting
+noImmediateReentry = [](|a==2| -> X(|a==0| -> (!|b==1| W |b==2|))) ∧
+                     [](|b==2| -> X(|b==0| -> (!|a==1| W |a==2|)))
+
+combinedSpec = exclusion && noDeadlock && liveness && idling //&& flagDiscipline

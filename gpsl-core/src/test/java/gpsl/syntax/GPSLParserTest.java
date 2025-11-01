@@ -166,6 +166,15 @@ class GPSLParserTest {
     }
 
     @Test
+    void testUnaryNegationNeg() {
+        assertEquals("(formula ¬ (formula (literal true)))", parseExpression("¬ true"));
+        assertEquals("(formula ¬ (formula (literal false)))", parseExpression("¬ false"));
+        assertEquals("(formula ¬ (formula x))", parseExpression("¬ x"));
+        assertEquals("(formula ¬ (formula zm))", parseExpression("¬ zm"));
+        assertEquals("(formula ¬ (formula ¬ (formula (literal true))))", parseExpression("¬ ¬ true"));
+    }
+
+    @Test
     void testNext() {
         assertEquals("(formula next (formula (literal true)))", parseExpression("next true"));
         assertEquals("(formula N (formula (literal true)))", parseExpression("N true"));

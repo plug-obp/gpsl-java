@@ -148,9 +148,9 @@ public class GPSLTextDocumentService implements TextDocumentService {
     }
     
     private ExpressionDeclaration findDeclarationByExpressionInTree(Expression expr, Expression targetExpression) {
-        if (expr instanceof LetExpression let) {
+        if (expr instanceof LetExpression(Declarations declarations, SyntaxTreeElement expression)) {
             // Check if any binding has this expression
-            for (var binding : let.declarations().declarations()) {
+            for (var binding : declarations.declarations()) {
                 if (binding.expression() == targetExpression) {
                     return binding;
                 }
@@ -159,7 +159,7 @@ public class GPSLTextDocumentService implements TextDocumentService {
                 if (result != null) return result;
             }
             // Search in the body
-            if (let.expression() instanceof Expression bodyExpr) {
+            if (expression instanceof Expression bodyExpr) {
                 return findDeclarationByExpressionInTree(bodyExpr, targetExpression);
             }
         } else if (expr instanceof BinaryExpression bin) {
@@ -182,15 +182,15 @@ public class GPSLTextDocumentService implements TextDocumentService {
             findReferencesInExpression(bin.right(), visitor);
         } else if (expr instanceof UnaryExpression un) {
             findReferencesInExpression(un.expression(), visitor);
-        } else if (expr instanceof LetExpression let) {
+        } else if (expr instanceof LetExpression(Declarations declarations, SyntaxTreeElement expression)) {
             // Search in all bindings
-            for (var binding : let.declarations().declarations()) {
+            for (var binding : declarations.declarations()) {
                 findReferencesInExpression(binding.expression(), visitor);
             }
             // Search in the body (can be Expression or Automaton)
-            if (let.expression() instanceof Expression bodyExpr) {
+            if (expression instanceof Expression bodyExpr) {
                 findReferencesInExpression(bodyExpr, visitor);
-            } else if (let.expression() instanceof Automaton automaton) {
+            } else if (expression instanceof Automaton automaton) {
                 // Search through all transition guards
                 for (var transition : automaton.transitions()) {
                     findReferencesInExpression(transition.guard(), visitor);

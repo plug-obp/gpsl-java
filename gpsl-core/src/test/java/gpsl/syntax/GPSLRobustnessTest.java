@@ -1,11 +1,10 @@
 package gpsl.syntax;
 
-import gpsl.parser.GPSLParser;
 import gpsl.syntax.model.*;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static gpsl.syntax.TestHelpers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Comprehensive robustness tests for GPSL grammar and model.

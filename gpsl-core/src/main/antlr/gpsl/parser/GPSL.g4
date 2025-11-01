@@ -44,7 +44,7 @@ GLOBALLY: 'globally' | 'always' | 'G' | '[]' | '\u2610' /* ☐ */;
 IMPLICATION: 'implies' | '->' | '=>' | '→' | '⟹';
 IN : 'in';
 LET : 'let' | '\\';
-NEGATION: '!' | '~' | 'not';
+NEGATION: '!' | '~' | 'not' | '¬';
 NEXT : 'next' | 'N' | '()' | '◯' | 'o' | 'X';
 SUNTIL: 'until' | 'U' | 'SU' | 'strong-until';
 WUNTIL: 'W' | 'WU' | 'weak-until';

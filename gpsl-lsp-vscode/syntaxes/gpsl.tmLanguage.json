@@ -154,7 +154,7 @@
       "patterns": [
         {
           "name": "keyword.operator.logical.negation.gpsl",
-          "match": "\\b(not)\\b|[!~]"
+          "match": "\\b(not)\\b|[!~¬]"
         },
         {
           "name": "keyword.operator.logical.conjunction.gpsl",

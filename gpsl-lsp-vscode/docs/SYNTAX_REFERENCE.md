@@ -32,7 +32,7 @@ true, false, 1, 0
 
 ### Negation
 ```gpsl
-not p, !p, ~p
+not p, !p, ~p, ¬p
 ```
 
 ### Conjunction (AND)

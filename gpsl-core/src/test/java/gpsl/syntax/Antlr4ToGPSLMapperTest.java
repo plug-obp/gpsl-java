@@ -88,6 +88,10 @@ class Antlr4ToGPSLMapperTest {
         assertEquals("!", neg1.operator());
         assertInstanceOf(True.class, neg1.expression());
 
+        Negation neg1n = (Negation) parseExpressionOrFail("¬true");
+        assertEquals("¬", neg1n.operator());
+        assertInstanceOf(True.class, neg1n.expression());
+
         Negation neg2 = (Negation) parseExpressionOrFail("!false");
         assertEquals("!", neg2.operator());
         assertInstanceOf(False.class, neg2.expression());

@@ -1,8 +1,8 @@
 exclusion  =! [] ! |a==2 && b==2|
-noDeadlock =! G !|deadlock|
+noDeadlock =! G ¬|deadlock|
 
 // Stronger than no deadlock - ensures conditional continuous progress
-noLiveLock =! []( !(|a==1| ∨ |b==1|) ∨ <>(|a==2| ∨ |b==2|) )
+noLiveLock =! []( ¬(|a==1| ∨ |b==1|) ∨ <>(|a==2| ∨ |b==2|) )
 
 // Critical section cannot be empty forever if someone wants in
 noLiveLock1 = []( (|a==1| ∨ |b==1|) -> <> (|a==2| ∨ |b==2|) )

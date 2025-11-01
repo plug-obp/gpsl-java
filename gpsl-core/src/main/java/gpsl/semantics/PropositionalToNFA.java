@@ -31,7 +31,7 @@ public class PropositionalToNFA {
                 }
                 yield aut.semanticsKind() == AutomatonSemanticsKind.NFA ? Optional.of(aut) : Optional.empty();
             }
-            case Declarations d -> hasAutomaton(d.declarations().getFirst(), wantBuchi);
+            case Declarations d -> hasAutomaton(d.declarations().getLast(), wantBuchi);
             case ExpressionDeclaration ed -> hasAutomaton(ed.expression(), wantBuchi);
             case LetExpression le -> hasAutomaton(le.expression(), wantBuchi);
             default -> Optional.empty();

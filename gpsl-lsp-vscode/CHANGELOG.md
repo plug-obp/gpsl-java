@@ -5,6 +5,23 @@ All notable changes to the GPSL VS Code extension.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-11-02
+
+### Added
+
+- **Unicode Negation Support**: Syntax highlighting for Unicode negation symbol `¬` (U+00AC)
+- **Peterson's Algorithm Example**: Added comprehensive example file demonstrating mutual exclusion properties
+- **Documentation Updates**: Corrected installation instructions to reflect GitHub Releases distribution
+
+### Changed
+
+- **Installation Method**: Updated documentation to clarify extension is distributed via GitHub Releases, not VS Code Marketplace
+- **Symbol Resolution**: Improved language server to use last declaration when multiple exist
+
+### Fixed
+
+- **Syntax Highlighting**: Updated TextMate grammar to recognize Unicode negation operator
+
 ## [1.0.3] - 2025-10-27
 
 ### Fixed

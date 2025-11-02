@@ -1,7 +1,7 @@
 # GPSL Language
 
 ![Build Status](https://github.com/plug-obp/gpsl-java/actions/workflows/build-and-publish.yml/badge.svg)
-![Tests](https://img.shields.io/badge/tests-322%20passing-success)
+![Tests](https://img.shields.io/badge/tests-324%20passing-success)
 ![Java](https://img.shields.io/badge/java-23-blue)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fplug-obp%2Fgpsl-java.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fplug-obp%2Fgpsl-java?ref=badge_shield&issueType=license)
 
@@ -40,13 +40,19 @@ This repository contains multiple components:
   - Go to Definition, Document Symbols
   - Based on Eclipse LSP4J
 
+- **[gpsl-modelchecker](gpsl-modelchecker/)** - Model checking integration
+  - Verifies GPSL properties against operational models
+  - Integrates with OBP3 model checking infrastructure
+  - Configurable Büchi emptiness checking algorithms
+  - Depth-bounded model checking support
+
 ### Editor Support
 
 - **[gpsl-lsp-vscode](gpsl-lsp-vscode/)** - Visual Studio Code extension
   - Full syntax highlighting for GPSL
   - Language Server integration (diagnostics, navigation, outline)
   - Code snippets and auto-completion
-  - Available on VS Code Marketplace
+  - Available from GitHub Releases
 
 ## Features
 

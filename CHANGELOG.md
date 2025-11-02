@@ -5,6 +5,49 @@ All notable changes to the GPSL project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-11-02
+
+### Added
+
+#### New Module: gpsl-modelchecker
+- **Model Checker Integration**: New `StepModelChecker` class for verifying temporal properties against operational models
+- Integrates with OBP3 model checking infrastructure
+- Supports Büchi emptiness checking with configurable algorithms (GS09_CDLP05_SEPARATED)
+- Configurable depth-first traversal strategies
+- Depth-bounded model checking option
+
+#### Language Enhancements
+- **Unicode Negation Support**: Added support for Unicode negation symbol `¬` (U+00AC) as an alternative to `!`, `~`, and `not`
+- **Propositional to NFA Conversion**: New `PropositionalToNFA` utility for converting propositional formulas to NFAs
+- **Propositional Formula Detection**: New `IsPropositional` visitor for determining if expressions are purely propositional
+
+#### Examples and Documentation
+- **Peterson's Algorithm Example**: Added comprehensive `petterson.gpsl` example demonstrating mutual exclusion properties
+  - Exclusion property
+  - Deadlock freedom
+  - Livelock freedom
+  - Recurrence properties
+  - Liveness guarantees
+- Updated syntax reference with Unicode negation operator
+
+### Changed
+- **Package Reorganization**: Moved `Expression2BuchiAutomaton` from `gpsl.ltl3ba` to `gpsl.toBuchi` package
+- **Module System**: Added `module-info.java` to gpsl-core and gpsl-ltl3ba for JPMS compatibility
+- **Version Metadata**: Git hash now included only as build metadata, local builds tagged with `.local` suffix
+- **Symbol Resolution**: Fixed to use last declaration instead of first when multiple declarations exist
+- **Test Suite**: Expanded to 324 tests (up from 322)
+
+### Fixed
+- **NFA Extraction**: Improved NFA extraction logic to properly handle Büchi automata
+- **Automaton Detection**: Enhanced logic to check for both NFA and Büchi automata presence
+- **Peterson Properties**: Corrected property specifications in test cases
+- **Parentheses**: Removed extraneous parentheses in generated code
+
+### Technical
+- All modules remain compatible with Java 23
+- Gradle wrapper 9.1.0
+- Dependencies updated to latest OBP3 runtime (1.0.+) and algorithms (1.0.+)
+
 ## [1.0.3] - 2025-10-27
 
 ### Fixed

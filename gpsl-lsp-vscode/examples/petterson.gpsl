@@ -54,6 +54,7 @@ priorityRespect = []( (|a==1| ∧ |b==1| ∧ |turn == 0|) -> (!|b==2| U |a==2|) 
                   []( (|a==1| ∧ |b==1| ∧ |turn == 1|) -> (!|a==2| U |b==2|) )
 
 // Turn variable should reflect recent activity
+// this is an example, it does not work like this for petterson
 turnConsistency = []( (|a==2| -> |turn == 0|) ∧ (|b==2| -> |turn == 1|) )
 
 strictAlternation = []( (|a==1| ∧ |b==1|) ->
@@ -119,3 +120,17 @@ comprehensiveSpec =
     liveness ∧
     recurrence ∧
     nonInterference
+
+//Safety properties:
+//  - exclusion
+//  - noDeadlock
+//  - initialSafety
+//  - flagConsistency
+//  - flagDiscipline
+//  - priorityRespect
+//  - turnConsistency
+//  - strictAlternation
+//  - boundedOvertaking
+//  - noSpuriousWait
+//  - entryOrder
+//  - noReentry

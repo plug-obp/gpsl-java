@@ -48,6 +48,26 @@ flagDiscipline = let
                     // in CS implies that flag raised **since** (S) last idle. S is a past operator, current unsupported.
                     //G((|a==2|→(|a==1| S |a==0|))∧(|b==2|→(|b==1| S |b==0|)))
 
+// the flag discipline can be encoded with NFA though:
+flagDisciplineNFA = let
+        aIdle   = |a == 0|,
+        aNoFlag = |a != 1|,
+        aCS     = |a == 2|,
+        bIdle   = |a == 0|,
+        bNoFlag = |a != 1|,
+        bCS     = |a == 2|
+    in nfa
+        states s0, sa1, sb1, saX, sbX;
+        initial s0;
+        accept saX, sbX;
+        s0 [true] s0;
+        s0 [aIdle] sa1;
+        sa1 [aNoFlag] sa1;
+        sa1 [aCS] saX;
+        s0 [bIdle] sb1;
+        sb1 [bNoFlag] sb1;
+        sb1 [bCS] sbX
+
 
 // When turn favors A and both want in, A should enter first
 priorityRespect = []( (|a==1| ∧ |b==1| ∧ |turn == 0|) -> (!|b==2| U |a==2|) ) ∧

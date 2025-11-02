@@ -37,13 +37,16 @@ idling = let
 // Flags accurately reflect process state
 flagConsistency =! []( (|a==1| ∨ |a==2|) ↔ |dA|) ∧ ( (|b==1| ∨ |b==2|) ↔ |dB|)
 
+// A process cannot enter CS without first raising its flag since the last idle.
 flagDiscipline = let
                     aliceFlagUP=|a==1|,
                     aliceCS = |a==2|,
                     bobFlagUP=|b==1|,
                     bobCS = |b==2|
-                in! ([]   (aliceCS -> /*P*/ aliceFlagUP) //P is the past operator, currently unsupported
+                in! ([]   (aliceCS -> /*P*/ aliceFlagUP) //P is the past operator, currently unsupported.
                         && (bobCS   -> /*P*/ bobFlagUP  ) )
+                    // in CS implies that flag raised **since** (S) last idle. S is a past operator, current unsupported.
+                    //G((|a==2|→(|a==1| S |a==0|))∧(|b==2|→(|b==1| S |b==0|)))
 
 
 // When turn favors A and both want in, A should enter first

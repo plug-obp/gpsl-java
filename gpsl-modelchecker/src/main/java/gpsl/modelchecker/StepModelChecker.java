@@ -1,6 +1,7 @@
 package gpsl.modelchecker;
 
 import gpsl.semantics.AtomEvaluator;
+import gpsl.semantics.AutomatonSemantics;
 import gpsl.semantics.Semantics;
 import gpsl.syntax.Reader;
 import gpsl.syntax.model.*;
@@ -8,10 +9,13 @@ import obp3.modelchecking.EmptinessCheckerAnswer;
 import obp3.modelchecking.tools.BuchiModelCheckerModel;
 import obp3.modelchecking.tools.ModelCheckerBuilder;
 import obp3.runtime.IExecutable;
+import obp3.runtime.sli.DependentSemanticRelation;
 import obp3.runtime.sli.SemanticRelation;
 import obp3.runtime.sli.Step;
 import obp3.traversal.dfs.DepthFirstTraversal;
 import rege.reader.infra.ParseResult;
+
+import java.util.function.BiPredicate;
 
 public class StepModelChecker<MA, MC> {
     //model SLI
@@ -20,6 +24,7 @@ public class StepModelChecker<MA, MC> {
 
     //property
     SyntaxTreeElement propertyModel;
+    Automaton automaton;
 
     //options
     BuchiModelCheckerModel.BuchiEmptinessCheckerAlgorithm emptinessCheckerAlgorithm;
@@ -36,7 +41,8 @@ public class StepModelChecker<MA, MC> {
             case ParseResult.Success<Declarations> success -> {
                 this.modelSemantics = modelSemantics;
                 this.atomicPropositionEvaluator = atomicPropositionEvaluator;
-                this.propertyModel = success.value().declarations().getFirst();
+                this.propertyModel = success.value().declarations().getLast();
+                this.automaton = Semantics.toAutomaton(this.propertyModel);
                 this.emptinessCheckerAlgorithm = BuchiModelCheckerModel.BuchiEmptinessCheckerAlgorithm.GS09_CDLP05_SEPARATED;
                 this.traversalAlgorithm = DepthFirstTraversal.Algorithm.WHILE;
                 this.depthBound = -1;
@@ -76,14 +82,18 @@ public class StepModelChecker<MA, MC> {
         this.depthBound = depthBound;
     }
 
+    DependentSemanticRelation<Step<MA, MC>, Transition, State> propertySemanticsProvider(BiPredicate<String, Step<MA, MC>> atomEval) {
+        return new AutomatonSemantics<>(automaton, AtomEvaluator.from(atomEval));
+    }
+
     public IExecutable<EmptinessCheckerAnswer<?>> modelChecker() {
-        var propertySemantics = new Semantics<>(propertyModel, atomicPropositionEvaluator);
         var builder =
                 new ModelCheckerBuilder<MA, MC, Transition, State>()
                         .modelSemantics(modelSemantics)
-                        .propertySemantics(propertySemantics)
-                        .acceptingPredicateForProduct((c) -> propertySemantics.isAccepting(c.r()))
-                        .buchi(propertySemantics.getAutomaton().semanticsKind() == AutomatonSemanticsKind.BUCHI)
+                        .atomicPropositionEvaluator(atomicPropositionEvaluator.toBiPredicate())
+                        .propertySemantics(this::propertySemanticsProvider)
+                        .acceptingPredicateForProduct((c, sem) ->((AutomatonSemantics<Step<MA, MC>>)sem.r()).isAccepting(c.r()))
+                        .buchi(automaton.semanticsKind() == AutomatonSemanticsKind.BUCHI)
                         .emptinessCheckerAlgorithm(emptinessCheckerAlgorithm)
                         .traversalStrategy(traversalAlgorithm)
                         .depthBound(depthBound);

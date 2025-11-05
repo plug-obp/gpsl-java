@@ -47,7 +47,7 @@ public class Semantics<T> implements DependentSemanticRelation<T, Transition, St
      * @return the automaton
      * @throws IllegalArgumentException if element is not an Automaton or Expression
      */
-    private Automaton toAutomaton(SyntaxTreeElement element) {
+    public static Automaton toAutomaton(SyntaxTreeElement element) {
         var nfa = PropositionalToNFA.hasAutomaton(element, false);
         if (nfa.isPresent()) {
             return nfa.get();
@@ -60,11 +60,11 @@ public class Semantics<T> implements DependentSemanticRelation<T, Transition, St
         var exp = PropositionalToNFA.toExpression(element);
         return PropositionalToNFA
                 .toNFA(element)
-                .or(() -> exp.flatMap(this::toBuchi))
+                .or(() -> exp.flatMap(Semantics::toBuchi))
                 .orElseThrow(() -> new SemanticConversionException("Cannot convert element to automaton"));
     }
 
-    private Optional<Automaton> toBuchi(Expression expression) {
+    private static Optional<Automaton> toBuchi(Expression expression) {
         var result = Expression2BuchiAutomaton.convert(expression);
         if (result instanceof rege.reader.infra.ParseResult.Success<Automaton>(Automaton value)) {
             return Optional.of(value);

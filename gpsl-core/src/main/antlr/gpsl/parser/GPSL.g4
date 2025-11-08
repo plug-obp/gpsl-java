@@ -40,7 +40,7 @@ DISJUNCTION: 'or' | '||' | '\\/' | '+' | '∨';  // Removed single '|' to avoid 
 EQUIVALENCE: 'iff' | '<->' | '<=>' | '⟺' | '↔';
 EVENTUALLY: 'eventually' | 'F' | '<>' | '\u25C7' /*◇*/ | '\u2662' /*♢*/;
 FALSE: 'false' | '0';
-GLOBALLY: 'globally' | 'always' | 'G' | '[]' | '\u2610' /* ☐ */;
+GLOBALLY: 'globally' | 'always' | 'G' | '[]' | '\u2610' /* ☐ */; //maybe also add □ ?
 IMPLICATION: 'implies' | '->' | '=>' | '→' | '⟹';
 IN : 'in';
 LET : 'let' | '\\';

@@ -1,0 +1,64 @@
+door1_open = |d1 == 1|
+door1_closed = |d1 == 0|
+door2_open = |d2 == 1|
+door2_closed = |d2 == 0|
+authorized = |authorized|
+
+mustOpenD1 = |mustOpenD1|
+
+phase0 = |sequence_phase == 0|
+phase1 = |sequence_phase == 1|
+
+//M[1,2,3]
+exclusion *=! [] ¬(door1_open ∧ door2_open)
+//M[0,1,2,3]
+noDeadlock *=! [] ¬|deadlock|
+//M[2,3]
+security *=! [] ((door2_open ∧ ¬authorized) → ◯ door2_closed)
+//M[2,3]
+door1OpenAndNotAuthorizedLeadsToClosed *=! [] ((door1_open ∧ ¬authorized) → <> door1_closed)
+//M[2,3]
+door1EventuallyOpensIfAuthorized *=! [] <> (authorized → <> door1_open)
+//M[2,3]
+door2EventuallyOpensIfAuthorized *=! [] <> (authorized → <> door2_open)
+//M[0,1,2,3]
+alwaysProgressSomehow *=! []<> (authorized → <> (door1_open ∨ door2_open))
+//M[0,1,2,3]
+eventualSecurity *=! <> (¬ authorized ∧ ¬ door1_open ∧ ¬door2_open)
+//M[3]
+authLeadsToDoor1OpenM2 *=! [] ((authorized ∧ mustOpenD1 ∧ phase1) → ◇ door1_open)
+//M[2,3]
+door1OpenLeadsToDoor1Close *=! [] (door1_open → ◇ ¬door1_open)
+//M[3]
+doorsOpenInTheRightPhase *=! [] ((door1_open → phase1) ∧ (door2_open → phase0))
+phase1LeadsToDoor1Open *=! [] (phase1 → ◇ door1_open)
+phase0LeadsToDoor2Open *=! [] (phase0 → ◇ door2_open)
+//M[2,3]
+accessSequence *=! [] (authorized →
+                        ( (authorized U door1_open) ∨ ◇¬authorized ) →
+                            ◇ ( door1_open ∧ ( (authorized U ¬door1_open) ∨ ◇¬authorized ) →
+                                ◇ ( ¬door1_open ∧ ( (authorized U door2_open) ∨ ◇¬authorized))))
+//M[3]
+enoughAuthGetsYouThrough *=! [] ( (authorized ∧ phase0 ∧ mustOpenD1) →
+                                    ◇ (// Either we lose the preconditions (so obligation ends)
+                                        ¬(authorized ∧ phase0 ∧ mustOpenD1)
+                                        // OR the sequence starts
+                                        ∨ (door1_open ∧ phase1))) 
+                               ∧ [] ( (door1_open ∧ phase1) →
+                                        ◇ (¬door1_open
+                                            ∨ (phase1 ∧ door2_open))) 
+                               ∧ [] ( (phase1 ∧ door2_open) → ◇ door2_open )
+//M[2,3]
+authWithoutDoor1OpenLeadsToNotAuthorizedOrDoor1Open *=! [] ((authorized ∧ ¬door1_open) → ◇ (¬authorized ∨ door1_open))
+//M[2,3]
+authWithoutDoor2OpenLeadsToNotAuthorizedOrDoor2Open *=! [] ((authorized ∧ ¬door2_open) → ◇ (¬authorized ∨ door2_open))
+
+door2AfterDoor1 = [] ( (authorized ∧ door1_open ∧ (authorized U door2_open)) → ◇ door2_open)
+
+// “As long as the system remains authorized, every door1 opening must eventually be followed by a door2 opening; the requirement ceases once authorization is revoked.”
+door2AfterDoor1D = let 
+        p = (door1_open → ◇ door2_open),
+        q = authorized,
+        r = ¬authorized,
+    in
+        [] q → p W r

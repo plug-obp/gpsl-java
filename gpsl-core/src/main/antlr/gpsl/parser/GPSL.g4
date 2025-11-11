@@ -45,7 +45,7 @@ IMPLICATION: 'implies' | '->' | '=>' | '→' | '⟹';
 IN : 'in';
 LET : 'let' | '\\';
 NEGATION: '!' | '~' | 'not' | '¬';
-NEXT : 'next' | 'N' | '()' | '◯' | 'o' | 'X';
+NEXT : 'next' | 'N' | '()' | '◯' | 'o' | 'X'; // maybe also add ○
 SUNTIL: 'until' | 'U' | 'SU' | 'strong-until';
 WUNTIL: 'W' | 'WU' | 'weak-until';
 SRELEASE: 'M' | 'SR' | 'strong-release';

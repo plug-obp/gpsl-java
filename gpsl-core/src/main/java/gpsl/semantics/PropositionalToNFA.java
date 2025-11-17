@@ -39,16 +39,16 @@ public class PropositionalToNFA {
     }
 
     private static Automaton toNFA(Expression expression) {
-        State initialState = new State("s");
-        State finalState = new State("x");
+        State i = new State("s");
+        State x = new State("x");
         return new Automaton(
                 AutomatonSemanticsKind.NFA,
-                Set.of(initialState, finalState),
-                Set.of(initialState),
-                Set.of(finalState),
+                Set.of(i, x),
+                Set.of(i),
+                Set.of(x),
                 List.of(
-                        new Transition(initialState, 1, new Negation("!", expression), finalState),
-                        new Transition(initialState, 1, expression, initialState)
+                        new Transition(i, 1, expression, x),
+                        new Transition(i, 1, new Negation("!", expression), i)
                 )
         );
     }

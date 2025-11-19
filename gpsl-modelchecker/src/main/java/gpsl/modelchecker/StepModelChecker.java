@@ -86,7 +86,7 @@ public class StepModelChecker<MA, MC> {
         return new AutomatonSemantics<>(automaton, AtomEvaluator.from(atomEval));
     }
 
-    public IExecutable<EmptinessCheckerAnswer<?>> modelChecker() {
+    public IExecutable<?, EmptinessCheckerAnswer<?>> modelChecker() {
         var builder =
                 new ModelCheckerBuilder<MA, MC, Transition, State>()
                         .modelSemantics(modelSemantics)

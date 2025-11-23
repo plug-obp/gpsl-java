@@ -1,0 +1,61 @@
+plugins {
+    id 'java'
+    id 'antlr'
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url = uri("https://maven.pkg.github.com/plug-obp/obp3-core")
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
+
+    maven {
+        url = uri("https://maven.pkg.github.com/plug-obp/rege-java")
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(23))
+    }
+}
+
+dependencies {
+    antlr 'org.antlr:antlr4:4.13.2'
+    implementation 'org.obpcdl:obp3-runtime:1.0.+'
+    implementation 'org.obpcdl:reader-infra:1.0.1-main.+'
+    implementation project(':gpsl-core')
+    implementation 'org.obpcdl:obp3-algos:1.0.+'
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+generateGrammarSource {
+    outputDirectory = layout.buildDirectory.dir('generated-src/antlr/main/gpsl/parser').get().asFile
+    packageName = 'gpsl.parser'
+    arguments = [
+            '-Xexact-output-dir'
+    ]
+}
+
+/**
+ * the following is needed because [antlr plugin wiring bug](https://github.com/gradle/gradle/issues/25885#issue-1818904631)
+ * [workaround](https://github.com/gradle/gradle/issues/19555#issuecomment-1593252653)
+ */
+sourceSets.configureEach {
+    var generateGrammarSource = tasks.named(getTaskName("generate", "GrammarSource"))
+    java.srcDir(generateGrammarSource.map { files() })
+}

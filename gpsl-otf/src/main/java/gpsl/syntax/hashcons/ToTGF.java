@@ -1,5 +1,6 @@
 package gpsl.syntax.hashcons;
 
+import gpsl.syntax.model.Factory;
 import gpsl.syntax.model.SyntaxTreeElement;
 import obp3.sli.core.operators.product.Product;
 import obp3.traversal.dfs.DepthFirstTraversal;

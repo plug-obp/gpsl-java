@@ -168,6 +168,12 @@ public class GPSLTextDocumentService implements TextDocumentService {
             return findDeclarationByExpressionInTree(bin.right(), targetExpression);
         } else if (expr instanceof UnaryExpression un) {
             return findDeclarationByExpressionInTree(un.expression(), targetExpression);
+        } else if (expr instanceof Conditional cond) {
+            var condition = findDeclarationByExpressionInTree(cond.condition(), targetExpression);
+            if (condition != null) return condition;
+            var trueBranch = findDeclarationByExpressionInTree(cond.trueBranch(), targetExpression);
+            if (trueBranch != null) return trueBranch;
+            return findDeclarationByExpressionInTree(cond.falseBranch(), targetExpression);
         }
         return null;
     }
@@ -182,6 +188,10 @@ public class GPSLTextDocumentService implements TextDocumentService {
             findReferencesInExpression(bin.right(), visitor);
         } else if (expr instanceof UnaryExpression un) {
             findReferencesInExpression(un.expression(), visitor);
+        } else if (expr instanceof Conditional cond) {
+            findReferencesInExpression(cond.condition(), visitor);
+            findReferencesInExpression(cond.trueBranch(), visitor);
+            findReferencesInExpression(cond.falseBranch(), visitor);
         } else if (expr instanceof LetExpression(Declarations declarations, SyntaxTreeElement expression)) {
             // Search in all bindings
             for (var binding : declarations.declarations()) {

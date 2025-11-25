@@ -466,4 +466,234 @@ class GoToDefinitionTest {
         assertEquals(1, resultQQ2.size());
         assertEquals(1, resultQQ2.get(0).getRange().getStart().getLine()); // Should jump to "qq = false"
     }
+
+    @Test
+    void testConditionalExpressionInCondition() throws Exception {
+        String uri = "file:///test.gpsl";
+        String text = """
+            p = true
+            q = false
+            result = p ? true : q
+            """;
+
+        openDocument(uri, text);
+
+        // Click on 'p' in condition (line 2, column 9)
+        Position position = new Position(2, 9);
+        var result = getDefinition(uri, position);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(0, result.get(0).getRange().getStart().getLine());
+    }
+
+    @Test
+    void testConditionalExpressionInTrueBranch() throws Exception {
+        String uri = "file:///test.gpsl";
+        String text = """
+            p = true
+            q = false
+            result = false ? p : q
+            """;
+
+        openDocument(uri, text);
+
+        // Click on 'p' in true branch (line 2, column 17)
+        Position position = new Position(2, 17);
+        var result = getDefinition(uri, position);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(0, result.get(0).getRange().getStart().getLine());
+    }
+
+    @Test
+    void testConditionalExpressionInFalseBranch() throws Exception {
+        String uri = "file:///test.gpsl";
+        String text = """
+            p = true
+            q = false
+            result = true ? p : q
+            """;
+
+        openDocument(uri, text);
+
+        // Click on 'q' in false branch (line 2, column 20)
+        Position position = new Position(2, 20);
+        var result = getDefinition(uri, position);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(1, result.get(0).getRange().getStart().getLine());
+    }
+
+    @Test
+    void testNestedConditionalExpression() throws Exception {
+        String uri = "file:///test.gpsl";
+        String text = """
+            p = true
+            q = false
+            r = true
+            result = p ? (q ? true : false) : r
+            """;
+
+        openDocument(uri, text);
+
+        // Click on 'p' in outer condition (line 3, column 9)
+        Position posP = new Position(3, 9);
+        var resultP = getDefinition(uri, posP);
+        assertNotNull(resultP);
+        assertEquals(1, resultP.size());
+        assertEquals(0, resultP.get(0).getRange().getStart().getLine());
+
+        // Click on 'q' in nested condition (line 3, column 14)
+        Position posQ = new Position(3, 14);
+        var resultQ = getDefinition(uri, posQ);
+        assertNotNull(resultQ);
+        assertEquals(1, resultQ.size());
+        assertEquals(1, resultQ.get(0).getRange().getStart().getLine());
+
+        // Click on 'r' in false branch (line 3, column 34)
+        Position posR = new Position(3, 34);
+        var resultR = getDefinition(uri, posR);
+        assertNotNull(resultR);
+        assertEquals(1, resultR.size());
+        assertEquals(2, resultR.get(0).getRange().getStart().getLine());
+    }
+
+    @Test
+    void testConditionalWithComplexExpressions() throws Exception {
+        String uri = "file:///test.gpsl";
+        String text = """
+            a = true
+            b = false
+            c = true
+            d = false
+            result = (a and b) ? (c or d) : (a xor b)
+            """;
+
+        openDocument(uri, text);
+
+        // Click on 'a' in condition (line 4, column 10)
+        Position posA1 = new Position(4, 10);
+        var resultA1 = getDefinition(uri, posA1);
+        assertNotNull(resultA1);
+        assertEquals(1, resultA1.size());
+        assertEquals(0, resultA1.get(0).getRange().getStart().getLine());
+
+        // Click on 'b' in condition (line 4, column 16)
+        Position posB1 = new Position(4, 16);
+        var resultB1 = getDefinition(uri, posB1);
+        assertNotNull(resultB1);
+        assertEquals(1, resultB1.size());
+        assertEquals(1, resultB1.get(0).getRange().getStart().getLine());
+
+        // Click on 'c' in true branch (line 4, column 22)
+        Position posC = new Position(4, 22);
+        var resultC = getDefinition(uri, posC);
+        assertNotNull(resultC);
+        assertEquals(1, resultC.size());
+        assertEquals(2, resultC.get(0).getRange().getStart().getLine());
+
+        // Click on 'd' in true branch (line 4, column 27)
+        Position posD = new Position(4, 27);
+        var resultD = getDefinition(uri, posD);
+        assertNotNull(resultD);
+        assertEquals(1, resultD.size());
+        assertEquals(3, resultD.get(0).getRange().getStart().getLine());
+
+        // Click on 'a' in false branch (line 4, column 33)
+        Position posA2 = new Position(4, 33);
+        var resultA2 = getDefinition(uri, posA2);
+        assertNotNull(resultA2);
+        assertEquals(1, resultA2.size());
+        assertEquals(0, resultA2.get(0).getRange().getStart().getLine());
+
+        // Click on 'b' in false branch (line 4, column 39)
+        Position posB2 = new Position(4, 39);
+        var resultB2 = getDefinition(uri, posB2);
+        assertNotNull(resultB2);
+        assertEquals(1, resultB2.size());
+        assertEquals(1, resultB2.get(0).getRange().getStart().getLine());
+    }
+
+    @Test
+    void testConditionalInLetExpression() throws Exception {
+        String uri = "file:///test.gpsl";
+        String text = """
+            p = true
+            result = let
+                x = false,
+                y = p ? x : true
+            in
+                y
+            """;
+
+        openDocument(uri, text);
+
+        // Click on 'p' in conditional (line 3, column 8)
+        Position posP = new Position(3, 8);
+        var resultP = getDefinition(uri, posP);
+        assertNotNull(resultP);
+        assertEquals(1, resultP.size());
+        assertEquals(0, resultP.get(0).getRange().getStart().getLine());
+
+        // Click on 'x' in conditional true branch (line 3, column 12)
+        Position posX = new Position(3, 12);
+        var resultX = getDefinition(uri, posX);
+        assertNotNull(resultX);
+        assertEquals(1, resultX.size());
+        // Should find 'x = false' in let binding on line 2
+        assertEquals(2, resultX.get(0).getRange().getStart().getLine());
+    }
+
+    @Test
+    void testChainedConditionals() throws Exception {
+        String uri = "file:///test.gpsl";
+        String text = """
+            a = true
+            b = false
+            c = true
+            result = a ? b : c ? a : b
+            """;
+
+        openDocument(uri, text);
+
+        // Click on 'a' in first condition (line 3, column 9)
+        Position posA1 = new Position(3, 9);
+        var resultA1 = getDefinition(uri, posA1);
+        assertNotNull(resultA1);
+        assertEquals(1, resultA1.size());
+        assertEquals(0, resultA1.get(0).getRange().getStart().getLine());
+
+        // Click on 'b' in first true branch (line 3, column 13)
+        Position posB1 = new Position(3, 13);
+        var resultB1 = getDefinition(uri, posB1);
+        assertNotNull(resultB1);
+        assertEquals(1, resultB1.size());
+        assertEquals(1, resultB1.get(0).getRange().getStart().getLine());
+
+        // Click on 'c' in nested condition (line 3, column 17)
+        Position posC = new Position(3, 17);
+        var resultC = getDefinition(uri, posC);
+        assertNotNull(resultC);
+        assertEquals(1, resultC.size());
+        assertEquals(2, resultC.get(0).getRange().getStart().getLine());
+
+        // Click on 'a' in nested true branch (line 3, column 21)
+        Position posA2 = new Position(3, 21);
+        var resultA2 = getDefinition(uri, posA2);
+        assertNotNull(resultA2);
+        assertEquals(1, resultA2.size());
+        assertEquals(0, resultA2.get(0).getRange().getStart().getLine());
+
+        // Click on 'b' in nested false branch (line 3, column 25)
+        Position posB2 = new Position(3, 25);
+        var resultB2 = getDefinition(uri, posB2);
+        assertNotNull(resultB2);
+        assertEquals(1, resultB2.size());
+        assertEquals(1, resultB2.get(0).getRange().getStart().getLine());
+    }
 }
+
+

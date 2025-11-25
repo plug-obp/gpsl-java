@@ -17,7 +17,7 @@ package gpsl.syntax.model;
  * p ? (q ? r : s) : t          // Nested conditional
  * a ? b : c ? d : e            // Chained (right-associative)
  * (p and q) ? r : s            // Complex condition
- * p ? (<> q) : ([] r)          // Temporal operators in branches
+ * p ? (&lt;&gt; q) : ([] r)          // Temporal operators in branches
  * </pre>
  * </p>
  *

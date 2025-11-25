@@ -6,12 +6,14 @@ import gpsl.semantics.Semantics;
 import gpsl.syntax.Reader;
 import gpsl.syntax.model.*;
 import obp3.modelchecking.EmptinessCheckerAnswer;
+import obp3.modelchecking.EmptinessCheckerStatus;
 import obp3.modelchecking.tools.BuchiModelCheckerModel;
-import obp3.modelchecking.tools.ModelCheckerBuilder;
+import obp3.modelchecking.tools.XModelCheckerBuilder;
 import obp3.runtime.IExecutable;
 import obp3.runtime.sli.DependentSemanticRelation;
 import obp3.runtime.sli.SemanticRelation;
 import obp3.runtime.sli.Step;
+import obp3.sli.core.operators.product.Product;
 import obp3.traversal.dfs.DepthFirstTraversal;
 import rege.reader.infra.ParseResult;
 
@@ -86,9 +88,9 @@ public class StepModelChecker<MA, MC> {
         return new AutomatonSemantics<>(automaton, AtomEvaluator.from(atomEval));
     }
 
-    public IExecutable<?, EmptinessCheckerAnswer<?>> modelChecker() {
+    public IExecutable<EmptinessCheckerStatus, EmptinessCheckerAnswer<Product<MC, State>>> modelChecker() {
         var builder =
-                new ModelCheckerBuilder<MA, MC, Transition, State>()
+                new XModelCheckerBuilder<MA, MC, Transition, State>()
                         .modelSemantics(modelSemantics)
                         .atomicPropositionEvaluator(atomicPropositionEvaluator.toBiPredicate())
                         .propertySemantics(this::propertySemanticsProvider)

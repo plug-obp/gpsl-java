@@ -5,7 +5,7 @@ package gpsl.syntax.model;
  */
 public sealed interface Expression extends SyntaxTreeElement 
     permits True, False, Atom, Reference,
-            UnaryExpression, BinaryExpression, LetExpression {
+            UnaryExpression, BinaryExpression, Conditional, LetExpression {
     
     @Override
     <T, R> R accept(Visitor<T, R> visitor, T input);

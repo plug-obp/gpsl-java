@@ -95,7 +95,9 @@ public interface Visitor<T, R> {
     default R visitWeakRelease(WeakRelease element, T input) {
         return visitBinaryExpression(element, input);
     }
-    
+
+    default R visitConditional(Conditional element, T input) { return visitExpression(element, input); }
+
     default R visitExpressionDeclaration(ExpressionDeclaration element, T input) {
         return visitSyntaxTreeElement(element, input);
     }

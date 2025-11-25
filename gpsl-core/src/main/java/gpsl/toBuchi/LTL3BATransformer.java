@@ -133,7 +133,15 @@ public class LTL3BATransformer implements Visitor<Void, String> {
         String right = element.right().accept(this, input);
         return "(" + left + " <-> " + right + ")";
     }
-    
+
+    @Override
+    public String visitConditional(Conditional element, Void input) {
+        // Is ' c ? tB :fB / ITE(c, tB, fB)' by LTL3BA?, use the encoding instead: (c && tB) || (!c && fB)
+        var tB = "(" + element.condition().accept(this, input) + " && " + element.trueBranch().accept(this, input) + ")";
+        var fB = "(!" + element.condition().accept(this, input) + " && " + element.falseBranch().accept(this, input) + ")";
+        return "(" + tB + " || " + fB + ")";
+    }
+
     @Override
     public String visitStrongUntil(StrongUntil element, Void input) {
         String left = element.left().accept(this, input);

@@ -52,6 +52,14 @@ public class NamelessHash implements Visitor<Void, Integer> {
     }
 
     @Override
+    public Integer visitConditional(Conditional element, Void input) {
+        var hc = element.condition().accept(this, input);
+        var ht = element.trueBranch().accept(this, input);
+        var hf = element.falseBranch().accept(this, input);
+        return Objects.hash(hc, ht, hf);
+    }
+
+    @Override
     public Integer visitExpressionDeclaration(ExpressionDeclaration element, Void input) {
         return element.expression().accept(this, input);
     }

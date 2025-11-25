@@ -2,7 +2,8 @@ package gpsl.syntax;
 
 import gpsl.syntax.model.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Resolves symbol references in GPSL syntax trees.
@@ -117,6 +118,14 @@ public class SymbolResolver implements Visitor<Context, Void> {
     public Void visitBinaryExpression(BinaryExpression binaryExpression, Context environment) {
         binaryExpression.left().accept(this, environment);
         binaryExpression.right().accept(this, environment);
+        return null;
+    }
+
+    @Override
+    public Void visitConditional(Conditional conditional, Context environment) {
+        conditional.condition().accept(this, environment);
+        conditional.trueBranch().accept(this, environment);
+        conditional.falseBranch().accept(this, environment);
         return null;
     }
 

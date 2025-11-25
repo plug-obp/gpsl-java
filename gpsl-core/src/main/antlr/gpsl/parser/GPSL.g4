@@ -18,6 +18,7 @@ formula :
         | formula operator=DISJUNCTION formula                                      #BinaryExp
         | formula operator=XOR formula                                              #BinaryExp
         |<assoc=right> formula operator=(IMPLICATION | EQUIVALENCE) formula         #BinaryExp
+        | formula '?' formula ':' formula                                           #ConditionalExp
         | letDecl formula                                                           #LetExp
         ;
 
@@ -68,6 +69,8 @@ QUOTEATOM: '"' ('\\"' | ~["])* '"';
 IDENTIFIER : [a-zA-Z][a-zA-Z_0-9]*;
 NATURAL: [0-9]+;
 
+QMARK : '?';
+COLON : ':';
 EQ : '=';
 SEQ : '*=';
 COMMA : ',';

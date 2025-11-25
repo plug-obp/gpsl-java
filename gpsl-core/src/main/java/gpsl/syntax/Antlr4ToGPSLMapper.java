@@ -121,6 +121,16 @@ public class Antlr4ToGPSLMapper extends GPSLBaseListener {
     }
 
     @Override
+    public void exitConditionalExp(GPSLParser.ConditionalExpContext ctx) {
+        Expression condition = getValue(ctx.formula(0));
+        Expression trueBranch = getValue(ctx.formula(1));
+        Expression falseBranch = getValue(ctx.formula(2));
+
+        Conditional conditional = new Conditional(condition, trueBranch, falseBranch);
+        setValue(ctx, conditional);
+    }
+
+    @Override
     public void exitAtomExp(GPSLParser.AtomExpContext ctx) {
         setValue(ctx, getValue(ctx.atom()));
     }
@@ -245,14 +255,12 @@ public class Antlr4ToGPSLMapper extends GPSLBaseListener {
         List<String> stateNames = getValue(ctx.stateDecl());
         List<String> initialNames = getValue(ctx.initialDecl());
         List<String> acceptNames = getValue(ctx.acceptDecl());
-        
+
+        // Sort transitions by priority (ascending: 0, 1, 2, ... where 0 > 1 > 2 in precedence)
         List<Transition> transitions = ctx.transitionDecl().stream()
                 .map(this::<Transition>getValue)
-                .collect(Collectors.toList());
-        
-        // Sort transitions by priority (ascending: 0, 1, 2, ... where 0 > 1 > 2 in precedence)
-        transitions.sort((a, b) -> Integer.compare(a.priority(), b.priority()));
-        
+                .sorted(Comparator.comparingInt(Transition::priority)).collect(Collectors.toList());
+
         // Convert state names to a set for the automaton
         Set<State> states = stateNames.stream()
                 .map(State::new)

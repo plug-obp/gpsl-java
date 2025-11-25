@@ -139,6 +139,17 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
+    public Boolean visitConditional(Conditional element, SyntaxTreeElement input) {
+        if (element == input) return true;
+        if (input instanceof Conditional(Expression condition, Expression trueBranch, Expression falseBranch)) {
+            return element.condition().accept(this, condition) &&
+                    element.trueBranch().accept(this, trueBranch) &&
+                    element.falseBranch().accept(this, falseBranch);
+        }
+        return false;
+    }
+
+    @Override
     public Boolean visitStrongRelease(StrongRelease element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof StrongRelease other) {

@@ -53,6 +53,14 @@ xor2 = p ^ q
 xor3 = p ⊻ q
 xor4 = p ⊕ q
 
+// Logical operators - conditional (ternary)
+cond1 = p ? q : r                          // If p then q else r
+cond2 = true ? |grant| : |deny|            // Conditional with atoms
+cond3 = (a and b) ? c : d                  // Conditional with complex condition
+cond4 = p ? (q ? r : s) : t                // Nested conditional
+cond5 = a ? b : c ? d : e                  // Chained conditional (right-associative: a ? b : (c ? d : e))
+cond6 = (p -> q) ? (r U s) : ([] t)        // Conditional with temporal operators
+
 // Temporal operators - next
 next1 = next p
 next2 = N p

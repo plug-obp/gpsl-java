@@ -5,6 +5,17 @@ All notable changes to the GPSL VS Code extension.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Conditional Operator**: Support for ternary conditional expressions `condition ? trueBranch : falseBranch`
+  - Syntax highlighting for `?` and `:` operators
+  - Code snippets: `cond` (simple) and `condn` (nested)
+  - Comprehensive example file: `examples/sampleConditional.gpsl`
+  - Documentation in SYNTAX_REFERENCE.md with examples
+  - Right-associative parsing: `a ? b : c ? d : e` parses as `a ? b : (c ? d : e)`
+
 ## [1.1.0] - 2025-11-02
 
 ### Added

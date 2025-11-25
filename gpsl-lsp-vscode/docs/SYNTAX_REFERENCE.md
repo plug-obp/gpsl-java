@@ -60,6 +60,28 @@ p implies q, p -> q, p => q, p → q, p ⟹ q
 p iff q, p <-> q, p <=> q, p ⟺ q, p ↔ q
 ```
 
+### Conditional (Ternary)
+```gpsl
+condition ? trueBranch : falseBranch
+```
+
+The conditional operator evaluates the condition and returns the trueBranch if true, otherwise the falseBranch.
+
+**Examples:**
+```gpsl
+// Simple conditional
+result = p ? q : r
+
+// Nested conditional  
+result = p ? (q ? r : s) : t
+
+// With complex expressions
+result = (a and b) ? (c or d) : (e xor f)
+
+// Chained conditionals (right-associative)
+result = a ? b : c ? d : e    // Same as: a ? b : (c ? d : e)
+```
+
 ## Temporal Operators
 
 ### Next (○)
@@ -210,6 +232,7 @@ in states s0, s1;
 5. `or` (disjunction)
 6. `xor` (exclusive or)
 7. `implies`, `iff` (implication, equivalence) (right-associative)
+8. `? :` (conditional/ternary) (right-associative)
 
 ## Examples
 

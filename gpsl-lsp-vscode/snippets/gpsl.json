@@ -93,6 +93,20 @@
     ],
     "description": "Weak until: p holds until q (or forever)"
   },
+  "Conditional": {
+    "prefix": "cond",
+    "body": [
+      "${1:condition} ? ${2:trueBranch} : ${0:falseBranch}"
+    ],
+    "description": "Conditional (ternary): if condition then trueBranch else falseBranch"
+  },
+  "Conditional Nested": {
+    "prefix": "condn",
+    "body": [
+      "${1:condition} ? (${2:innerCond} ? ${3:trueTrue} : ${4:trueFalse}) : ${0:falseBranch}"
+    ],
+    "description": "Nested conditional expression"
+  },
   "Pipe Atom": {
     "prefix": "atom",
     "body": [

@@ -1,0 +1,141 @@
+// GPSL Example - Conditional (Ternary) Operator
+// Demonstrates the use of conditional expressions: condition ? trueBranch : falseBranch
+
+// Basic conditional expressions
+basic1 = p ? q : r                    // If p then q else r
+basic2 = true ? |granted| : |denied|  // With atoms
+basic3 = false ? |granted| : |denied| // Evaluates to |denied|
+
+// Conditional with complex conditions
+complexCond1 = (a and b) ? c : d
+complexCond2 = (p or q) ? (r and s) : (t or u)
+complexCond3 = (p -> q) ? r : s
+
+// Nested conditionals
+nested1 = p ? (q ? r : s) : t
+nested2 = p ? q : (r ? s : t)
+nested3 = p ? (q ? (r ? s : t) : u) : v
+
+// Chained conditionals (right-associative)
+// a ? b : c ? d : e  is parsed as  a ? b : (c ? d : e)
+chained1 = a ? b : c ? d : e
+chained2 = a ? b : c ? d : e ? f : g
+
+// Conditional with temporal operators
+temporal1 = p ? (<> q) : ([] r)
+temporal2 = ([] p) ? (q U r) : (s W t)
+temporal3 = p ? (next q) : (eventually r)
+
+// Real-world examples
+
+// Access control: admin has full access, owner has write access, public has read-only
+accessControl = let
+    isAdmin = |user:role = admin|,
+    isOwner = |user:id = resource:owner|,
+    isPublic = |resource:public = true|,
+    access = isAdmin ? |full| : isOwner ? |write| : isPublic ? |read| : |none|
+in
+    access
+
+// Safety property with conditional
+safetyWithCond = let
+    highPriority = |task:priority > 5|,
+    normalDelay = |delay = 100ms|,
+    fastDelay = |delay = 10ms|,
+    delay = highPriority ? fastDelay : normalDelay
+in
+    [] (|request| -> (<> delay))
+
+// Resource allocation strategy
+resourceAlloc = let
+    criticalTask = |task:critical = true|,
+    availableMemory = |sys:memory > 1GB|,
+
+    // Allocate based on task criticality and resource availability
+    allocate = criticalTask ?
+        (availableMemory ? |allocate_high| : |preempt_low|) :
+        (availableMemory ? |allocate_normal| : |queue|)
+in
+    allocate
+
+// Mutual exclusion with conditional
+mutex = let
+    alice = |{Alice}@CS|,
+    bob = |{Bob}@CS|,
+    turn = |turn = alice|,
+
+    // Priority based on turn
+    canEnter = turn ? !bob : !alice
+in
+    [] canEnter
+
+// Mode-based behavior
+modeBehavior = let
+    normalMode = |mode = normal|,
+    safeMode = |mode = safe|,
+    emergencyMode = |mode = emergency|,
+
+    // Different behaviors for different modes
+    behavior = emergencyMode ?
+        ([] |shutdown|) :
+        (safeMode ?
+            ([] |limit_operations|) :
+            |normal_operations|)
+in
+    behavior
+
+// Conditional in automaton guard
+conditionalAutomaton = let
+    condition = |flag = true|,
+    guardTrue = |state = active|,
+    guardFalse = |state = inactive|,
+    guard = condition ? guardTrue : guardFalse
+in
+    states s0, s1;
+    initial s0;
+    accept s1;
+    s0 [guard] s1;
+    s1 [!guard] s0
+
+// Timeout handling
+timeoutHandler = let
+    timeout = |elapsed > 5s|,
+    success = |operation = success|,
+    retry = |retry_count < 3|,
+
+    // If timeout, retry if possible, otherwise fail
+    nextAction = timeout ?
+        (retry ? |retry| : |fail|) :
+        (success ? |complete| : |continue|)
+in
+    nextAction
+
+// Complex formula with multiple conditionals
+complexExample = let
+    // Conditions
+    systemActive = |sys:active = true|,
+    highLoad = |sys:load > 80%|,
+    maintenanceMode = |sys:maintenance = true|,
+
+    // Actions based on multiple conditions
+    action = maintenanceMode ?
+        |schedule_later| :
+        (systemActive ?
+            (highLoad ? |queue| : |execute|) :
+            |system_offline|)
+in
+    [] (|new_request| -> action)
+
+// Fairness with conditional priority
+fairnessWithPriority = let
+    reqA = |process_A:request|,
+    reqB = |process_B:request|,
+    priorityA = |process_A:priority|,
+
+    // Higher priority process gets preference
+    grant = priorityA ?
+        (<> |grant_A|) :
+        (<> |grant_B|)
+in
+    [] ((reqA or reqB) -> grant)
+

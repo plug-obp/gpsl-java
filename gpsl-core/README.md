@@ -18,6 +18,7 @@ This module provides the fundamental language infrastructure for GPSL:
 
 - **Temporal Logic**: LTL operators (next, eventually, globally, until, release)
 - **Propositional Logic**: Boolean operators with multiple syntax variants
+- **Conditional Operator**: Ternary conditional (`condition ? trueBranch : falseBranch`)
 - **Automata**: Büchi and NFA specifications with optional priorities
 - **Let Expressions**: Scoped variable bindings
 - **Atoms**: Pipe-delimited (`|...|`) and quoted (`"..."`) with escape sequences

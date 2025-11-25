@@ -5,6 +5,32 @@ All notable changes to the GPSL project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+#### Language Enhancements
+- **Conditional Operator**: Support for ternary conditional expressions `condition ? trueBranch : falseBranch`
+  - Right-associative parsing: `a ? b : c ? d : e` parses as `a ? b : (c ? d : e)`
+  - Full support in all language components:
+    - Syntax parsing with ANTLR4 grammar
+    - AST representation with `Conditional` record class
+    - Semantic evaluation in `Evaluator`
+    - Propositional detection in `IsPropositional`
+    - LTL3BA transformation (encoded as `(c && tB) || (!c && fB)`)
+    - Symbol resolution for references in all branches
+    - LSP go-to-definition for references in condition, true branch, and false branch
+  - Comprehensive test coverage (67 new tests):
+    - 60 tests in gpsl-core (syntax, semantics, LTL3BA, IsPropositional)
+    - 7 tests in gpsl-lsp (go-to-definition in all branches)
+  - Complete documentation:
+    - JavaDoc for `Conditional` class
+    - VS Code syntax highlighting
+    - Code snippets (`cond`, `condn`)
+    - 21+ examples in `sampleConditional.gpsl`
+    - SYNTAX_REFERENCE.md with operator precedence
+  - Real-world use cases: access control, resource allocation, mode-based behavior, timeout handling
+
 ## [1.1.0] - 2025-11-02
 
 ### Added

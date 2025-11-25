@@ -58,6 +58,7 @@ This repository contains multiple components:
 
 - **Temporal Logic**: Full support for LTL operators (next, eventually, globally, until, release)
 - **Propositional Logic**: Standard boolean operators with multiple syntax variants
+- **Conditional Operator**: Ternary conditional expressions (`condition ? trueBranch : falseBranch`)
 - **Automata**: Büchi and NFA specifications with priorities
 - **Let Expressions**: Scoped variable bindings for complex formulas
 - **Atoms**: Flexible atom notation with pipe (`|...|`) and quote (`"..."`) delimiters
@@ -118,6 +119,10 @@ See [gpsl-lsp-vscode/README.md](gpsl-lsp-vscode/README.md) for details.
 // Temporal properties
 safety = always (request -> eventually grant);
 liveness = always eventually ready;
+
+// Conditional expressions
+access = isAdmin ? |full| : isOwner ? |write| : |read|;
+action = timeout ? (retry ? |retry| : |fail|) : |continue|;
 
 // Büchi automaton
 mutex = states s0, s1;

@@ -19,6 +19,7 @@ For developers:
 
 Full syntax highlighting for all GPSL constructs including:
 - Propositional logic operators (and, or, not, implies, iff, xor)
+- Conditional operator (ternary: `condition ? trueBranch : falseBranch`)
 - Temporal logic operators (next, eventually, globally, until, release)
 - Boolean literals and atoms (pipe-delimited `|...|` and quoted `"..."`)
 - Let expressions with bindings

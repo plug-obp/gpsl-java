@@ -18,7 +18,7 @@ formula :
         | formula operator=DISJUNCTION formula                                      #BinaryExp
         | formula operator=XOR formula                                              #BinaryExp
         |<assoc=right> formula operator=(IMPLICATION | EQUIVALENCE) formula         #BinaryExp
-        | formula '?' formula ':' formula                                           #ConditionalExp
+        |<assoc=right> formula '?' formula ':' formula                              #ConditionalExp
         | letDecl formula                                                           #LetExp
         ;
 

@@ -40,6 +40,13 @@ public class IsPropositional implements Visitor<Void, Boolean> {
     }
 
     @Override
+    public Boolean visitConditional(Conditional element, Void input) {
+        return element.condition().accept(this, input)
+            && element.trueBranch().accept(this, input)
+            && element.falseBranch().accept(this, input);
+    }
+
+    @Override
     public Boolean visitNext(Next element, Void input) {
         return false;
     }

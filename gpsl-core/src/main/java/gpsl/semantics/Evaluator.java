@@ -79,6 +79,14 @@ public class Evaluator<T> implements Visitor<T, Boolean> {
     }
     
     @Override
+    public Boolean visitConditional(Conditional element, T input) {
+        // Ternary conditional: condition ? trueBranch : falseBranch
+        return element.condition().accept(this, input)
+            ? element.trueBranch().accept(this, input)
+            : element.falseBranch().accept(this, input);
+    }
+
+    @Override
     public Boolean visitLetExpression(LetExpression element, T input) {
         // Let expressions just evaluate their body
         // The declarations should already be resolved via references

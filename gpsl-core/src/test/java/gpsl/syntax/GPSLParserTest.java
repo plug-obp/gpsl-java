@@ -319,4 +319,94 @@ class GPSLParserTest {
         assertEquals("(block (formulaDeclaration a = (automaton (automatonDecl (stateDecl states s0) ; (initialDecl initial s0) ; (acceptDecl accept s0) ; (transitionDecl s0 false [ (formula (literal true)) ] s0)))))", 
                 parseDeclarations("a = states s0; initial s0; accept s0; s0 false [true] s0"));
     }
+
+    @Test
+    void testConditionalBasic() {
+        // Test: true ? false : true
+        String result = parseExpression("true ? false : true");
+        assertTrue(result.contains("?"));
+        assertTrue(result.contains(":"));
+        assertTrue(result.contains("true"));
+        assertTrue(result.contains("false"));
+    }
+
+    @Test
+    void testConditionalWithAtoms() {
+        // Test: |p| ? |q| : |r|
+        String result = parseExpression("|p| ? |q| : |r|");
+        assertTrue(result.contains("?"));
+        assertTrue(result.contains(":"));
+        assertTrue(result.contains("|p|"));
+        assertTrue(result.contains("|q|"));
+        assertTrue(result.contains("|r|"));
+    }
+
+    @Test
+    void testConditionalNested() {
+        // Test: true ? (false ? true : false) : true
+        String result = parseExpression("true ? (false ? true : false) : true");
+        assertTrue(result.contains("?"));
+        assertTrue(result.contains(":"));
+        assertTrue(result.contains("("));
+        assertTrue(result.contains(")"));
+    }
+
+    @Test
+    void testConditionalChained() {
+        // Test: true ? false : false ? true : false
+        // Should parse as: true ? false : (false ? true : false)
+        String result = parseExpression("true ? false : false ? true : false");
+        assertTrue(result.contains("?"));
+        assertTrue(result.contains(":"));
+    }
+
+    @Test
+    void testConditionalWithLogicalOperators() {
+        // Test: (true && false) ? (true || false) : (true -> false)
+        String result = parseExpression("(true && false) ? (true || false) : (true -> false)");
+        assertTrue(result.contains("?"));
+        assertTrue(result.contains(":"));
+        assertTrue(result.contains("&&"));
+        assertTrue(result.contains("||"));
+        assertTrue(result.contains("->"));
+    }
+
+    @Test
+    void testConditionalWithTemporalOperators() {
+        // Test: [] |p| ? <> |q| : X |r|
+        String result = parseExpression("[] |p| ? <> |q| : X |r|");
+        assertTrue(result.contains("?"));
+        assertTrue(result.contains(":"));
+        assertTrue(result.contains("[]"));
+        assertTrue(result.contains("<>"));
+        assertTrue(result.contains("X"));
+    }
+
+    @Test
+    void testConditionalWithNegation() {
+        // Test: !|p| ? |q| : |r|
+        String result = parseExpression("!|p| ? |q| : |r|");
+        assertTrue(result.contains("?"));
+        assertTrue(result.contains(":"));
+        assertTrue(result.contains("!"));
+    }
+
+    @Test
+    void testConditionalInDeclaration() {
+        // Test: result = |p| ? |q| : |r|
+        String result = parseDeclarations("result = |p| ? |q| : |r|");
+        assertTrue(result.contains("formulaDeclaration"));
+        assertTrue(result.contains("result"));
+        assertTrue(result.contains("?"));
+        assertTrue(result.contains(":"));
+    }
+
+    @Test
+    void testConditionalInLetExpression() {
+        // Test: let x = true in x ? false : true
+        String result = parseExpression("let x = true in x ? false : true");
+        assertTrue(result.contains("letDecl"));
+        assertTrue(result.contains("?"));
+        assertTrue(result.contains(":"));
+    }
 }

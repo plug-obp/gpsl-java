@@ -355,4 +355,205 @@ class EvaluatorTest {
         assertFalse(TestHelpers.parseExpressionOrFail("~true").accept(evaluator, null));
         assertFalse(TestHelpers.parseExpressionOrFail("not true").accept(evaluator, null));
     }
+
+    @Test
+    void testEvaluateConditionalBasic() {
+        Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
+
+        // true ? true : false
+        Expression expr1 = TestHelpers.parseExpressionOrFail("true ? true : false");
+        assertTrue(expr1.accept(evaluator, null));
+
+        // false ? true : false
+        Expression expr2 = TestHelpers.parseExpressionOrFail("false ? true : false");
+        assertFalse(expr2.accept(evaluator, null));
+
+        // true ? false : true
+        Expression expr3 = TestHelpers.parseExpressionOrFail("true ? false : true");
+        assertFalse(expr3.accept(evaluator, null));
+
+        // false ? false : true
+        Expression expr4 = TestHelpers.parseExpressionOrFail("false ? false : true");
+        assertTrue(expr4.accept(evaluator, null));
+    }
+
+    @Test
+    void testEvaluateConditionalWithAtoms() {
+        Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
+
+        // |true| ? |true| : |false|
+        Expression expr1 = TestHelpers.parseExpressionOrFail("|true| ? |true| : |false|");
+        assertTrue(expr1.accept(evaluator, null));
+
+        // |false| ? |true| : |false|
+        Expression expr2 = TestHelpers.parseExpressionOrFail("|false| ? |true| : |false|");
+        assertFalse(expr2.accept(evaluator, null));
+    }
+
+    @Test
+    void testEvaluateConditionalNested() {
+        Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
+
+        // true ? (true ? true : false) : false
+        Expression expr1 = TestHelpers.parseExpressionOrFail("true ? (true ? true : false) : false");
+        assertTrue(expr1.accept(evaluator, null));
+
+        // false ? true : (false ? false : true)
+        Expression expr2 = TestHelpers.parseExpressionOrFail("false ? true : (false ? false : true)");
+        assertTrue(expr2.accept(evaluator, null));
+
+        // true ? (false ? true : false) : true
+        Expression expr3 = TestHelpers.parseExpressionOrFail("true ? (false ? true : false) : true");
+        assertFalse(expr3.accept(evaluator, null));
+    }
+
+    @Test
+    void testEvaluateConditionalWithContext() {
+        Evaluator<Map<String, Boolean>> evaluator = new Evaluator<>(MAP_ATOM_EVALUATOR);
+
+        Map<String, Boolean> context = new HashMap<>();
+        context.put("x > 5", true);
+        context.put("y < 10", true);
+        context.put("z == 0", false);
+
+        // |x > 5| ? |y < 10| : |z == 0|
+        Expression expr1 = TestHelpers.parseExpressionOrFail("|x > 5| ? |y < 10| : |z == 0|");
+        assertTrue(expr1.accept(evaluator, context));
+
+        // |z == 0| ? |y < 10| : |x > 5|
+        Expression expr2 = TestHelpers.parseExpressionOrFail("|z == 0| ? |y < 10| : |x > 5|");
+        assertTrue(expr2.accept(evaluator, context));
+
+        // Change context
+        context.put("x > 5", false);
+        Expression expr3 = TestHelpers.parseExpressionOrFail("|x > 5| ? |y < 10| : |z == 0|");
+        assertFalse(expr3.accept(evaluator, context));
+    }
+
+    @Test
+    void testEvaluateConditionalWithLogicalOperators() {
+        Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
+
+        // (true && false) ? true : false
+        Expression expr1 = TestHelpers.parseExpressionOrFail("(true && false) ? true : false");
+        assertFalse(expr1.accept(evaluator, null));
+
+        // (true || false) ? true : false
+        Expression expr2 = TestHelpers.parseExpressionOrFail("(true || false) ? true : false");
+        assertTrue(expr2.accept(evaluator, null));
+
+        // true ? (true && true) : (false || false)
+        Expression expr3 = TestHelpers.parseExpressionOrFail("true ? (true && true) : (false || false)");
+        assertTrue(expr3.accept(evaluator, null));
+
+        // false ? (true && true) : (false || false)
+        Expression expr4 = TestHelpers.parseExpressionOrFail("false ? (true && true) : (false || false)");
+        assertFalse(expr4.accept(evaluator, null));
+    }
+
+    @Test
+    void testEvaluateConditionalWithNegation() {
+        Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
+
+        // !true ? true : false
+        Expression expr1 = TestHelpers.parseExpressionOrFail("!true ? true : false");
+        assertFalse(expr1.accept(evaluator, null));
+
+        // true ? !false : false
+        Expression expr2 = TestHelpers.parseExpressionOrFail("true ? !false : false");
+        assertTrue(expr2.accept(evaluator, null));
+
+        // false ? false : !false
+        Expression expr3 = TestHelpers.parseExpressionOrFail("false ? false : !false");
+        assertTrue(expr3.accept(evaluator, null));
+    }
+
+    @Test
+    void testEvaluateConditionalChained() {
+        Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
+
+        // true ? true : false ? false : true
+        // Should parse as: true ? true : (false ? false : true)
+        Expression expr1 = TestHelpers.parseExpressionOrFail("true ? true : false ? false : true");
+        assertTrue(expr1.accept(evaluator, null));
+
+        // false ? false : false ? false : true
+        Expression expr2 = TestHelpers.parseExpressionOrFail("false ? false : false ? false : true");
+        assertTrue(expr2.accept(evaluator, null));
+
+        // false ? false : true ? true : false
+        Expression expr3 = TestHelpers.parseExpressionOrFail("false ? false : true ? true : false");
+        assertTrue(expr3.accept(evaluator, null));
+    }
+
+    @Test
+    void testEvaluateConditionalShortCircuit() {
+        // Track which atoms are evaluated
+        Map<String, Boolean> evaluatedAtoms = new HashMap<>();
+        AtomEvaluator<Void> trackingEvaluator = (atomValue, input) -> {
+            evaluatedAtoms.put(atomValue, true);
+            return atomValue.equals("true");
+        };
+
+        Evaluator<Void> evaluator = new Evaluator<>(trackingEvaluator);
+
+        // true ? |true| : |never-evaluated| should short-circuit
+        evaluatedAtoms.clear();
+        Expression expr1 = TestHelpers.parseExpressionOrFail("true ? |true| : |never-evaluated|");
+        assertTrue(expr1.accept(evaluator, null));
+        assertFalse(evaluatedAtoms.containsKey("never-evaluated"));
+        assertTrue(evaluatedAtoms.containsKey("true"));
+
+        // false ? |never-evaluated| : |true| should short-circuit
+        evaluatedAtoms.clear();
+        Expression expr2 = TestHelpers.parseExpressionOrFail("false ? |never-evaluated| : |true|");
+        assertTrue(expr2.accept(evaluator, null));
+        assertFalse(evaluatedAtoms.containsKey("never-evaluated"));
+        assertTrue(evaluatedAtoms.containsKey("true"));
+    }
+
+    @Test
+    void testEvaluateConditionalRealWorld() {
+        // Test a real-world scenario: access control with conditional
+        Evaluator<Map<String, Boolean>> evaluator = new Evaluator<>(MAP_ATOM_EVALUATOR);
+
+        String input = """
+            is_admin = |user_is_admin|
+            is_owner = |user_is_owner|
+            is_public = |resource_is_public|
+            has_access = is_admin ? true : is_owner ? true : is_public
+            """;
+
+        Declarations decls = parseDeclarationsOrFail(input);
+        ExpressionDeclaration accessDecl = decls.declarations().get(3);
+
+        // Test case 1: Admin can access
+        Map<String, Boolean> state1 = new HashMap<>();
+        state1.put("user_is_admin", true);
+        state1.put("user_is_owner", false);
+        state1.put("resource_is_public", false);
+        assertTrue(accessDecl.expression().accept(evaluator, state1));
+
+        // Test case 2: Owner can access
+        Map<String, Boolean> state2 = new HashMap<>();
+        state2.put("user_is_admin", false);
+        state2.put("user_is_owner", true);
+        state2.put("resource_is_public", false);
+        assertTrue(accessDecl.expression().accept(evaluator, state2));
+
+        // Test case 3: Public resource can be accessed
+        Map<String, Boolean> state3 = new HashMap<>();
+        state3.put("user_is_admin", false);
+        state3.put("user_is_owner", false);
+        state3.put("resource_is_public", true);
+        assertTrue(accessDecl.expression().accept(evaluator, state3));
+
+        // Test case 4: No access
+        Map<String, Boolean> state4 = new HashMap<>();
+        state4.put("user_is_admin", false);
+        state4.put("user_is_owner", false);
+        state4.put("resource_is_public", false);
+        assertFalse(accessDecl.expression().accept(evaluator, state4));
+    }
 }
+

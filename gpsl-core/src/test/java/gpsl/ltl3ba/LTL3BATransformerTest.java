@@ -295,4 +295,90 @@ class LTL3BATransformerTest {
         String result = expr.accept(transformer, null);
         assertEquals("((true && atom0) || false)", result);
     }
+
+    @Test
+    void testTransformConditionalBasic() {
+        // Test: |p| ? |q| : |r|
+        Expression expr = TestHelpers.parseExpressionOrFail("|p| ? |q| : |r|");
+        String result = expr.accept(transformer, null);
+        // Conditional should be encoded as: (condition && trueBranch) || (!condition && falseBranch)
+        assertEquals("((atom0 && atom1) || (!atom0 && atom2))", result);
+    }
+
+    @Test
+    void testTransformConditionalWithTrue() {
+        // Test: true ? |p| : |q|
+        Expression expr = TestHelpers.parseExpressionOrFail("true ? |p| : |q|");
+        String result = expr.accept(transformer, null);
+        assertEquals("((true && atom0) || (!true && atom1))", result);
+    }
+
+    @Test
+    void testTransformConditionalWithFalse() {
+        // Test: false ? |p| : |q|
+        Expression expr = TestHelpers.parseExpressionOrFail("false ? |p| : |q|");
+        String result = expr.accept(transformer, null);
+        assertEquals("((false && atom0) || (!false && atom1))", result);
+    }
+
+    @Test
+    void testTransformConditionalNested() {
+        // Test: |p| ? (|q| ? |r| : |s|) : |t|
+        Expression expr = TestHelpers.parseExpressionOrFail("|p| ? (|q| ? |r| : |s|) : |t|");
+        String result = expr.accept(transformer, null);
+        // Outer: (p && inner) || (!p && t)
+        // Inner: (q && r) || (!q && s)
+        assertEquals("((atom0 && ((atom1 && atom2) || (!atom1 && atom3))) || (!atom0 && atom4))", result);
+    }
+
+    @Test
+    void testTransformConditionalWithTemporalOperators() {
+        // Test: [] |p| ? <> |q| : X |r|
+        Expression expr = TestHelpers.parseExpressionOrFail("[] |p| ? <> |q| : X |r|");
+        String result = expr.accept(transformer, null);
+        assertEquals("((([] atom0) && (<> atom1)) || (!([] atom0) && (X atom2)))", result);
+    }
+
+    @Test
+    void testTransformConditionalWithLogicalOperators() {
+        // Test: (|p| && |q|) ? (|r| || |s|) : (|t| -> |u|)
+        Expression expr = TestHelpers.parseExpressionOrFail("(|p| && |q|) ? (|r| || |s|) : (|t| -> |u|)");
+        String result = expr.accept(transformer, null);
+        assertEquals("(((atom0 && atom1) && (atom2 || atom3)) || (!(atom0 && atom1) && (atom4 -> atom5)))", result);
+    }
+
+    @Test
+    void testTransformConditionalChained() {
+        // Test: |a| ? |b| : |c| ? |d| : |e|
+        // This should parse as: |a| ? |b| : (|c| ? |d| : |e|)
+        Expression expr = TestHelpers.parseExpressionOrFail("|a| ? |b| : |c| ? |d| : |e|");
+        String result = expr.accept(transformer, null);
+        // Outer: (a && b) || (!a && inner)
+        // Inner: (c && d) || (!c && e)
+        assertEquals("((atom0 && atom1) || (!atom0 && ((atom2 && atom3) || (!atom2 && atom4))))", result);
+    }
+
+    @Test
+    void testTransformConditionalWithNegation() {
+        // Test: !|p| ? |q| : |r|
+        Expression expr = TestHelpers.parseExpressionOrFail("!|p| ? |q| : |r|");
+        String result = expr.accept(transformer, null);
+        assertEquals("(((!atom0) && atom1) || (!(!atom0) && atom2))", result);
+    }
+
+    @Test
+    void testTransformConditionalInUntil() {
+        // Test: (|p| ? |q| : |r|) U |s|
+        Expression expr = TestHelpers.parseExpressionOrFail("(|p| ? |q| : |r|) U |s|");
+        String result = expr.accept(transformer, null);
+        assertEquals("(((atom0 && atom1) || (!atom0 && atom2)) U atom3)", result);
+    }
+
+    @Test
+    void testTransformConditionalComplex() {
+        // Test: [] (|req| ? <> |grant| : true)
+        Expression expr = TestHelpers.parseExpressionOrFail("[] (|req| ? <> |grant| : true)");
+        String result = expr.accept(transformer, null);
+        assertEquals("([] ((atom0 && (<> atom1)) || (!atom0 && true)))", result);
+    }
 }

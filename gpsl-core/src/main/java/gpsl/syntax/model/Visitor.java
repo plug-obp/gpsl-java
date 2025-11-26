@@ -8,113 +8,113 @@ package gpsl.syntax.model;
  */
 public interface Visitor<T, R> {
     
-    default R visitSyntaxTreeElement(SyntaxTreeElement element, T input) {
+    default R visit(SyntaxTreeElement element, T input) {
         return null;
     }
     
-    default R visitDeclarations(Declarations element, T input) {
-        return visitSyntaxTreeElement(element, input);
+    default R visit(Declarations element, T input) {
+        return visit((SyntaxTreeElement) element, input);
     }
     
-    default R visitExpression(Expression element, T input) {
-        return visitSyntaxTreeElement(element, input);
+    default R visit(Expression element, T input) {
+        return visit((SyntaxTreeElement) element, input);
     }
     
-    default R visitTrue(True element, T input) {
-        return visitExpression(element, input);
+    default R visit(True element, T input) {
+        return visit((Expression) element, input);
     }
     
-    default R visitFalse(False element, T input) {
-        return visitExpression(element, input);
+    default R visit(False element, T input) {
+        return visit((Expression) element, input);
     }
     
-    default R visitAtom(Atom element, T input) {
-        return visitExpression(element, input);
+    default R visit(Atom element, T input) {
+        return visit((Expression) element, input);
     }
     
-    default R visitReference(Reference element, T input) {
-        return visitExpression(element, input);
+    default R visit(Reference element, T input) {
+        return visit((Expression) element, input);
     }
     
-    default R visitUnaryExpression(UnaryExpression element, T input) {
-        return visitExpression(element, input);
+    default R visit(UnaryExpression element, T input) {
+        return visit((Expression) element, input);
     }
     
-    default R visitNegation(Negation element, T input) {
-        return visitUnaryExpression(element, input);
+    default R visit(Negation element, T input) {
+        return visit((UnaryExpression) element, input);
     }
     
-    default R visitNext(Next element, T input) {
-        return visitUnaryExpression(element, input);
+    default R visit(Next element, T input) {
+        return visit((UnaryExpression) element, input);
     }
     
-    default R visitEventually(Eventually element, T input) {
-        return visitUnaryExpression(element, input);
+    default R visit(Eventually element, T input) {
+        return visit((UnaryExpression) element, input);
     }
     
-    default R visitGlobally(Globally element, T input) {
-        return visitUnaryExpression(element, input);
+    default R visit(Globally element, T input) {
+        return visit((UnaryExpression)element, input);
     }
     
-    default R visitBinaryExpression(BinaryExpression element, T input) {
-        return visitExpression(element, input);
+    default R visit(BinaryExpression element, T input) {
+        return visit((Expression) element, input);
     }
     
-    default R visitConjunction(Conjunction element, T input) {
-        return visitBinaryExpression(element, input);
+    default R visit(Conjunction element, T input) {
+        return visit((BinaryExpression) element, input);
     }
     
-    default R visitDisjunction(Disjunction element, T input) {
-        return visitBinaryExpression(element, input);
+    default R visit(Disjunction element, T input) {
+        return visit((BinaryExpression) element, input);
     }
     
-    default R visitExclusiveDisjunction(ExclusiveDisjunction element, T input) {
-        return visitBinaryExpression(element, input);
+    default R visit(ExclusiveDisjunction element, T input) {
+        return visit((BinaryExpression) element, input);
     }
     
-    default R visitImplication(Implication element, T input) {
-        return visitBinaryExpression(element, input);
+    default R visit(Implication element, T input) {
+        return visit((BinaryExpression) element, input);
     }
     
-    default R visitEquivalence(Equivalence element, T input) {
-        return visitBinaryExpression(element, input);
+    default R visit(Equivalence element, T input) {
+        return visit((BinaryExpression) element, input);
     }
     
-    default R visitStrongUntil(StrongUntil element, T input) {
-        return visitBinaryExpression(element, input);
+    default R visit(StrongUntil element, T input) {
+        return visit((BinaryExpression) element, input);
     }
     
-    default R visitWeakUntil(WeakUntil element, T input) {
-        return visitBinaryExpression(element, input);
+    default R visit(WeakUntil element, T input) {
+        return visit((BinaryExpression) element, input);
     }
     
-    default R visitStrongRelease(StrongRelease element, T input) {
-        return visitBinaryExpression(element, input);
+    default R visit(StrongRelease element, T input) {
+        return this.visit((BinaryExpression) element, input);
     }
     
-    default R visitWeakRelease(WeakRelease element, T input) {
-        return visitBinaryExpression(element, input);
+    default R visit(WeakRelease element, T input) {
+        return this.visit((BinaryExpression) element, input);
     }
 
-    default R visitConditional(Conditional element, T input) { return visitExpression(element, input); }
+    default R visit(Conditional element, T input) { return visit((Expression) element, input); }
 
-    default R visitExpressionDeclaration(ExpressionDeclaration element, T input) {
-        return visitSyntaxTreeElement(element, input);
+    default R visit(ExpressionDeclaration element, T input) {
+        return visit((SyntaxTreeElement)element, input);
     }
     
-    default R visitLetExpression(LetExpression element, T input) {
-        return visitExpression(element, input);
+    default R visit(LetExpression element, T input) {
+        return visit((Expression)element, input);
     }
     
-    default R visitState(State element, T input) {
-        return visitSyntaxTreeElement(element, input);
+    default R visit(State element, T input) {
+        return visit((SyntaxTreeElement)element, input);
     }
     
-    default R visitTransition(Transition element, T input) {
-        return visitSyntaxTreeElement(element, input);
+    default R visit(Transition element, T input) {
+        return visit((SyntaxTreeElement)element, input);
     }
     
-    default R visitAutomaton(Automaton element, T input) {
-        return visitSyntaxTreeElement(element, input);
+    default R visit(Automaton element, T input) {
+        return visit((SyntaxTreeElement)element, input);
     }
 }

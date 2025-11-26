@@ -31,25 +31,25 @@ public class ToEdgedRootedGraph implements IRootedGraph<Pair<Optional<String>, S
 
     public static class NeighboursGenerator implements Visitor<Void, Iterator<Pair<Optional<String>, SyntaxTreeElement>>> {
         @Override
-        public Iterator<Pair<Optional<String>, SyntaxTreeElement>> visitSyntaxTreeElement(SyntaxTreeElement element, Void input) {
+        public Iterator<Pair<Optional<String>, SyntaxTreeElement>> visit(SyntaxTreeElement element, Void input) {
             return Collections.emptyIterator();
         }
 
         @Override
-        public Iterator<Pair<Optional<String>, SyntaxTreeElement>> visitUnaryExpression(UnaryExpression element, Void input) {
+        public Iterator<Pair<Optional<String>, SyntaxTreeElement>> visit(UnaryExpression element, Void input) {
             var pair = new Pair<Optional<String>, SyntaxTreeElement>(Optional.of("exp"), element.expression());
             return Collections.singletonList(pair).iterator();
         }
 
         @Override
-        public Iterator<Pair<Optional<String>, SyntaxTreeElement>> visitBinaryExpression(BinaryExpression element, Void input) {
+        public Iterator<Pair<Optional<String>, SyntaxTreeElement>> visit(BinaryExpression element, Void input) {
             var lhs = new Pair<Optional<String>, SyntaxTreeElement>(Optional.of("left"), element.left());
             var rhs = new Pair<Optional<String>, SyntaxTreeElement>(Optional.of("right"), element.right());
             return List.of(lhs, rhs).iterator();
         }
 
         @Override
-        public Iterator<Pair<Optional<String>, SyntaxTreeElement>> visitConditional(Conditional element, Void input) {
+        public Iterator<Pair<Optional<String>, SyntaxTreeElement>> visit(Conditional element, Void input) {
             var cond = new Pair<Optional<String>, SyntaxTreeElement>(Optional.of("condition"), element.condition());
             var tBranch = new Pair<Optional<String>, SyntaxTreeElement>(Optional.of("trueBranch"), element.trueBranch());
             var fBranch = new Pair<Optional<String>, SyntaxTreeElement>(Optional.of("falseBranch"), element.falseBranch());
@@ -57,21 +57,21 @@ public class ToEdgedRootedGraph implements IRootedGraph<Pair<Optional<String>, S
         }
 
         @Override
-        public Iterator<Pair<Optional<String>, SyntaxTreeElement>> visitDeclarations(Declarations element, Void input) {
+        public Iterator<Pair<Optional<String>, SyntaxTreeElement>> visit(Declarations element, Void input) {
             return element.declarations().stream()
                     .flatMap(ed ->
                             StreamSupport.stream(((Iterable<Pair<Optional<String>, SyntaxTreeElement>>)() -> ed.accept(this, input)).spliterator(), false)
                     ).collect(Collectors.toList()).iterator();
         }
         @Override
-        public Iterator<Pair<Optional<String>, SyntaxTreeElement>> visitLetExpression(LetExpression element, Void input) {
+        public Iterator<Pair<Optional<String>, SyntaxTreeElement>> visit(LetExpression element, Void input) {
             var dp = new Pair<Optional<String>, SyntaxTreeElement>(Optional.of("declarations"), element.declarations());
             var ep = new Pair<Optional<String>, SyntaxTreeElement>(Optional.of("expression"), element.expression());
             return List.of(dp, ep).iterator();
         }
 
         @Override
-        public Iterator<Pair<Optional<String>, SyntaxTreeElement>> visitTransition(Transition element, Void input) {
+        public Iterator<Pair<Optional<String>, SyntaxTreeElement>> visit(Transition element, Void input) {
             var sp = new Pair<Optional<String>, SyntaxTreeElement>(Optional.of("source"), element.source());
             var tp = new Pair<Optional<String>, SyntaxTreeElement>(Optional.of("target"), element.target());
             var gp = new Pair<Optional<String>, SyntaxTreeElement>(Optional.of("guard"), element.guard());
@@ -79,13 +79,13 @@ public class ToEdgedRootedGraph implements IRootedGraph<Pair<Optional<String>, S
         }
 
         @Override
-        public Iterator<Pair<Optional<String>, SyntaxTreeElement>> visitExpressionDeclaration(ExpressionDeclaration element, Void input) {
+        public Iterator<Pair<Optional<String>, SyntaxTreeElement>> visit(ExpressionDeclaration element, Void input) {
             var pair = new Pair<Optional<String>, SyntaxTreeElement>(Optional.of(element.name()), element.expression());
             return Collections.singletonList(pair).iterator();
         }
 
         @Override
-        public Iterator<Pair<Optional<String>, SyntaxTreeElement>> visitReference(Reference element, Void input) {
+        public Iterator<Pair<Optional<String>, SyntaxTreeElement>> visit(Reference element, Void input) {
             return element.expression() == null ? Collections.emptyIterator()
                     : (Collections.<Pair<Optional<String>, SyntaxTreeElement>>singletonList(
                         new Pair<>(Optional.of(element.name()), element.expression())
@@ -93,7 +93,7 @@ public class ToEdgedRootedGraph implements IRootedGraph<Pair<Optional<String>, S
         }
 
         @Override
-        public Iterator<Pair<Optional<String>, SyntaxTreeElement>> visitAutomaton(Automaton element, Void input) {
+        public Iterator<Pair<Optional<String>, SyntaxTreeElement>> visit(Automaton element, Void input) {
             return Collections.emptyIterator();
         }
     }

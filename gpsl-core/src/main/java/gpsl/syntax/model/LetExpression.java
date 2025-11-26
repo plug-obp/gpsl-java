@@ -18,6 +18,6 @@ public record LetExpression(Declarations declarations, SyntaxTreeElement express
     
     @Override
     public <T, R> R accept(Visitor<T, R> visitor, T input) {
-        return visitor.visitLetExpression(this, input);
+        return visitor.visit(this, input);
     }
 }

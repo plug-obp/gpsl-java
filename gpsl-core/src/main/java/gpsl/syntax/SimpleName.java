@@ -15,7 +15,7 @@ public class SimpleName implements Visitor<Void, String> {
     }
 
     @Override
-    public String visitSyntaxTreeElement(SyntaxTreeElement element, Void input) {
+    public String visit(SyntaxTreeElement element, Void input) {
         var nameMapList = List.of(
                 "Conditional", "?:",
                 "Conjunction", "∧",

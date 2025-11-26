@@ -12,6 +12,6 @@ public record Transition(
     
     @Override
     public <T, R> R accept(Visitor<T, R> visitor, T input) {
-        return visitor.visitTransition(this, input);
+        return visitor.visit(this, input);
     }
 }

@@ -8,6 +8,6 @@ public record ExclusiveDisjunction(String operator, Expression left, Expression 
     
     @Override
     public <T, R> R accept(Visitor<T, R> visitor, T input) {
-        return visitor.visitExclusiveDisjunction(this, input);
+        return visitor.visit(this, input);
     }
 }

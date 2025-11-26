@@ -32,171 +32,171 @@ class VisitorHierarchyTest {
     static class TrackingVisitor implements Visitor<List<String>, String> {
 
         @Override
-        public String visitSyntaxTreeElement(SyntaxTreeElement element, List<String> callChain) {
+        public String visit(SyntaxTreeElement element, List<String> callChain) {
             callChain.add("visit.SyntaxTreeElement");
             return "SyntaxTreeElement";
         }
 
         @Override
-        public String visitExpression(Expression element, List<String> callChain) {
+        public String visit(Expression element, List<String> callChain) {
             callChain.add("visit.Expression");
-            return Visitor.super.visitExpression(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitUnaryExpression(UnaryExpression element, List<String> callChain) {
+        public String visit(UnaryExpression element, List<String> callChain) {
             callChain.add("visit.UnaryExpression");
-            return Visitor.super.visitUnaryExpression(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitNegation(Negation element, List<String> callChain) {
+        public String visit(Negation element, List<String> callChain) {
             callChain.add("visit.Negation");
-            return Visitor.super.visitNegation(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitNext(Next element, List<String> callChain) {
+        public String visit(Next element, List<String> callChain) {
             callChain.add("visit.Next");
-            return Visitor.super.visitNext(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitEventually(Eventually element, List<String> callChain) {
+        public String visit(Eventually element, List<String> callChain) {
             callChain.add("visit.Eventually");
-            return Visitor.super.visitEventually(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitGlobally(Globally element, List<String> callChain) {
+        public String visit(Globally element, List<String> callChain) {
             callChain.add("visit.Globally");
-            return Visitor.super.visitGlobally(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitBinaryExpression(BinaryExpression element, List<String> callChain) {
+        public String visit(BinaryExpression element, List<String> callChain) {
             callChain.add("visit.BinaryExpression");
-            return Visitor.super.visitBinaryExpression(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitConjunction(Conjunction element, List<String> callChain) {
+        public String visit(Conjunction element, List<String> callChain) {
             callChain.add("visit.Conjunction");
-            return Visitor.super.visitConjunction(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitDisjunction(Disjunction element, List<String> callChain) {
+        public String visit(Disjunction element, List<String> callChain) {
             callChain.add("visit.Disjunction");
-            return Visitor.super.visitDisjunction(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitImplication(Implication element, List<String> callChain) {
+        public String visit(Implication element, List<String> callChain) {
             callChain.add("visit.Implication");
-            return Visitor.super.visitImplication(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitEquivalence(Equivalence element, List<String> callChain) {
+        public String visit(Equivalence element, List<String> callChain) {
             callChain.add("visit.Equivalence");
-            return Visitor.super.visitEquivalence(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitExclusiveDisjunction(ExclusiveDisjunction element, List<String> callChain) {
+        public String visit(ExclusiveDisjunction element, List<String> callChain) {
             callChain.add("visit.ExclusiveDisjunction");
-            return Visitor.super.visitExclusiveDisjunction(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitStrongUntil(StrongUntil element, List<String> callChain) {
+        public String visit(StrongUntil element, List<String> callChain) {
             callChain.add("visit.StrongUntil");
-            return Visitor.super.visitStrongUntil(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitWeakUntil(WeakUntil element, List<String> callChain) {
+        public String visit(WeakUntil element, List<String> callChain) {
             callChain.add("visit.WeakUntil");
-            return Visitor.super.visitWeakUntil(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitStrongRelease(StrongRelease element, List<String> callChain) {
+        public String visit(StrongRelease element, List<String> callChain) {
             callChain.add("visit.StrongRelease");
-            return Visitor.super.visitStrongRelease(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitWeakRelease(WeakRelease element, List<String> callChain) {
+        public String visit(WeakRelease element, List<String> callChain) {
             callChain.add("visit.WeakRelease");
-            return Visitor.super.visitWeakRelease(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitTrue(True element, List<String> callChain) {
+        public String visit(True element, List<String> callChain) {
             callChain.add("visit.True");
-            return Visitor.super.visitTrue(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitFalse(False element, List<String> callChain) {
+        public String visit(False element, List<String> callChain) {
             callChain.add("visit.False");
-            return Visitor.super.visitFalse(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitAtom(Atom element, List<String> callChain) {
+        public String visit(Atom element, List<String> callChain) {
             callChain.add("visit.Atom");
-            return Visitor.super.visitAtom(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitConditional(Conditional element, List<String> callChain) {
+        public String visit(Conditional element, List<String> callChain) {
             callChain.add("visit.Conditional");
-            return Visitor.super.visitConditional(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitReference(Reference element, List<String> callChain) {
+        public String visit(Reference element, List<String> callChain) {
             callChain.add("visit.Reference");
-            return Visitor.super.visitReference(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitLetExpression(LetExpression element, List<String> callChain) {
+        public String visit(LetExpression element, List<String> callChain) {
             callChain.add("visit.LetExpression");
-            return Visitor.super.visitLetExpression(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitDeclarations(Declarations element, List<String> callChain) {
+        public String visit(Declarations element, List<String> callChain) {
             callChain.add("visit.Declarations");
-            return Visitor.super.visitDeclarations(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitExpressionDeclaration(ExpressionDeclaration element, List<String> callChain) {
+        public String visit(ExpressionDeclaration element, List<String> callChain) {
             callChain.add("visit.ExpressionDeclaration");
-            return Visitor.super.visitExpressionDeclaration(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitState(State element, List<String> callChain) {
+        public String visit(State element, List<String> callChain) {
             callChain.add("visit.State");
-            return Visitor.super.visitState(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitTransition(Transition element, List<String> callChain) {
+        public String visit(Transition element, List<String> callChain) {
             callChain.add("visit.Transition");
-            return Visitor.super.visitTransition(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
 
         @Override
-        public String visitAutomaton(Automaton element, List<String> callChain) {
+        public String visit(Automaton element, List<String> callChain) {
             callChain.add("visit.Automaton");
-            return Visitor.super.visitAutomaton(element, callChain);
+            return Visitor.super.visit(element, callChain);
         }
     }
 
@@ -641,13 +641,13 @@ class VisitorHierarchyTest {
             var calls = new ArrayList<String>();
             var visitor = new Visitor<Void, String>() {
                 @Override
-                public String visitUnaryExpression(UnaryExpression element, Void input) {
+                public String visit(UnaryExpression element, Void input) {
                     calls.add("visit.UnaryExpression");
                     return "UnaryExpression-Overridden";
                 }
 
                 @Override
-                public String visitExpression(Expression element, Void input) {
+                public String visit(Expression element, Void input) {
                     calls.add("visit.Expression");
                     return "Should-Not-Reach";
                 }
@@ -672,13 +672,13 @@ class VisitorHierarchyTest {
             var calls = new ArrayList<String>();
             var visitor = new Visitor<Void, String>() {
                 @Override
-                public String visitExpression(Expression element, Void input) {
+                public String visit(Expression element, Void input) {
                     calls.add("visit.Expression");
                     return "Expression-Overridden";
                 }
 
                 @Override
-                public String visitSyntaxTreeElement(SyntaxTreeElement element, Void input) {
+                public String visit(SyntaxTreeElement element, Void input) {
                     calls.add("visit.SyntaxTreeElement");
                     return "Should-Not-Reach";
                 }
@@ -702,13 +702,13 @@ class VisitorHierarchyTest {
             var calls = new ArrayList<String>();
             var visitor = new Visitor<Void, String>() {
                 @Override
-                public String visitNegation(Negation element, Void input) {
+                public String visit(Negation element, Void input) {
                     calls.add("visit.Negation");
                     return "Negation-Overridden";
                 }
 
                 @Override
-                public String visitUnaryExpression(UnaryExpression element, Void input) {
+                public String visit(UnaryExpression element, Void input) {
                     calls.add("visit.UnaryExpression");
                     return "Should-Not-Reach";
                 }
@@ -733,20 +733,20 @@ class VisitorHierarchyTest {
 
             var visitor = new Visitor<Void, String>() {
                 @Override
-                public String visitUnaryExpression(UnaryExpression element, Void input) {
+                public String visit(UnaryExpression element, Void input) {
                     unaryResult.add("UnaryExpression-Intercepted");
                     return "UnaryExpression-Custom";
                 }
 
                 @Override
-                public String visitBinaryExpression(BinaryExpression element, Void input) {
+                public String visit(BinaryExpression element, Void input) {
                     binaryResult.add("BinaryExpression-Intercepted");
                     // Continue delegation
-                    return Visitor.super.visitBinaryExpression(element, input);
+                    return Visitor.super.visit(element, input);
                 }
 
                 @Override
-                public String visitSyntaxTreeElement(SyntaxTreeElement element, Void input) {
+                public String visit(SyntaxTreeElement element, Void input) {
                     return "Root";
                 }
             };
@@ -793,7 +793,7 @@ class VisitorHierarchyTest {
             // Given: Override only visitSyntaxTreeElement
             var visitor = new Visitor<Void, String>() {
                 @Override
-                public String visitSyntaxTreeElement(SyntaxTreeElement element, Void input) {
+                public String visit(SyntaxTreeElement element, Void input) {
                     return "Root-" + element.getClass().getSimpleName();
                 }
             };
@@ -819,23 +819,23 @@ class VisitorHierarchyTest {
             // Given: A visitor where each level modifies the return value
             var visitor = new Visitor<Void, String>() {
                 @Override
-                public String visitSyntaxTreeElement(SyntaxTreeElement element, Void input) {
+                public String visit(SyntaxTreeElement element, Void input) {
                     return "Root";
                 }
 
                 @Override
-                public String visitExpression(Expression element, Void input) {
-                    return Visitor.super.visitExpression(element, input) + "->Expression";
+                public String visit(Expression element, Void input) {
+                    return Visitor.super.visit(element, input) + "->Expression";
                 }
 
                 @Override
-                public String visitUnaryExpression(UnaryExpression element, Void input) {
-                    return Visitor.super.visitUnaryExpression(element, input) + "->Unary";
+                public String visit(UnaryExpression element, Void input) {
+                    return Visitor.super.visit(element, input) + "->Unary";
                 }
 
                 @Override
-                public String visitNegation(Negation element, Void input) {
-                    return Visitor.super.visitNegation(element, input) + "->Negation";
+                public String visit(Negation element, Void input) {
+                    return Visitor.super.visit(element, input) + "->Negation";
                 }
             };
 
@@ -855,13 +855,13 @@ class VisitorHierarchyTest {
             // Given: A visitor where one level returns null explicitly
             var visitor = new Visitor<Void, String>() {
                 @Override
-                public String visitExpression(Expression element, Void input) {
+                public String visit(Expression element, Void input) {
                     return null; // Explicit null
                 }
 
                 @Override
-                public String visitUnaryExpression(UnaryExpression element, Void input) {
-                    String parent = Visitor.super.visitUnaryExpression(element, input);
+                public String visit(UnaryExpression element, Void input) {
+                    String parent = Visitor.super.visit(element, input);
                     return parent == null ? "WasNull" : "WasNotNull";
                 }
             };
@@ -886,23 +886,23 @@ class VisitorHierarchyTest {
             // Given: A visitor that accumulates depth through the chain
             var visitor = new Visitor<Integer, Integer>() {
                 @Override
-                public Integer visitSyntaxTreeElement(SyntaxTreeElement element, Integer depth) {
+                public Integer visit(SyntaxTreeElement element, Integer depth) {
                     return depth;
                 }
 
                 @Override
-                public Integer visitExpression(Expression element, Integer depth) {
-                    return Visitor.super.visitExpression(element, depth + 1);
+                public Integer visit(Expression element, Integer depth) {
+                    return Visitor.super.visit(element, depth + 1);
                 }
 
                 @Override
-                public Integer visitUnaryExpression(UnaryExpression element, Integer depth) {
-                    return Visitor.super.visitUnaryExpression(element, depth + 1);
+                public Integer visit(UnaryExpression element, Integer depth) {
+                    return Visitor.super.visit(element, depth + 1);
                 }
 
                 @Override
-                public Integer visitNegation(Negation element, Integer depth) {
-                    return Visitor.super.visitNegation(element, depth + 1);
+                public Integer visit(Negation element, Integer depth) {
+                    return Visitor.super.visit(element, depth + 1);
                 }
             };
 
@@ -926,27 +926,27 @@ class VisitorHierarchyTest {
 
             var visitor = new Visitor<Context, Void>() {
                 @Override
-                public Void visitSyntaxTreeElement(SyntaxTreeElement element, Context ctx) {
+                public Void visit(SyntaxTreeElement element, Context ctx) {
                     ctx.visitedTypes.add("SyntaxTreeElement");
                     return null;
                 }
 
                 @Override
-                public Void visitExpression(Expression element, Context ctx) {
+                public Void visit(Expression element, Context ctx) {
                     ctx.visitedTypes.add("Expression");
-                    return Visitor.super.visitExpression(element, ctx);
+                    return Visitor.super.visit(element, ctx);
                 }
 
                 @Override
-                public Void visitBinaryExpression(BinaryExpression element, Context ctx) {
+                public Void visit(BinaryExpression element, Context ctx) {
                     ctx.visitedTypes.add("BinaryExpression");
-                    return Visitor.super.visitBinaryExpression(element, ctx);
+                    return Visitor.super.visit(element, ctx);
                 }
 
                 @Override
-                public Void visitConjunction(Conjunction element, Context ctx) {
+                public Void visit(Conjunction element, Context ctx) {
                     ctx.visitedTypes.add("Conjunction");
-                    return Visitor.super.visitConjunction(element, ctx);
+                    return Visitor.super.visit(element, ctx);
                 }
             };
 

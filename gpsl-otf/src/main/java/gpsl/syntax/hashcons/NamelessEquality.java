@@ -17,12 +17,12 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitSyntaxTreeElement(SyntaxTreeElement element, SyntaxTreeElement input) {
+    public Boolean visit(SyntaxTreeElement element, SyntaxTreeElement input) {
         return element.equals(input);
     }
 
     @Override
-    public Boolean visitTrue(True element, SyntaxTreeElement input) {
+    public Boolean visit(True element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof True) {
             return true;
@@ -31,7 +31,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitFalse(False element, SyntaxTreeElement input) {
+    public Boolean visit(False element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof False) {
             return true;
@@ -40,7 +40,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitAtom(Atom element, SyntaxTreeElement input) {
+    public Boolean visit(Atom element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof Atom other) {
             return element.value().equals(other.value());
@@ -49,7 +49,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitReference(Reference element, SyntaxTreeElement input) {
+    public Boolean visit(Reference element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof Reference other) {
             if (element.expression() == null || other.expression() == null) return element.name().equals(other.name());
@@ -59,7 +59,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitNegation(Negation element, SyntaxTreeElement input) {
+    public Boolean visit(Negation element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof Negation other) {
             return element.expression().accept(this, other.expression());
@@ -68,7 +68,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitNext(Next element, SyntaxTreeElement input) {
+    public Boolean visit(Next element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof Next other) {
             return element.expression().accept(this, other.expression());
@@ -77,7 +77,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitGlobally(Globally element, SyntaxTreeElement input) {
+    public Boolean visit(Globally element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof Globally other) {
             return element.expression().accept(this, other.expression());
@@ -86,7 +86,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitEventually(Eventually element, SyntaxTreeElement input) {
+    public Boolean visit(Eventually element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof Eventually other) {
             return element.expression().accept(this, other.expression());
@@ -95,7 +95,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitConjunction(Conjunction element, SyntaxTreeElement input) {
+    public Boolean visit(Conjunction element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof Conjunction other) {
             return element.left().accept(this, other.left()) && element.right().accept(this, other.right());
@@ -104,7 +104,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitDisjunction(Disjunction element, SyntaxTreeElement input) {
+    public Boolean visit(Disjunction element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof Disjunction other) {
             return element.left().accept(this, other.left()) && element.right().accept(this, other.right());
@@ -112,7 +112,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
         return false;
     }
     @Override
-    public Boolean visitExclusiveDisjunction(ExclusiveDisjunction element, SyntaxTreeElement input) {
+    public Boolean visit(ExclusiveDisjunction element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof ExclusiveDisjunction other) {
             return element.left().accept(this, other.left()) && element.right().accept(this, other.right());
@@ -121,7 +121,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitImplication(Implication element, SyntaxTreeElement input) {
+    public Boolean visit(Implication element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof Implication other) {
             return element.left().accept(this, other.left()) && element.right().accept(this, other.right());
@@ -130,7 +130,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitEquivalence(Equivalence element, SyntaxTreeElement input) {
+    public Boolean visit(Equivalence element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof Equivalence other) {
             return element.left().accept(this, other.left()) && element.right().accept(this, other.right());
@@ -139,7 +139,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitConditional(Conditional element, SyntaxTreeElement input) {
+    public Boolean visit(Conditional element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof Conditional(Expression condition, Expression trueBranch, Expression falseBranch)) {
             return element.condition().accept(this, condition) &&
@@ -150,7 +150,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitStrongRelease(StrongRelease element, SyntaxTreeElement input) {
+    public Boolean visit(StrongRelease element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof StrongRelease other) {
             return element.left().accept(this, other.left()) && element.right().accept(this, other.right());
@@ -159,7 +159,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitWeakRelease(WeakRelease element, SyntaxTreeElement input) {
+    public Boolean visit(WeakRelease element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof WeakRelease other) {
             return element.left().accept(this, other.left()) && element.right().accept(this, other.right());
@@ -168,7 +168,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitStrongUntil(StrongUntil element, SyntaxTreeElement input) {
+    public Boolean visit(StrongUntil element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof StrongUntil other) {
             return element.left().accept(this, other.left()) && element.right().accept(this, other.right());
@@ -177,7 +177,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitWeakUntil(WeakUntil element, SyntaxTreeElement input) {
+    public Boolean visit(WeakUntil element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof WeakUntil other) {
             return element.left().accept(this, other.left()) && element.right().accept(this, other.right());
@@ -186,7 +186,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitExpressionDeclaration(ExpressionDeclaration element, SyntaxTreeElement input) {
+    public Boolean visit(ExpressionDeclaration element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof ExpressionDeclaration other) {
             return element.name().equals(other.name()) &&
@@ -196,7 +196,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitState(State element, SyntaxTreeElement input) {
+    public Boolean visit(State element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof State(String name)) {
             return element.name().equals(name);
@@ -205,7 +205,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitLetExpression(LetExpression element, SyntaxTreeElement input) {
+    public Boolean visit(LetExpression element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof LetExpression(Declarations declarations, SyntaxTreeElement expression)) {
             return element.declarations().accept(this, declarations) && element.expression().accept(this, expression);
@@ -214,7 +214,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitDeclarations(Declarations element, SyntaxTreeElement input) {
+    public Boolean visit(Declarations element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof Declarations(List<ExpressionDeclaration> declarations)) {
             return element.declarations().size() == declarations.size() &&
@@ -225,7 +225,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitTransition(Transition element, SyntaxTreeElement input) {
+    public Boolean visit(Transition element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof Transition(State source, int priority, Expression guard, State target)) {
             return element.source().accept(this, source) &&
@@ -237,7 +237,7 @@ public class NamelessEquality implements Visitor<SyntaxTreeElement, Boolean> {
     }
 
     @Override
-    public Boolean visitAutomaton(Automaton element, SyntaxTreeElement input) {
+    public Boolean visit(Automaton element, SyntaxTreeElement input) {
         if (element == input) return true;
         if (input instanceof Automaton(
                 AutomatonSemanticsKind semanticsKind, Set<State> states, Set<State> initialStates,

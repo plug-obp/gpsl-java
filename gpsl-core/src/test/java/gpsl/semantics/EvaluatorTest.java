@@ -3,7 +3,6 @@ import gpsl.syntax.TestHelpers;
 
 import static gpsl.syntax.TestHelpers.parseDeclarationsOrFail;
 
-import gpsl.syntax.Reader;
 import gpsl.syntax.model.*;
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +29,7 @@ class EvaluatorTest {
         Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
         Expression expr = TestHelpers.parseExpressionOrFail("true");
         
-        assertTrue(evaluator.visitTrue((True) expr, null));
+        assertTrue(evaluator.visit((True) expr, null));
     }
     
     @Test
@@ -38,7 +37,7 @@ class EvaluatorTest {
         Evaluator<Void> evaluator = new Evaluator<>(SIMPLE_ATOM_EVALUATOR);
         Expression expr = TestHelpers.parseExpressionOrFail("false");
         
-        assertFalse(evaluator.visitFalse((False) expr, null));
+        assertFalse(evaluator.visit((False) expr, null));
     }
     
     @Test
@@ -198,7 +197,7 @@ class EvaluatorTest {
         
         Reference unresolved = new Reference("unresolved");
         assertThrows(Evaluator.EvaluationException.class, 
-            () -> evaluator.visitReference(unresolved, null));
+            () -> evaluator.visit(unresolved, null));
     }
     
     @Test

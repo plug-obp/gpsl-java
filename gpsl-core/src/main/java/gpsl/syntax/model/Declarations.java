@@ -10,6 +10,6 @@ public record Declarations(List<ExpressionDeclaration> declarations)
     
     @Override
     public <T, R> R accept(Visitor<T, R> visitor, T input) {
-        return visitor.visitDeclarations(this, input);
+        return visitor.visit(this, input);
     }
 }

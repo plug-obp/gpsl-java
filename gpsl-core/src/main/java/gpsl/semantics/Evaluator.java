@@ -26,22 +26,22 @@ public class Evaluator<T> implements Visitor<T, Boolean> {
     }
     
     @Override
-    public Boolean visitAtom(Atom element, T input) {
+    public Boolean visit(Atom element, T input) {
         return atomEvaluator.evaluate(element.value(), input);
     }
     
     @Override
-    public Boolean visitTrue(True element, T input) {
+    public Boolean visit(True element, T input) {
         return true;
     }
     
     @Override
-    public Boolean visitFalse(False element, T input) {
+    public Boolean visit(False element, T input) {
         return false;
     }
     
     @Override
-    public Boolean visitReference(Reference element, T input) {
+    public Boolean visit(Reference element, T input) {
         if (element.expression() == null) {
             throw new EvaluationException("Unresolved reference: " + element.name());
         }
@@ -49,37 +49,37 @@ public class Evaluator<T> implements Visitor<T, Boolean> {
     }
     
     @Override
-    public Boolean visitNegation(Negation element, T input) {
+    public Boolean visit(Negation element, T input) {
         return !element.expression().accept(this, input);
     }
     
     @Override
-    public Boolean visitConjunction(Conjunction element, T input) {
+    public Boolean visit(Conjunction element, T input) {
         return element.left().accept(this, input) && element.right().accept(this, input);
     }
     
     @Override
-    public Boolean visitDisjunction(Disjunction element, T input) {
+    public Boolean visit(Disjunction element, T input) {
         return element.left().accept(this, input) || element.right().accept(this, input);
     }
     
     @Override
-    public Boolean visitExclusiveDisjunction(ExclusiveDisjunction element, T input) {
+    public Boolean visit(ExclusiveDisjunction element, T input) {
         return element.left().accept(this, input) != element.right().accept(this, input);
     }
     
     @Override
-    public Boolean visitImplication(Implication element, T input) {
+    public Boolean visit(Implication element, T input) {
         return !element.left().accept(this, input) || element.right().accept(this, input);
     }
     
     @Override
-    public Boolean visitEquivalence(Equivalence element, T input) {
+    public Boolean visit(Equivalence element, T input) {
         return element.left().accept(this, input) == element.right().accept(this, input);
     }
     
     @Override
-    public Boolean visitConditional(Conditional element, T input) {
+    public Boolean visit(Conditional element, T input) {
         // Ternary conditional: condition ? trueBranch : falseBranch
         return element.condition().accept(this, input)
             ? element.trueBranch().accept(this, input)
@@ -87,14 +87,14 @@ public class Evaluator<T> implements Visitor<T, Boolean> {
     }
 
     @Override
-    public Boolean visitLetExpression(LetExpression element, T input) {
+    public Boolean visit(LetExpression element, T input) {
         // Let expressions just evaluate their body
         // The declarations should already be resolved via references
         return element.expression().accept(this, input);
     }
     
     @Override
-    public Boolean visitExpressionDeclaration(ExpressionDeclaration element, T input) {
+    public Boolean visit(ExpressionDeclaration element, T input) {
         if (element.expression() == null) {
             throw new EvaluationException("Expression declaration has no expression: " + element.name());
         }
@@ -104,43 +104,43 @@ public class Evaluator<T> implements Visitor<T, Boolean> {
     // Temporal operators are not supported in basic boolean evaluation
     
     @Override
-    public Boolean visitNext(Next element, T input) {
+    public Boolean visit(Next element, T input) {
         throw new UnsupportedOperationException(
             "The GPSL evaluator does not support temporal operator: Next");
     }
     
     @Override
-    public Boolean visitEventually(Eventually element, T input) {
+    public Boolean visit(Eventually element, T input) {
         throw new UnsupportedOperationException(
             "The GPSL evaluator does not support temporal operator: Eventually");
     }
     
     @Override
-    public Boolean visitGlobally(Globally element, T input) {
+    public Boolean visit(Globally element, T input) {
         throw new UnsupportedOperationException(
             "The GPSL evaluator does not support temporal operator: Globally");
     }
     
     @Override
-    public Boolean visitStrongUntil(StrongUntil element, T input) {
+    public Boolean visit(StrongUntil element, T input) {
         throw new UnsupportedOperationException(
             "The GPSL evaluator does not support temporal operator: StrongUntil");
     }
     
     @Override
-    public Boolean visitWeakUntil(WeakUntil element, T input) {
+    public Boolean visit(WeakUntil element, T input) {
         throw new UnsupportedOperationException(
             "The GPSL evaluator does not support temporal operator: WeakUntil");
     }
     
     @Override
-    public Boolean visitStrongRelease(StrongRelease element, T input) {
+    public Boolean visit(StrongRelease element, T input) {
         throw new UnsupportedOperationException(
             "The GPSL evaluator does not support temporal operator: StrongRelease");
     }
     
     @Override
-    public Boolean visitWeakRelease(WeakRelease element, T input) {
+    public Boolean visit(WeakRelease element, T input) {
         throw new UnsupportedOperationException(
             "The GPSL evaluator does not support temporal operator: WeakRelease");
     }
@@ -148,25 +148,25 @@ public class Evaluator<T> implements Visitor<T, Boolean> {
     // Automaton expressions are not supported in basic boolean evaluation
     
     @Override
-    public Boolean visitAutomaton(Automaton element, T input) {
+    public Boolean visit(Automaton element, T input) {
         throw new UnsupportedOperationException(
             "The GPSL evaluator does not support Automaton expressions");
     }
     
     @Override
-    public Boolean visitDeclarations(Declarations element, T input) {
+    public Boolean visit(Declarations element, T input) {
         throw new UnsupportedOperationException(
             "Cannot directly evaluate Declarations - evaluate individual declarations instead");
     }
     
     @Override
-    public Boolean visitState(State element, T input) {
+    public Boolean visit(State element, T input) {
         throw new UnsupportedOperationException(
             "Cannot evaluate automaton State");
     }
     
     @Override
-    public Boolean visitTransition(Transition element, T input) {
+    public Boolean visit(Transition element, T input) {
         throw new UnsupportedOperationException(
             "Cannot evaluate automaton Transition");
     }

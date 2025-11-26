@@ -16,22 +16,22 @@ public class NamelessHash implements Visitor<Void, Integer> {
     }
 
     @Override
-    public Integer visitTrue(True element, Void input) {
+    public Integer visit(True element, Void input) {
         return Objects.hash(true);
     }
 
     @Override
-    public Integer visitFalse(False element, Void input) {
+    public Integer visit(False element, Void input) {
         return Objects.hash(false);
     }
 
     @Override
-    public Integer visitAtom(Atom element, Void input) {
+    public Integer visit(Atom element, Void input) {
         return Objects.hash(element.value());
     }
 
     @Override
-    public Integer visitReference(Reference element, Void input) {
+    public Integer visit(Reference element, Void input) {
         if (element.expression() == null) {
             return Objects.hash(element.name());
         }
@@ -39,20 +39,20 @@ public class NamelessHash implements Visitor<Void, Integer> {
     }
 
     @Override
-    public Integer visitUnaryExpression(UnaryExpression element, Void input) {
+    public Integer visit(UnaryExpression element, Void input) {
         var he = element.expression().accept(this, input);
         return Objects.hash(element.getClass().hashCode(), he);
     }
 
     @Override
-    public Integer visitBinaryExpression(BinaryExpression element, Void input) {
+    public Integer visit(BinaryExpression element, Void input) {
         var hel = element.left().accept(this, input);
         var her = element.right().accept(this, input);
         return Objects.hash(element.getClass().hashCode(), hel, her);
     }
 
     @Override
-    public Integer visitConditional(Conditional element, Void input) {
+    public Integer visit(Conditional element, Void input) {
         var hc = element.condition().accept(this, input);
         var ht = element.trueBranch().accept(this, input);
         var hf = element.falseBranch().accept(this, input);
@@ -60,29 +60,29 @@ public class NamelessHash implements Visitor<Void, Integer> {
     }
 
     @Override
-    public Integer visitExpressionDeclaration(ExpressionDeclaration element, Void input) {
+    public Integer visit(ExpressionDeclaration element, Void input) {
         return element.expression().accept(this, input);
     }
 
     @Override
-    public Integer visitLetExpression(LetExpression element, Void input) {
+    public Integer visit(LetExpression element, Void input) {
         var dh = element.declarations().accept(this, input);
         var eh = element.expression().accept(this, input);
         return Objects.hash(dh, eh);
     }
 
     @Override
-    public Integer visitDeclarations(Declarations element, Void input) {
+    public Integer visit(Declarations element, Void input) {
         return hash(element.declarations().stream());
     }
 
     @Override
-    public Integer visitState(State element, Void input) {
+    public Integer visit(State element, Void input) {
         return Objects.hash(element.name());
     }
 
     @Override
-    public Integer visitTransition(Transition element, Void input) {
+    public Integer visit(Transition element, Void input) {
         var sh = element.source().accept(this, input);
         var th = element.target().accept(this, input);
         var eh = element.guard().accept(this, input);
@@ -90,7 +90,7 @@ public class NamelessHash implements Visitor<Void, Integer> {
     }
 
     @Override
-    public Integer visitAutomaton(Automaton element, Void input) {
+    public Integer visit(Automaton element, Void input) {
         var hk = element.semanticsKind().hashCode();
         var hs = hash(element.states().stream());
         var hi = hash(element.initialStates().stream());

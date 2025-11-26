@@ -8,6 +8,6 @@ public record Globally(String operator, Expression expression)
     
     @Override
     public <T, R> R accept(Visitor<T, R> visitor, T input) {
-        return visitor.visitGlobally(this, input);
+        return visitor.visit(this, input);
     }
 }

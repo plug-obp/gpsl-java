@@ -8,6 +8,6 @@ public record Next(String operator, Expression expression)
     
     @Override
     public <T, R> R accept(Visitor<T, R> visitor, T input) {
-        return visitor.visitNext(this, input);
+        return visitor.visit(this, input);
     }
 }

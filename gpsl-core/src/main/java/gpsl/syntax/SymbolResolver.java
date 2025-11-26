@@ -23,7 +23,7 @@ public class SymbolResolver implements Visitor<Context, Void> {
     }
 
     @Override
-    public Void visitLetExpression(LetExpression letExpression, Context environment) {
+    public Void visit(LetExpression letExpression, Context environment) {
         environment.pushContext();
         letExpression.declarations().accept(this, environment);
         letExpression.expression().accept(this, environment);
@@ -32,7 +32,7 @@ public class SymbolResolver implements Visitor<Context, Void> {
     }
 
     @Override
-    public Void visitDeclarations(Declarations declarations, Context environment) {
+    public Void visit(Declarations declarations, Context environment) {
         for (ExpressionDeclaration declaration : declarations.declarations()) {
             declaration.accept(this, environment);
         }
@@ -40,7 +40,7 @@ public class SymbolResolver implements Visitor<Context, Void> {
     }
 
     @Override
-    public Void visitExpressionDeclaration(ExpressionDeclaration expressionDeclaration, Context environment) {
+    public Void visit(ExpressionDeclaration expressionDeclaration, Context environment) {
         if (expressionDeclaration.expression() != null) {
             expressionDeclaration.expression().accept(this, environment);
             
@@ -59,7 +59,7 @@ public class SymbolResolver implements Visitor<Context, Void> {
     }
 
     @Override
-    public Void visitReference(Reference reference, Context environment) {
+    public Void visit(Reference reference, Context environment) {
         if (reference.expression() == null) {
             try {
                 Expression resolved = environment.lookup(reference.name());
@@ -76,7 +76,7 @@ public class SymbolResolver implements Visitor<Context, Void> {
     }
 
     @Override
-    public Void visitTransition(Transition transition, Context environment) {
+    public Void visit(Transition transition, Context environment) {
         // Resolve source and target states if they are stored as State objects
         // Note: In the Java implementation, states are already State objects from the mapper
         // but we still need to resolve them from the automaton's state context
@@ -87,7 +87,7 @@ public class SymbolResolver implements Visitor<Context, Void> {
     }
 
     @Override
-    public Void visitAutomaton(Automaton automaton, Context environment) {
+    public Void visit(Automaton automaton, Context environment) {
         // Create a new context for the automaton's states
         Map<String, Object> stateContext = new HashMap<>();
         
@@ -109,110 +109,23 @@ public class SymbolResolver implements Visitor<Context, Void> {
     }
 
     @Override
-    public Void visitUnaryExpression(UnaryExpression unaryExpression, Context environment) {
+    public Void visit(UnaryExpression unaryExpression, Context environment) {
         unaryExpression.expression().accept(this, environment);
         return null;
     }
 
     @Override
-    public Void visitBinaryExpression(BinaryExpression binaryExpression, Context environment) {
+    public Void visit(BinaryExpression binaryExpression, Context environment) {
         binaryExpression.left().accept(this, environment);
         binaryExpression.right().accept(this, environment);
         return null;
     }
 
     @Override
-    public Void visitConditional(Conditional conditional, Context environment) {
+    public Void visit(Conditional conditional, Context environment) {
         conditional.condition().accept(this, environment);
         conditional.trueBranch().accept(this, environment);
         conditional.falseBranch().accept(this, environment);
-        return null;
-    }
-
-    // Default implementations for other visit methods that don't need symbol resolution
-    
-    @Override
-    public Void visitTrue(True element, Context input) {
-        return null;
-    }
-
-    @Override
-    public Void visitFalse(False element, Context input) {
-        return null;
-    }
-
-    @Override
-    public Void visitAtom(Atom element, Context input) {
-        return null;
-    }
-
-    @Override
-    public Void visitNegation(Negation element, Context input) {
-        return visitUnaryExpression(element, input);
-    }
-
-    @Override
-    public Void visitNext(Next element, Context input) {
-        return visitUnaryExpression(element, input);
-    }
-
-    @Override
-    public Void visitEventually(Eventually element, Context input) {
-        return visitUnaryExpression(element, input);
-    }
-
-    @Override
-    public Void visitGlobally(Globally element, Context input) {
-        return visitUnaryExpression(element, input);
-    }
-
-    @Override
-    public Void visitConjunction(Conjunction element, Context input) {
-        return visitBinaryExpression(element, input);
-    }
-
-    @Override
-    public Void visitDisjunction(Disjunction element, Context input) {
-        return visitBinaryExpression(element, input);
-    }
-
-    @Override
-    public Void visitExclusiveDisjunction(ExclusiveDisjunction element, Context input) {
-        return visitBinaryExpression(element, input);
-    }
-
-    @Override
-    public Void visitImplication(Implication element, Context input) {
-        return visitBinaryExpression(element, input);
-    }
-
-    @Override
-    public Void visitEquivalence(Equivalence element, Context input) {
-        return visitBinaryExpression(element, input);
-    }
-
-    @Override
-    public Void visitStrongUntil(StrongUntil element, Context input) {
-        return visitBinaryExpression(element, input);
-    }
-
-    @Override
-    public Void visitWeakUntil(WeakUntil element, Context input) {
-        return visitBinaryExpression(element, input);
-    }
-
-    @Override
-    public Void visitStrongRelease(StrongRelease element, Context input) {
-        return visitBinaryExpression(element, input);
-    }
-
-    @Override
-    public Void visitWeakRelease(WeakRelease element, Context input) {
-        return visitBinaryExpression(element, input);
-    }
-
-    @Override
-    public Void visitState(State element, Context input) {
         return null;
     }
 }

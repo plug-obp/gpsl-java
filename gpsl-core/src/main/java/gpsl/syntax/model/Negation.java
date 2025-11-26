@@ -8,6 +8,6 @@ public record Negation(String operator, Expression expression)
     
     @Override
     public <T, R> R accept(Visitor<T, R> visitor, T input) {
-        return visitor.visitNegation(this, input);
+        return visitor.visit(this, input);
     }
 }

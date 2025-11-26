@@ -2,6 +2,7 @@ package gpsl.syntax.hashcons;
 
 import gpsl.syntax.SimpleName;
 import gpsl.syntax.hashcons.ToEdgedRootedGraph.Pair;
+import gpsl.syntax.model.Factory;
 import gpsl.syntax.model.SyntaxTreeElement;
 import obp3.traversal.dfs.DepthFirstTraversal;
 import obp3.traversal.dfs.model.FunctionalDFTCallbacksModel;

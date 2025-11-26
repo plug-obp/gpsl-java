@@ -26,60 +26,60 @@ public class ToRootedGraph implements IRootedGraph<SyntaxTreeElement> {
 
     public static class NeighboursGenerator implements Visitor<Void, Iterator<SyntaxTreeElement>> {
         @Override
-        public Iterator<SyntaxTreeElement> visitSyntaxTreeElement(SyntaxTreeElement element, Void input) {
+        public Iterator<SyntaxTreeElement> visit(SyntaxTreeElement element, Void input) {
             return Collections.emptyIterator();
         }
 
         @Override
-        public Iterator<SyntaxTreeElement> visitUnaryExpression(UnaryExpression element, Void input) {
+        public Iterator<SyntaxTreeElement> visit(UnaryExpression element, Void input) {
             List<SyntaxTreeElement> list = List.of(element.expression());
             return list.iterator();
         }
 
         @Override
-        public Iterator<SyntaxTreeElement> visitBinaryExpression(BinaryExpression element, Void input) {
+        public Iterator<SyntaxTreeElement> visit(BinaryExpression element, Void input) {
             List<SyntaxTreeElement> list = List.of(element.left(), element.right());
             return list.iterator();
         }
 
         @Override
-        public Iterator<SyntaxTreeElement> visitConditional(Conditional element, Void input) {
+        public Iterator<SyntaxTreeElement> visit(Conditional element, Void input) {
             List<SyntaxTreeElement> list = List.of(element.condition(), element.trueBranch(), element.falseBranch());
             return list.iterator();
         }
 
         @Override
-        public Iterator<SyntaxTreeElement> visitLetExpression(LetExpression element, Void input) {
+        public Iterator<SyntaxTreeElement> visit(LetExpression element, Void input) {
             List<SyntaxTreeElement> list = List.of(element.declarations(), element.expression());
             return list.iterator();
         }
 
         @Override
         @SuppressWarnings({"unchecked", "rawtypes"})
-        public Iterator<SyntaxTreeElement> visitDeclarations(Declarations element, Void input) {
+        public Iterator<SyntaxTreeElement> visit(Declarations element, Void input) {
             return (Iterator) element.declarations().iterator();
         }
 
         @Override
-        public Iterator<SyntaxTreeElement> visitTransition(Transition element, Void input) {
+        public Iterator<SyntaxTreeElement> visit(Transition element, Void input) {
             List<SyntaxTreeElement> list = List.of(element.source(), element.target(), element.guard());
             return list.iterator();
         }
 
         @Override
-        public Iterator<SyntaxTreeElement> visitExpressionDeclaration(ExpressionDeclaration element, Void input) {
+        public Iterator<SyntaxTreeElement> visit(ExpressionDeclaration element, Void input) {
             List<SyntaxTreeElement> list = Collections.singletonList(element.expression());
             return list.iterator();
         }
 
         @Override
         @SuppressWarnings({"unchecked", "rawtypes"})
-        public Iterator<SyntaxTreeElement> visitReference(Reference element, Void input) {
+        public Iterator<SyntaxTreeElement> visit(Reference element, Void input) {
             return element.expression() == null ? Collections.emptyIterator() : (Iterator) List.of(element.expression()).iterator();
         }
 
         @Override
-        public Iterator<SyntaxTreeElement> visitAutomaton(Automaton element, Void input) {
+        public Iterator<SyntaxTreeElement> visit(Automaton element, Void input) {
             List<SyntaxTreeElement> list = new ArrayList<>(element.states());
             list.addAll(element.transitions());
             return list.iterator();

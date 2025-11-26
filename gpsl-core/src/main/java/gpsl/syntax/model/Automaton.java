@@ -17,6 +17,6 @@ public record Automaton(
     
     @Override
     public <T, R> R accept(Visitor<T, R> visitor, T input) {
-        return visitor.visitAutomaton(this, input);
+        return visitor.visit(this, input);
     }
 }

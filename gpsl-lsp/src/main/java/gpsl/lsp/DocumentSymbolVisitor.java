@@ -18,7 +18,7 @@ import java.util.List;
 public class DocumentSymbolVisitor implements Visitor<PositionMap, List<DocumentSymbol>> {
 
     @Override
-    public List<DocumentSymbol> visitDeclarations(Declarations element, PositionMap positionMap) {
+    public List<DocumentSymbol> visit(Declarations element, PositionMap positionMap) {
         List<DocumentSymbol> symbols = new ArrayList<>();
         for (ExpressionDeclaration decl : element.declarations()) {
             DocumentSymbol symbol = createSymbolForDeclaration(decl, positionMap);
@@ -30,7 +30,7 @@ public class DocumentSymbolVisitor implements Visitor<PositionMap, List<Document
     }
 
     @Override
-    public List<DocumentSymbol> visitExpressionDeclaration(ExpressionDeclaration element, PositionMap positionMap) {
+    public List<DocumentSymbol> visit(ExpressionDeclaration element, PositionMap positionMap) {
         DocumentSymbol symbol = createSymbolForDeclaration(element, positionMap);
         return symbol != null ? List.of(symbol) : Collections.emptyList();
     }
@@ -77,7 +77,7 @@ public class DocumentSymbolVisitor implements Visitor<PositionMap, List<Document
         if (decl.expression() instanceof LetExpression let && 
             let.expression() instanceof Automaton automaton) {
             // Handle let expression with automaton body
-            children = childExtractor.visitAutomaton(automaton, positionMap);
+            children = childExtractor.visit(automaton, positionMap);
         } else {
             // Handle regular expressions (including LetExpression with Expression body)
             children = decl.expression().accept(childExtractor, positionMap);
@@ -110,7 +110,7 @@ public class DocumentSymbolVisitor implements Visitor<PositionMap, List<Document
     private class ChildSymbolExtractor implements Visitor<PositionMap, List<DocumentSymbol>> {
 
         @Override
-        public List<DocumentSymbol> visitLetExpression(LetExpression element, PositionMap positionMap) {
+        public List<DocumentSymbol> visit(LetExpression element, PositionMap positionMap) {
             List<DocumentSymbol> children = new ArrayList<>();
             
             // Add each let binding as a child symbol
@@ -140,7 +140,7 @@ public class DocumentSymbolVisitor implements Visitor<PositionMap, List<Document
                 
                 // Recursively extract children if this binding's expression is a let
                 if (binding.expression() instanceof LetExpression nestedLet) {
-                    List<DocumentSymbol> nestedChildren = visitLetExpression(nestedLet, positionMap);
+                    List<DocumentSymbol> nestedChildren = visit(nestedLet, positionMap);
                     if (!nestedChildren.isEmpty()) {
                         bindingSymbol.setChildren(nestedChildren);
                     }
@@ -165,7 +165,7 @@ public class DocumentSymbolVisitor implements Visitor<PositionMap, List<Document
                     );
                     
                     // Get the nested let's children
-                    List<DocumentSymbol> nestedChildren = visitLetExpression(bodyLet, positionMap);
+                    List<DocumentSymbol> nestedChildren = visit(bodyLet, positionMap);
                     if (!nestedChildren.isEmpty()) {
                         inSymbol.setChildren(nestedChildren);
                     }
@@ -178,7 +178,7 @@ public class DocumentSymbolVisitor implements Visitor<PositionMap, List<Document
         }
 
         @Override
-        public List<DocumentSymbol> visitAutomaton(Automaton element, PositionMap positionMap) {
+        public List<DocumentSymbol> visit(Automaton element, PositionMap positionMap) {
             List<DocumentSymbol> children = new ArrayList<>();
 
             // Add transitions as children
@@ -213,17 +213,17 @@ public class DocumentSymbolVisitor implements Visitor<PositionMap, List<Document
 
         // Default implementation: no children for other expression types
         @Override
-        public List<DocumentSymbol> visitExpression(Expression element, PositionMap positionMap) {
+        public List<DocumentSymbol> visit(Expression element, PositionMap positionMap) {
             return Collections.emptyList();
         }
 
         @Override
-        public List<DocumentSymbol> visitBinaryExpression(BinaryExpression element, PositionMap positionMap) {
+        public List<DocumentSymbol> visit(BinaryExpression element, PositionMap positionMap) {
             return Collections.emptyList();
         }
 
         @Override
-        public List<DocumentSymbol> visitUnaryExpression(UnaryExpression element, PositionMap positionMap) {
+        public List<DocumentSymbol> visit(UnaryExpression element, PositionMap positionMap) {
             return Collections.emptyList();
         }
     }

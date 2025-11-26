@@ -15,6 +15,6 @@ public record ExpressionDeclaration(
     
     @Override
     public <T, R> R accept(Visitor<T, R> visitor, T input) {
-        return visitor.visitExpressionDeclaration(this, input);
+        return visitor.visit(this, input);
     }
 }

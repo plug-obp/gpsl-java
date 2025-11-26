@@ -11,6 +11,6 @@ public sealed interface UnaryExpression extends Expression
     
     @Override
     default <T, R> R accept(Visitor<T, R> visitor, T input) {
-        return visitor.visitUnaryExpression(this, input);
+        return visitor.visit(this, input);
     }
 }

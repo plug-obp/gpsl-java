@@ -14,6 +14,6 @@ public sealed interface BinaryExpression extends Expression
     
     @Override
     default <T, R> R accept(Visitor<T, R> visitor, T input) {
-        return visitor.visitBinaryExpression(this, input);
+        return visitor.visit(this, input);
     }
 }

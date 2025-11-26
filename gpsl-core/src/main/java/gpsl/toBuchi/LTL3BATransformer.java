@@ -42,7 +42,7 @@ public class LTL3BATransformer implements Visitor<Void, String> {
     }
     
     @Override
-    public String visitSyntaxTreeElement(SyntaxTreeElement element, Void input) {
+    public String visit(SyntaxTreeElement element, Void input) {
         throw new UnsupportedOperationException(
             "The GPSL to abstract text converter does not support " 
             + element.getClass().getSimpleName() + " elements."
@@ -50,7 +50,7 @@ public class LTL3BATransformer implements Visitor<Void, String> {
     }
     
     @Override
-    public String visitAtom(Atom element, Void input) {
+    public String visit(Atom element, Void input) {
         String name = atomToName.get(element);
         if (name == null) {
             name = "atom" + nameToAtom.size();
@@ -61,17 +61,17 @@ public class LTL3BATransformer implements Visitor<Void, String> {
     }
     
     @Override
-    public String visitTrue(True element, Void input) {
+    public String visit(True element, Void input) {
         return "true";
     }
     
     @Override
-    public String visitFalse(False element, Void input) {
+    public String visit(False element, Void input) {
         return "false";
     }
     
     @Override
-    public String visitReference(Reference element, Void input) {
+    public String visit(Reference element, Void input) {
         if (element.expression() == null) {
             throw new EvaluationException("Unresolved reference: " + element.name());
         }
@@ -79,41 +79,41 @@ public class LTL3BATransformer implements Visitor<Void, String> {
     }
     
     @Override
-    public String visitNegation(Negation element, Void input) {
+    public String visit(Negation element, Void input) {
         return "(!" + element.expression().accept(this, input) + ")";
     }
     
     @Override
-    public String visitNext(Next element, Void input) {
+    public String visit(Next element, Void input) {
         return "(X " + element.expression().accept(this, input) + ")";
     }
     
     @Override
-    public String visitEventually(Eventually element, Void input) {
+    public String visit(Eventually element, Void input) {
         return "(<> " + element.expression().accept(this, input) + ")";
     }
     
     @Override
-    public String visitGlobally(Globally element, Void input) {
+    public String visit(Globally element, Void input) {
         return "([] " + element.expression().accept(this, input) + ")";
     }
     
     @Override
-    public String visitConjunction(Conjunction element, Void input) {
+    public String visit(Conjunction element, Void input) {
         String left = element.left().accept(this, input);
         String right = element.right().accept(this, input);
         return "(" + left + " && " + right + ")";
     }
     
     @Override
-    public String visitDisjunction(Disjunction element, Void input) {
+    public String visit(Disjunction element, Void input) {
         String left = element.left().accept(this, input);
         String right = element.right().accept(this, input);
         return "(" + left + " || " + right + ")";
     }
     
     @Override
-    public String visitExclusiveDisjunction(ExclusiveDisjunction element, Void input) {
+    public String visit(ExclusiveDisjunction element, Void input) {
         // XOR is not supported by LTL3BA, use the XOR encoding instead: (!a && b) || (a && !b)
         String left = element.left().accept(this, input);
         String right = element.right().accept(this, input);
@@ -121,21 +121,21 @@ public class LTL3BATransformer implements Visitor<Void, String> {
     }
     
     @Override
-    public String visitImplication(Implication element, Void input) {
+    public String visit(Implication element, Void input) {
         String left = element.left().accept(this, input);
         String right = element.right().accept(this, input);
         return "(" + left + " -> " + right + ")";
     }
     
     @Override
-    public String visitEquivalence(Equivalence element, Void input) {
+    public String visit(Equivalence element, Void input) {
         String left = element.left().accept(this, input);
         String right = element.right().accept(this, input);
         return "(" + left + " <-> " + right + ")";
     }
 
     @Override
-    public String visitConditional(Conditional element, Void input) {
+    public String visit(Conditional element, Void input) {
         // Is ' c ? tB :fB / ITE(c, tB, fB)' by LTL3BA?, use the encoding instead: (c && tB) || (!c && fB)
         var tB = "(" + element.condition().accept(this, input) + " && " + element.trueBranch().accept(this, input) + ")";
         var fB = "(!" + element.condition().accept(this, input) + " && " + element.falseBranch().accept(this, input) + ")";
@@ -143,14 +143,14 @@ public class LTL3BATransformer implements Visitor<Void, String> {
     }
 
     @Override
-    public String visitStrongUntil(StrongUntil element, Void input) {
+    public String visit(StrongUntil element, Void input) {
         String left = element.left().accept(this, input);
         String right = element.right().accept(this, input);
         return "(" + left + " U " + right + ")";
     }
     
     @Override
-    public String visitWeakUntil(WeakUntil element, Void input) {
+    public String visit(WeakUntil element, Void input) {
         // W is not supported by LTL3BA, encode as: ([] a) || (a U b)
         String left = element.left().accept(this, input);
         String right = element.right().accept(this, input);
@@ -158,7 +158,7 @@ public class LTL3BATransformer implements Visitor<Void, String> {
     }
     
     @Override
-    public String visitStrongRelease(StrongRelease element, Void input) {
+    public String visit(StrongRelease element, Void input) {
         // M is not supported by LTL3BA, encode as: b U (a && b)
         String left = element.left().accept(this, input);
         String right = element.right().accept(this, input);
@@ -166,19 +166,19 @@ public class LTL3BATransformer implements Visitor<Void, String> {
     }
     
     @Override
-    public String visitWeakRelease(WeakRelease element, Void input) {
+    public String visit(WeakRelease element, Void input) {
         String left = element.left().accept(this, input);
         String right = element.right().accept(this, input);
         return "(" + left + " R " + right + ")";
     }
     
     @Override
-    public String visitLetExpression(LetExpression element, Void input) {
+    public String visit(LetExpression element, Void input) {
         return element.expression().accept(this, input);
     }
     
     @Override
-    public String visitExpressionDeclaration(ExpressionDeclaration element, Void input) {
+    public String visit(ExpressionDeclaration element, Void input) {
         return element.expression().accept(this, input);
     }
 }

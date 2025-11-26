@@ -8,6 +8,6 @@ public record Conjunction(String operator, Expression left, Expression right)
     
     @Override
     public <T, R> R accept(Visitor<T, R> visitor, T input) {
-        return visitor.visitConjunction(this, input);
+        return visitor.visit(this, input);
     }
 }

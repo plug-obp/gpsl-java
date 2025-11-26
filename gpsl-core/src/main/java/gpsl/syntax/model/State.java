@@ -9,7 +9,7 @@ public record State(String name) implements SyntaxTreeElement {
     
     @Override
     public <T, R> R accept(Visitor<T, R> visitor, T input) {
-        return visitor.visitState(this, input);
+        return visitor.visit(this, input);
     }
     
     @Override

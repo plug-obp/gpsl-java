@@ -1,5 +1,6 @@
 package gpsl.syntax.hashcons;
 
+import gpsl.syntax.SimpleName;
 import gpsl.syntax.hashcons.ToEdgedRootedGraph.Pair;
 import gpsl.syntax.model.SyntaxTreeElement;
 import obp3.traversal.dfs.DepthFirstTraversal;
@@ -15,7 +16,7 @@ public class ToEdgedTGF {
         var term1 = f.conjunction("&&", f.t(), f.t());
         var term2 = f.conjunction("and", f.t(), f.t());
         var term = f.or(term1, term2);
-        var rr = new ToEdgedRootedGraph(term);
+        var rr = new ToEdgedRootedGraph(ToTGF.bigC(10, f));
 
         Map<SyntaxTreeElement, List<Pair<Optional<String>, SyntaxTreeElement>>> edges = new IdentityHashMap<>();
         var dfs = new DepthFirstTraversal<>(DepthFirstTraversal.Algorithm.WHILE, rr,
@@ -39,7 +40,7 @@ public class ToEdgedTGF {
         var r = dfs.runAlone();
 
         var tgfNodes = edges.keySet().stream().reduce("", (a, b) -> {
-            a += System.identityHashCode(b) + " " + b + "\n";
+            a += System.identityHashCode(b) + " " + SimpleName.print(b) + "\n";
             return a;
         }, (a, b) -> a + b);
         System.out.println(tgfNodes.trim());

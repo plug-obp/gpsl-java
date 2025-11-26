@@ -1,12 +1,11 @@
 package gpsl.syntax.hashcons;
 
+import gpsl.syntax.SimpleName;
+import gpsl.syntax.model.Expression;
 import gpsl.syntax.model.Factory;
 import gpsl.syntax.model.SyntaxTreeElement;
-import obp3.sli.core.operators.product.Product;
 import obp3.traversal.dfs.DepthFirstTraversal;
-import obp3.traversal.dfs.domain.IDepthFirstTraversalConfiguration;
 import obp3.traversal.dfs.model.FunctionalDFTCallbacksModel;
-import obp3.utils.Either;
 
 import java.util.*;
 
@@ -14,11 +13,11 @@ public class ToTGF {
 
 
     public static void main(String[] args) {
-        var f = new Factory();
-        var term1 = f.conjunction("&&", f.t(), f.t());
-        var term2 = f.conjunction("and", f.t(), f.t());
-        var term = f.or(term1, term2);
-        var rr = new ToRootedGraph(term);
+        var f = new HashConsingFactory();
+//        var term1 = f.conjunction("&&", f.t(), f.t());
+//        var term2 = f.conjunction("and", f.t(), f.t());
+//        var term = f.or(term1, term2);
+        var rr = new ToRootedGraph(bigC(4, f));
 
         Map<SyntaxTreeElement, List<SyntaxTreeElement>> edges = new IdentityHashMap<>();
         var dfs = new DepthFirstTraversal<>(DepthFirstTraversal.Algorithm.WHILE, rr,
@@ -40,7 +39,7 @@ public class ToTGF {
         var r = dfs.runAlone();
 
         var tgfNodes = edges.keySet().stream().reduce("", (a, b) -> {
-            a += System.identityHashCode(b) + " " + b + "\n";
+            a += System.identityHashCode(b) + " " + SimpleName.print(b) + "\n";
             return a;
         }, (a, b) -> a + b);
         System.out.println(tgfNodes.trim());
@@ -56,4 +55,13 @@ public class ToTGF {
                 String::concat);
         System.out.println(tgfEdges.trim());
     }
+
+    static Expression bigC(int n, Factory f) {
+        if (n == 0) {
+            return f.t();
+        } else {
+            return f.conjunction("and", bigC(n - 1, f), bigC(n-1, f));
+        }
+    }
+
 }

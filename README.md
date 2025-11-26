@@ -1,7 +1,7 @@
 # GPSL Language
 
 ![Build Status](https://github.com/plug-obp/gpsl-java/actions/workflows/build-and-publish.yml/badge.svg)
-![Tests](https://img.shields.io/badge/tests-394%20passing-success)
+![Tests](https://img.shields.io/badge/tests-428%20passing-success)
 ![Java](https://img.shields.io/badge/java-23-blue)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fplug-obp%2Fgpsl-java.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fplug-obp%2Fgpsl-java?ref=badge_shield&issueType=license)
 

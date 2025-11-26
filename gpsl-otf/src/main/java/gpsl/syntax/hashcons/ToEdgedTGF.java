@@ -1,41 +1,40 @@
 package gpsl.syntax.hashcons;
 
-import gpsl.syntax.model.Factory;
+import gpsl.syntax.hashcons.ToEdgedRootedGraph.Pair;
 import gpsl.syntax.model.SyntaxTreeElement;
-import obp3.sli.core.operators.product.Product;
 import obp3.traversal.dfs.DepthFirstTraversal;
-import obp3.traversal.dfs.domain.IDepthFirstTraversalConfiguration;
 import obp3.traversal.dfs.model.FunctionalDFTCallbacksModel;
-import obp3.utils.Either;
 
 import java.util.*;
 
-public class ToTGF {
+public class ToEdgedTGF {
 
 
     public static void main(String[] args) {
-        var f = new Factory();
+        var f = new HashConsingFactory();
         var term1 = f.conjunction("&&", f.t(), f.t());
         var term2 = f.conjunction("and", f.t(), f.t());
         var term = f.or(term1, term2);
-        var rr = new ToRootedGraph(term);
+        var rr = new ToEdgedRootedGraph(term);
 
-        Map<SyntaxTreeElement, List<SyntaxTreeElement>> edges = new IdentityHashMap<>();
+        Map<SyntaxTreeElement, List<Pair<Optional<String>, SyntaxTreeElement>>> edges = new IdentityHashMap<>();
         var dfs = new DepthFirstTraversal<>(DepthFirstTraversal.Algorithm.WHILE, rr,
                 () -> Collections.newSetFromMap(new IdentityHashMap<>()),
+                Pair::b,
                 new FunctionalDFTCallbacksModel<>(
                         (s, t, c) -> {
                             if (s != null) {
-                                edges.get(s).add(t);
+                                edges.get(s.b()).add(t);
                             }
-                            edges.put(t, new ArrayList<>());
+                            edges.put(t.b(), new ArrayList<>());
                             return false; },
                         (s, t, c) -> {
                             if (s != null) {
-                                edges.get(s).add(t);
+                                edges.get(s.b()).add(t);
                             }
                             return false; },
-                        null ));
+                        null )
+                );
 
         var r = dfs.runAlone();
 
@@ -49,7 +48,8 @@ public class ToTGF {
                 (a, fanout) -> {
                     var source = System.identityHashCode(fanout.getKey());
                     a += fanout.getValue().stream().reduce("",
-                            (b, target) -> b + source + " " + System.identityHashCode(target) + "\n" ,
+                            (b, target) ->
+                                    b + source + " " + System.identityHashCode(target.b()) + " " + (target.a().orElse(""))+ "\n" ,
                             String::concat);
                     return a;
                 },

@@ -1,5 +1,7 @@
 package gpsl.syntax;
 
+import gpsl.syntax.model.Atom;
+import gpsl.syntax.model.Conditional;
 import gpsl.syntax.model.SyntaxTreeElement;
 import gpsl.syntax.model.Visitor;
 
@@ -16,6 +18,12 @@ public class SimpleName implements Visitor<Void, String> {
 
     @Override
     public String visit(SyntaxTreeElement element, Void input) {
+        if (element instanceof Atom) {
+            return "|" + ((Atom) element).value() + "|";
+        }
+        if (element instanceof Conditional cond && cond.condition() instanceof Atom atom) {
+            return "|" + atom.value() + "|?:";
+        }
         var nameMapList = List.of(
                 "Conditional", "?:",
                 "Conjunction", "∧",

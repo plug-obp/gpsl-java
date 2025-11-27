@@ -44,6 +44,10 @@ public class ToRootedGraph implements IRootedGraph<SyntaxTreeElement> {
 
         @Override
         public Iterator<SyntaxTreeElement> visit(Conditional element, Void input) {
+            if (element instanceof Conditional cond && cond.condition() instanceof Atom atom) {
+                List<SyntaxTreeElement> list = List.of(element.trueBranch(), element.falseBranch());
+                return list.iterator();
+            }
             List<SyntaxTreeElement> list = List.of(element.condition(), element.trueBranch(), element.falseBranch());
             return list.iterator();
         }

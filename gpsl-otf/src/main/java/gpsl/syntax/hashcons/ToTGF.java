@@ -1,6 +1,7 @@
 package gpsl.syntax.hashcons;
 
 import gpsl.syntax.SimpleName;
+import gpsl.syntax.ite.IteFactory;
 import gpsl.syntax.model.Expression;
 import gpsl.syntax.model.Factory;
 import gpsl.syntax.model.SyntaxTreeElement;
@@ -120,19 +121,31 @@ public class ToTGF implements Visitor<Boolean, String>, BiFunction<SyntaxTreeEle
 
 
     public static void main(String[] args) throws Exception {
-        var f = new HashConsingFactory();
-        var term1 = f.conjunction("&&", f.t(), f.t());
-        var term2 = f.conjunction("and", f.t(), f.t());
-        var term = f.or(term1, term2);
-        System.out.println(ToTGF.transform(term, false));
-        System.out.println("-----");
-        System.out.println(ToTGF.transform(term, true));
+//        var f = new HashConsingFactory();
+//        var term1 = f.conjunction("&&", f.t(), f.t());
+//        var term2 = f.conjunction("and", f.t(), f.t());
+//        var term = f.or(term1, term2);
+//        System.out.println(ToTGF.transform(term, false));
+//        System.out.println("-----");
+//        System.out.println(ToTGF.transform(term, true));
+//
+//        System.out.println(bigC(3, f).accept(ToTGF.instance(), false));
+//        System.out.println("-----");
+//        System.out.println(ToTGF.instance().apply(bigC(3, new Factory()), true));
+//
+//        ToTGF.writeToFile(bigC(5, f), "gpsl_term.tgf", true);
 
-        System.out.println(bigC(3, f).accept(ToTGF.instance(), false));
-        System.out.println("-----");
-        System.out.println(ToTGF.instance().apply(bigC(3, new Factory()), true));
-
-        ToTGF.writeToFile(bigC(5, f), "gpsl_term.tgf", true);
+        var f = new Factory();
+        var term = majority(f);
+        ToTGF.writeToFile(term, "gpsl_term.tgf", true);
+        var hcF = new HashConsingFactory();
+        var hcTerm = majority(hcF);
+//        var hcTerm = hcF.disjunction(bigC(5, hcF), hcF.atom("v1"));
+        ToTGF.writeToFile(hcTerm, "gpsl_term_hc.tgf", true);
+        var iF = new IteFactory();
+        var iTerm = majority(iF);
+//        var iTerm = iF.disjunction(bigC(5, iF), iF.atom("v1"));
+        ToTGF.writeToFile(iTerm, "gpsl_term_ite.tgf", true);
     }
 
     static Expression bigC(int n, Factory f) {
@@ -141,5 +154,13 @@ public class ToTGF implements Visitor<Boolean, String>, BiFunction<SyntaxTreeEle
         } else {
             return f.conjunction("and", bigC(n - 1, f), bigC(n-1, f));
         }
+    }
+
+    //(a ∧ b) ∨ (a ∧ c) ∨ (b ∧ c)
+    static Expression majority(Factory f) {
+        var ab = f.and(f.atom("a"), f.atom("b"));
+        var ac = f.and(f.atom("a"), f.atom("c"));
+        var bc = f.and(f.atom("b"), f.atom("c"));
+        return f.or(f.or(ab, ac), bc);
     }
 }

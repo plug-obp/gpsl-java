@@ -50,6 +50,12 @@ public class ToEdgedRootedGraph implements IRootedGraph<Pair<Optional<String>, S
 
         @Override
         public Iterator<Pair<Optional<String>, SyntaxTreeElement>> visit(Conditional element, Void input) {
+            if (element instanceof Conditional cond && cond.condition() instanceof Atom atom) {
+                var tBranch = new Pair<Optional<String>, SyntaxTreeElement>(Optional.of("trueBranch"), element.trueBranch());
+                var fBranch = new Pair<Optional<String>, SyntaxTreeElement>(Optional.of("falseBranch"), element.falseBranch());
+                return List.of(tBranch, fBranch).iterator();
+            }
+
             var cond = new Pair<Optional<String>, SyntaxTreeElement>(Optional.of("condition"), element.condition());
             var tBranch = new Pair<Optional<String>, SyntaxTreeElement>(Optional.of("trueBranch"), element.trueBranch());
             var fBranch = new Pair<Optional<String>, SyntaxTreeElement>(Optional.of("falseBranch"), element.falseBranch());

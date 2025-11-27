@@ -2,6 +2,7 @@ package gpsl.syntax.hashcons;
 
 import gpsl.syntax.model.Builder;
 import gpsl.syntax.model.Factory;
+import gpsl.syntax.model.Reference;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,8 +40,8 @@ public class NamelessEqualityTest {
 
     @Test
     void testReferences() {
-        var r1 = f.reference("a");
-        var r2 = f.reference("b");
+        var r1 = (Reference)f.reference("a");
+        var r2 = (Reference)f.reference("b");
 
         assertNotEquals(r1, r2);
         assertFalse(NamelessEquality.same(r1, r2));

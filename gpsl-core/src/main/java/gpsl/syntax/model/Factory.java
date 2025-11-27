@@ -15,19 +15,23 @@ public class Factory {
         return term;
     }
 
-    public Atom atom(String value, String delimiter) {
+    public Expression atom(String value, String delimiter) {
         return wrap(new Atom(value, delimiter));
     }
 
-    public True t() {
+    public Expression atom(String value) {
+        return atom(value, "|");
+    }
+
+    public Expression t() {
         return wrap(new True());
     }
 
-    public False f() {
+    public Expression f() {
         return wrap(new False());
     }
 
-    public Reference reference(String name) {
+    public Expression reference(String name) {
         return wrap(new Reference(name));
     }
 
@@ -35,25 +39,25 @@ public class Factory {
         return wrap(expression);
     }
 
-    public Negation negation(String operator, Expression expression) {
+    public Expression negation(String operator, Expression expression) {
         var e = new Negation(operator, wrap(expression));
         return wrap(e);
     }
 
-    public Negation negation(Expression expression) {
+    public Expression negation(Expression expression) {
         return negation("!", expression);
     }
 
-    public Negation not(Expression expression) {
+    public Expression not(Expression expression) {
         return negation(expression);
     }
 
-    public Next next(String operator, Expression expression) {
+    public Expression next(String operator, Expression expression) {
         var e = new Next(operator, wrap(expression));
         return wrap(e);
     }
 
-    public Next next(Expression expression) {
+    public Expression next(Expression expression) {
         return next("X", expression);
     }
 
@@ -62,114 +66,119 @@ public class Factory {
         return wrap(e);
     }
 
-    public Globally globally(Expression expression) {
+    public Expression globally(Expression expression) {
         return globally("[]", expression);
     }
 
-    public Eventually eventually(String operator, Expression expression) {
+    public Expression eventually(String operator, Expression expression) {
         var e = new Eventually(operator, wrap(expression));
         return wrap(e);
     }
 
-    public Eventually eventually(Expression expression) {
+    public Expression eventually(Expression expression) {
         return eventually("<>", expression);
     }
 
-    public Conjunction conjunction(String operator, Expression left, Expression right) {
+    public Expression conjunction(String operator, Expression left, Expression right) {
         var e = new Conjunction(operator, wrap(left), wrap(right));
         return wrap(e);
     }
 
-    public Conjunction conjunction(Expression left, Expression right) {
+    public Expression conjunction(Expression left, Expression right) {
         return conjunction("&&", left, right);
     }
 
-    public Conjunction and(Expression left, Expression right) {
+    public Expression and(Expression left, Expression right) {
         return conjunction(left, right);
     }
 
-    public Disjunction disjunction(String operator, Expression left, Expression right) {
+    public Expression disjunction(String operator, Expression left, Expression right) {
         var e = new Disjunction(operator, wrap(left), wrap(right));
         return wrap(e);
     }
 
-    public Disjunction disjunction(Expression left, Expression right) {
+    public Expression disjunction(Expression left, Expression right) {
         return disjunction("||", left, right);
     }
 
-    public Disjunction or(Expression left, Expression right) {
+    public Expression or(Expression left, Expression right) {
         return disjunction(left, right);
     }
 
-    public Equivalence equivalence(String operator, Expression left, Expression right) {
+    public Expression equivalence(String operator, Expression left, Expression right) {
         var e = new Equivalence(operator, wrap(left), wrap(right));
         return wrap(e);
     }
 
-    public Equivalence equivalence(Expression left, Expression right) {
+    public Expression equivalence(Expression left, Expression right) {
         return equivalence("<->", left, right);
     }
 
-    public Implication implication(String operator, Expression left, Expression right) {
+    public Expression implication(String operator, Expression left, Expression right) {
         var e = new Implication(operator, wrap(left), wrap(right));
         return wrap(e);
     }
 
-    public Implication implication(Expression left, Expression right) {
+    public Expression implication(Expression left, Expression right) {
         return implication("->", left, right);
     }
 
-    public Implication implies(Expression left, Expression right) {
+    public Expression implies(Expression left, Expression right) {
         return implication(left, right);
     }
 
-    public ExclusiveDisjunction exclusiveDisjunction(String operator, Expression left, Expression right) {
+    public Expression exclusiveDisjunction(String operator, Expression left, Expression right) {
         var e = new ExclusiveDisjunction(operator, wrap(left), wrap(right));
         return wrap(e);
     }
 
-    public ExclusiveDisjunction exclusiveDisjunction(Expression left, Expression right) {
+    public Expression exclusiveDisjunction(Expression left, Expression right) {
         return exclusiveDisjunction("xor", left, right);
     }
 
-    public ExclusiveDisjunction xor(Expression left, Expression right) {
+    public Expression xor(Expression left, Expression right) {
         return exclusiveDisjunction(left, right);
     }
 
-    public StrongRelease strongRelease(String operator, Expression left, Expression right) {
+    public Expression strongRelease(String operator, Expression left, Expression right) {
         var e = new StrongRelease(operator, wrap(left), wrap(right));
         return wrap(e);
     }
 
-    public StrongRelease strongRelease(Expression left, Expression right) {
+    public Expression strongRelease(Expression left, Expression right) {
         return strongRelease("M", left, right);
     }
 
-    public WeakRelease weakRelease(String operator, Expression left, Expression right) {
+    public Expression weakRelease(String operator, Expression left, Expression right) {
         var e = new WeakRelease(operator, wrap(left), wrap(right));
         return wrap(e);
     }
 
-    public WeakRelease weakRelease(Expression left, Expression right) {
+    public Expression weakRelease(Expression left, Expression right) {
         return weakRelease("R", left, right);
     }
 
-    public StrongUntil strongUntil(String operator, Expression left, Expression right) {
+    public Expression strongUntil(String operator, Expression left, Expression right) {
         var e = new StrongUntil(operator, wrap(left), wrap(right));
         return wrap(e);
     }
 
-    public StrongUntil strongUntil(Expression left, Expression right) {
+    public Expression strongUntil(Expression left, Expression right) {
         return strongUntil("U", left, right);
     }
 
-    public WeakUntil weakUntil(String operator, Expression left, Expression right) {
+    public Expression weakUntil(String operator, Expression left, Expression right) {
         var e = new WeakUntil(operator, wrap(left), wrap(right));
         return wrap(e);
     }
 
-    public WeakUntil weakUntil(Expression left, Expression right) {
+    public Expression weakUntil(Expression left, Expression right) {
         return weakUntil("W", left, right);
+    }
+
+    public Expression conditional(Expression condition, Expression thenClause, Expression elseClause) {
+        var e = new Conditional(wrap(condition), wrap(thenClause), wrap(elseClause));
+        return wrap(e);
     }
 
     public ExpressionDeclaration declaration(String name, Expression expression, boolean isInternal) {
@@ -193,11 +202,11 @@ public class Factory {
         return wrap(new Declarations(Arrays.stream(declarations).map(this::wrap).toList()));
     }
 
-    public LetExpression letExpression(Declarations declarations, Expression expression) {
+    public Expression letExpression(Declarations declarations, Expression expression) {
         return wrap(new LetExpression(wrap(declarations), wrap(expression)));
     }
 
-    public LetExpression letExpression(Expression expression, ExpressionDeclaration... whereClauses) {
+    public Expression letExpression(Expression expression, ExpressionDeclaration... whereClauses) {
         return wrap(new LetExpression(wrap(declarations(whereClauses)), wrap(expression)));
     }
 

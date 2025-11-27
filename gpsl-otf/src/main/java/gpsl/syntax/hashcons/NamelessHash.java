@@ -17,12 +17,12 @@ public class NamelessHash implements Visitor<Void, Integer> {
 
     @Override
     public Integer visit(True element, Void input) {
-        return Objects.hash(true);
+        return 1;
     }
 
     @Override
     public Integer visit(False element, Void input) {
-        return Objects.hash(false);
+        return 0;
     }
 
     @Override

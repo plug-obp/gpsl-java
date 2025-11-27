@@ -7,7 +7,7 @@ import obp3.hashcons.HashConsed;
 import obp3.utils.Hashable;
 
 public class HashConsingFactory extends Factory {
-    HashConsTable<SyntaxTreeElement> intern;
+    public HashConsTable<SyntaxTreeElement> intern;
 
     public HashConsingFactory() {
         this(new HashConsTable<>(

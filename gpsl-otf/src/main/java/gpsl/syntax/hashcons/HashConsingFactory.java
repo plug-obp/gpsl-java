@@ -42,4 +42,27 @@ public class HashConsingFactory extends Factory {
     public <T extends SyntaxTreeElement> T wrap(T term) {
         return (T) hc(term);
     }
+
+    public Hashable<SyntaxTreeElement> hashable() {
+        return new Hashable<>() {
+            @Override
+            public boolean equal(SyntaxTreeElement x, SyntaxTreeElement y) {
+                var lhs = intern.map().get(x);
+                var rhs = intern.map().get(y);
+                if (lhs != null && rhs != null) {
+                    return lhs.tag() == rhs.tag();
+                }
+                //degrades to nameless equality if the terms are not hash consed
+                return NamelessEquality.same(x, y);
+            }
+
+            @Override
+            public int hash(SyntaxTreeElement x) {
+                var hc = intern.map().get(x);
+                if (hc != null) return hc.hashKey();
+                //degrades to nameless hashcode if the term is not hash consed
+                return NamelessHash.hashCode(x);
+            }
+        };
+    }
  }

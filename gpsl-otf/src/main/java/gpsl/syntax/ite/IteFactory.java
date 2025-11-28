@@ -42,24 +42,39 @@ public class IteFactory extends HashConsingFactory {
                 .min(Comparator.comparingInt(HashConsed::tag))
                 .orElseThrow(()-> new RuntimeException("should not happen"));
 
-        var f1 = cofactor(condition, top.tag(), true);
-        var f0 = cofactor(condition, top.tag(), false);
-
-        var g1 = cofactor(thenClause, top.tag(), true);
-        var g0 = cofactor(thenClause, top.tag(), false);
-
-        var h1 = cofactor(elseClause, top.tag(), true);
-        var h0 = cofactor(elseClause, top.tag(), false);
+        var f = cofactors(condition, top);
+        var g = cofactors(thenClause, top);
+        var h = cofactors(elseClause, top);
 
         //Shannon expansion
-        var t = conditional(f1, g1, h1);
-        var e = conditional(f0, g0, h0);
+        var t = conditional(f.high, g.high, h.high);
+        var e = conditional(f.low, g.low, h.low);
         if (t == e) return t;
 
         return super.conditional((Expression)top.node(), t, e);
     }
 
-    int orderIndex(Atom var) {
+    private record CofactorPair(Expression high, Expression low) {}
+
+    private CofactorPair cofactors(Expression node, HashConsed<SyntaxTreeElement> var) {
+        if (node == t() || node == f()) {
+            return new CofactorPair(node, node);
+        }
+
+        var cond = (Conditional) node;
+        var v = (Atom) cond.condition();
+        int nodeOrder = orderIndex(v);
+
+        if (var.tag() < nodeOrder) {
+            return new CofactorPair(node, node);
+        } else if (var.tag() == nodeOrder) {
+            return new CofactorPair(cond.trueBranch(), cond.falseBranch());
+        }
+
+        throw new IllegalStateException("Variable ordering violation: expected order");
+    }
+
+    int orderIndex(Expression var) {
         return intern.map().get(var).tag();
     }
 

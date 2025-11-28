@@ -17,9 +17,15 @@ public class IteFactory extends HashConsingFactory {
 
     @Override
     public Expression conditional(Expression condition, Expression thenClause, Expression elseClause) {
+        //ite(⊤, m, _) = m  -- true condition
         if (condition == t()) return thenClause;
+        //ite(⊥, _, m) = m -- false condition
         if (condition == f()) return elseClause;
+        //ite(_, m, m) = m -- identical branches
         if (thenClause == elseClause) return thenClause;
+        //ite(c, ⊤, ⊥) = c -- condition identity
+        if (thenClause == t() && elseClause == f()) return condition;
+
         //I suppose that condition, then and else are oneOf(ITE | t | f)
 
         //find the top variable, here we use hashcons order

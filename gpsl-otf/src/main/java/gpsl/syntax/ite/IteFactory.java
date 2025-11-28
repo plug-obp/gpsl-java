@@ -20,56 +20,44 @@ public class IteFactory extends HashConsingFactory {
         if (condition == t()) return thenClause;
         if (condition == f()) return elseClause;
         if (thenClause == elseClause) return thenClause;
-        //I suppose that condition, then and else are BDDs already
-
-
+        //I suppose that condition, then and else are oneOf(ITE | t | f)
 
         //find the top variable, here we use hashcons order
         int min = Integer.MAX_VALUE;
         Atom top = null;
-        if (condition instanceof Conditional) {
-            var f = (Conditional) condition;
+        if (condition instanceof Conditional f) {
             var vF = (Atom) f.condition();
-            var tF = intern.map().get(vF).tag();
+            var tF = orderIndex(vF);
             min = tF;
             top = vF;
         }
 
-        if (thenClause instanceof Conditional) {
-            var g = (Conditional) thenClause;
+        if (thenClause instanceof Conditional g) {
             var vG = (Atom) g.condition();
-            var tG = intern.map().get(vG).tag();
+            var tG = orderIndex(vG);
             if (tG < min) {
                 min = tG;
                 top = vG;
             }
         }
 
-        if (elseClause instanceof Conditional) {
-            var h = (Conditional) elseClause;
+        if (elseClause instanceof Conditional h) {
             var vH = (Atom) h.condition();
-            var tH = intern.map().get(vH).tag();
+            var tH = orderIndex(vH);
             if (tH < min) {
                 min = tH;
                 top = vH;
             }
         }
 
-        var tF = condition instanceof Conditional;
-        var f = tF ? (Conditional) condition : condition;
-        var f1 = tF ? cofactor(f, min, true) : condition;
-        var f0 = tF ? cofactor(f, min, false) : condition;
+        var f1 = cofactor(condition, min, true);
+        var f0 = cofactor(condition, min, false);
 
-        var tG = thenClause instanceof Conditional;
-        var g = tG ? (Conditional) thenClause : thenClause;
-        var g1 = tG ? cofactor(g, min, true) : thenClause;
-        var g0 = tG ? cofactor(g, min, false) : thenClause;
+        var g1 = cofactor(thenClause, min, true);
+        var g0 = cofactor(thenClause, min, false);
 
-
-        var tH = elseClause instanceof Conditional;
-        var h = tH ? (Conditional) elseClause : elseClause;
-        var h1 = tH ? cofactor(h, min, true) : elseClause;
-        var h0 = tH ? cofactor(h, min, false) : elseClause;
+        var h1 = cofactor(elseClause, min, true);
+        var h0 = cofactor(elseClause, min, false);
 
         //Shannon expansion
         var t = conditional(f1, g1, h1);
@@ -79,8 +67,13 @@ public class IteFactory extends HashConsingFactory {
         return super.conditional(top, t, e);
     }
 
+    int orderIndex(Atom var) {
+        return intern.map().get(var).tag();
+    }
+
     Expression cofactor(Expression node, int min, boolean polarity) {
-        if (node == t() && node == f()) return node;
+        //terminals are their own cofactors
+        if (node == t() || node == f()) return node;
         var cond = (Conditional) node;
         var v = (Atom) cond.condition();
         var tag = intern.map().get(v).tag();

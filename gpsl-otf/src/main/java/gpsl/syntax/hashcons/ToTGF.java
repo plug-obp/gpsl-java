@@ -135,17 +135,23 @@ public class ToTGF implements Visitor<Boolean, String>, BiFunction<SyntaxTreeEle
 //
 //        ToTGF.writeToFile(bigC(5, f), "gpsl_term.tgf", true);
 
+        all("maj", ToTGF::majority);
+        all("bigc", (f) -> bigC(5, f));
+
+
+    }
+
+    static void all(String name, Function<Factory, Expression> termGenerator) throws Exception {
         var f = new Factory();
-        var term = majority(f);
-        ToTGF.writeToFile(term, "gpsl_term.tgf", true);
+        var term = termGenerator.apply(f);
+        ToTGF.writeToFile(term, "gpsl_"+name+".tgf", true);
         var hcF = new HashConsingFactory();
-        var hcTerm = majority(hcF);
-//        var hcTerm = hcF.disjunction(bigC(5, hcF), hcF.atom("v1"));
-        ToTGF.writeToFile(hcTerm, "gpsl_term_hc.tgf", true);
+        var hcTerm = termGenerator.apply(hcF);
+        ToTGF.writeToFile(hcTerm, "gpsl_"+name+"_hc.tgf", true);
         var iF = new IteFactory();
-        var iTerm = majority(iF);
-//        var iTerm = iF.disjunction(bigC(5, iF), iF.atom("v1"));
-        ToTGF.writeToFile(iTerm, "gpsl_term_ite.tgf", true);
+        var iTerm = termGenerator.apply(iF);
+        ToTGF.writeToFile(iTerm, "gpsl_"+name+"_ite.tgf", true);
+
     }
 
     static Expression bigC(int n, Factory f) {

@@ -4,6 +4,11 @@ import gpsl.syntax.hashcons.HashConsingFactory;
 import gpsl.syntax.model.Atom;
 import gpsl.syntax.model.Conditional;
 import gpsl.syntax.model.Expression;
+import gpsl.syntax.model.SyntaxTreeElement;
+import obp3.hashcons.HashConsed;
+
+import java.util.Comparator;
+import java.util.stream.Stream;
 
 public class FastPathIteFactory extends HashConsingFactory {
     public FastPathIteFactory() {
@@ -37,52 +42,29 @@ public class FastPathIteFactory extends HashConsingFactory {
         //I suppose that condition, then and else are oneOf(ITE | t | f)
 
         //find the top variable, here we use hashcons order
-        int min = Integer.MAX_VALUE;
-        Atom top = null;
-        if (condition instanceof Conditional f) {
-            var vF = (Atom) f.condition();
-            var tF = orderIndex(vF);
-            min = tF;
-            top = vF;
-        }
+        HashConsed<SyntaxTreeElement> top = Stream.of(condition, thenClause, elseClause)
+                .filter(e -> e instanceof Conditional)
+                .map(e -> (Conditional) e)
+                .map(c -> (Atom) c.condition())
+                .map(intern.map()::get)
+                .min(Comparator.comparingInt(HashConsed::tag))
+                .orElseThrow(()-> new RuntimeException("should not happen"));
 
-        if (thenClause instanceof Conditional g) {
-            var vG = (Atom) g.condition();
-            var tG = orderIndex(vG);
-            if (tG < min) {
-                min = tG;
-                top = vG;
-            }
-        }
+        var f1 = cofactor(condition, top.tag(), true);
+        var f0 = cofactor(condition, top.tag(), false);
 
-        if (elseClause instanceof Conditional h) {
-            var vH = (Atom) h.condition();
-            var tH = orderIndex(vH);
-            if (tH < min) {
-                min = tH;
-                top = vH;
-            }
-        }
+        var g1 = cofactor(thenClause, top.tag(), true);
+        var g0 = cofactor(thenClause, top.tag(), false);
 
-        var f1 = cofactor(condition, min, true);
-        var f0 = cofactor(condition, min, false);
-
-        var g1 = cofactor(thenClause, min, true);
-        var g0 = cofactor(thenClause, min, false);
-
-        var h1 = cofactor(elseClause, min, true);
-        var h0 = cofactor(elseClause, min, false);
+        var h1 = cofactor(elseClause, top.tag(), true);
+        var h0 = cofactor(elseClause, top.tag(), false);
 
         //Shannon expansion
         var t = conditional(f1, g1, h1);
         var e = conditional(f0, g0, h0);
         if (t == e) return t;
 
-        return super.conditional(top, t, e);
-    }
-
-    int orderIndex(Expression var) {
-        return intern.map().get(var).tag();
+        return super.conditional((Expression) top.node(), t, e);
     }
 
     Expression cofactor(Expression node, int min, boolean polarity) {
@@ -105,6 +87,10 @@ public class FastPathIteFactory extends HashConsingFactory {
             return cond.falseBranch();
         }
         throw new RuntimeException("Impossible");
+    }
+
+    int orderIndex(Expression var) {
+        return intern.map().get(var).tag();
     }
 
     @Override
@@ -170,6 +156,10 @@ public class FastPathIteFactory extends HashConsingFactory {
         if (right == t()) return not(left);
         // f ⊕ f = ⊥
         if (left == right) return f();
+        // m ⊕ n -> n ⊕ m, where m.tag > n.tag -- normalize commutativity
+        if (orderIndex(right) < orderIndex(left)) {
+            return exclusiveDisjunction(op, right, left);
+        }
 
         // f ⊕ g = (f ∧ ¬g) ∨ (¬f ∧ g) = ite(f, ¬g, g)
         return conditional(left, not(right), right);
@@ -202,6 +192,10 @@ public class FastPathIteFactory extends HashConsingFactory {
         if (right == f()) return not(left);
         // f ↔ f = ⊤
         if (left == right) return t();
+        // m ↔ n -> n ↔ m, where m.tag > n.tag -- normalize commutativity
+        if (orderIndex(right) < orderIndex(left)) {
+            return equivalence(op, right, left);
+        }
 
         // f ↔ g = (f → g) ∧ (g → f) = ite(f, g, ¬g) # Same as XNOR
         return conditional(left, right, not(right));
@@ -216,6 +210,10 @@ public class FastPathIteFactory extends HashConsingFactory {
         if (right == t()) return not(left);
         // f ⊼ f = ¬f
         if (left == right) return not(left);
+        // m ⊼ n -> n ⊼ m, where m.tag > n.tag -- normalize commutativity
+        if (orderIndex(right) < orderIndex(left)) {
+            return nand(right, left);
+        }
 
         // f ⊼ g = ¬(f ∧ g) = ite(f, ¬g, true)
         return conditional(left, not(right), t());
@@ -230,6 +228,10 @@ public class FastPathIteFactory extends HashConsingFactory {
         if (right == f()) return not(left);
         // f ⊽ f = ¬f
         if (left == right) return not(left);
+        // m ⊽ n -> n ⊽ m, where m.tag > n.tag -- normalize commutativity
+        if (orderIndex(right) < orderIndex(left)) {
+            return nor(right, left);
+        }
 
         // f ⊽ g = ¬(f ∨ g) = ite(f, false, ¬g)
         return conditional(left, f(), not(right));

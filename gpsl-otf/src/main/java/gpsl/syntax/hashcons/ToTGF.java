@@ -1,7 +1,8 @@
 package gpsl.syntax.hashcons;
 
 import gpsl.syntax.SimpleName;
-import gpsl.syntax.ite.IteFactory;
+import gpsl.syntax.ite.BDDFactory;
+import gpsl.syntax.ite.ITEFactory;
 import gpsl.syntax.model.Expression;
 import gpsl.syntax.model.Factory;
 import gpsl.syntax.model.SyntaxTreeElement;
@@ -148,9 +149,12 @@ public class ToTGF implements Visitor<Boolean, String>, BiFunction<SyntaxTreeEle
         var hcF = new HashConsingFactory();
         var hcTerm = termGenerator.apply(hcF);
         ToTGF.writeToFile(hcTerm, "gpsl_"+name+"_hc.tgf", true);
-        var iF = new IteFactory();
+        var iF = new ITEFactory();
         var iTerm = termGenerator.apply(iF);
         ToTGF.writeToFile(iTerm, "gpsl_"+name+"_ite.tgf", true);
+        var bF = new BDDFactory();
+        var bTerm = termGenerator.apply(bF);
+        ToTGF.writeToFile(bTerm, "gpsl_"+name+"_bdd.tgf", true);
 
     }
 

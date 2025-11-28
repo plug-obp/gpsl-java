@@ -10,8 +10,15 @@ import obp3.hashcons.HashConsed;
 import java.util.Comparator;
 import java.util.stream.Stream;
 
-public class IteFactory extends HashConsingFactory {
-    public IteFactory() {
+/**
+ * Inspired by:
+ * W. K. C. Lam and R. K. Brayton,
+ * "On relationship between ITE and BDD,"
+ * Proceedings 1992 IEEE International Conference on Computer Design: VLSI in Computers & Processors,
+ * Cambridge, MA, USA, 1992, pp. 448-451, doi: 10.1109/ICCD.1992.276312.
+ */
+public class ITEFactory extends HashConsingFactory {
+    public ITEFactory() {
         super();
     }
 
@@ -30,28 +37,16 @@ public class IteFactory extends HashConsingFactory {
         if (thenClause == elseClause) return thenClause;
         //ite(c, ⊤, ⊥) = c -- condition identity
         if (thenClause == t() && elseClause == f()) return condition;
+        // ite(f, f, g) = f ∨ g = ite(f, ⊤, g)
+        if (condition == thenClause) {
+            return conditional(condition, t(), elseClause);
+        }
+        // ite(f, g, f) = f ∧ g = ite(f, g, ⊥)
+        if (condition == elseClause) {
+            return conditional(condition, thenClause, f());
+        }
 
-        //I suppose that condition, then and else are oneOf(ITE | t | f)
-
-        //find the top variable, here we use hashcons order
-        HashConsed<SyntaxTreeElement> top = Stream.of(condition, thenClause, elseClause)
-                .filter(e -> e instanceof Conditional)
-                .map(e -> (Conditional) e)
-                .map(c -> (Atom) c.condition())
-                .map(intern.map()::get)
-                .min(Comparator.comparingInt(HashConsed::tag))
-                .orElseThrow(()-> new RuntimeException("should not happen"));
-
-        var f = cofactors(condition, top);
-        var g = cofactors(thenClause, top);
-        var h = cofactors(elseClause, top);
-
-        //Shannon expansion
-        var t = conditional(f.high, g.high, h.high);
-        var e = conditional(f.low, g.low, h.low);
-        if (t == e) return t;
-
-        return super.conditional((Expression)top.node(), t, e);
+        return super.conditional(condition, thenClause, elseClause);
     }
 
     private record CofactorPair(Expression high, Expression low) {}
@@ -71,33 +66,13 @@ public class IteFactory extends HashConsingFactory {
             return new CofactorPair(cond.trueBranch(), cond.falseBranch());
         }
 
-        throw new IllegalStateException("Variable ordering violation: expected order");
+        throw new IllegalStateException(
+                "Variable ordering violation: cofactor var order %d > node var order %d".formatted(var.tag(), nodeOrder)
+        );
     }
 
     int orderIndex(Expression var) {
         return intern.map().get(var).tag();
-    }
-
-    Expression cofactor(Expression node, int min, boolean polarity) {
-        //terminals are their own cofactors
-        if (node == t() || node == f()) return node;
-        var cond = (Conditional) node;
-        var v = (Atom) cond.condition();
-        var tag = intern.map().get(v).tag();
-        if (polarity) {
-            if (min < tag) {
-                return node;
-            } else if (min == tag) {
-                return cond.trueBranch();
-            }
-            throw new RuntimeException("Impossible");
-        }
-        if (min < tag) {
-            return node;
-        } else if (min == tag) {
-            return cond.falseBranch();
-        }
-        throw new RuntimeException("Impossible");
     }
 
     @Override
@@ -148,6 +123,6 @@ public class IteFactory extends HashConsingFactory {
 
     public Expression xnor(Expression left, Expression right) {
         // f ⊙ g = ¬(f ⊕ g) = ite(f, g, ¬g)  # Same as equiv!
-        return conditional(left, right, not(right));
+        return equivalence(left, right);
     }
 }

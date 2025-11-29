@@ -14,7 +14,7 @@ import java.util.stream.Stream;
  * Inspired by:
  * W. K. C. Lam and R. K. Brayton,
  * "On relationship between ITE and BDD,"
- * Proceedings 1992 IEEE International Conference on Computer Design: VLSI in Computers & Processors,
+ * Proceedings 1992 IEEE International Conference on Computer Design: VLSI in Computers and Processors,
  * Cambridge, MA, USA, 1992, pp. 448-451, doi: 10.1109/ICCD.1992.276312.
  */
 public class ITEFactory extends HashConsingFactory {
